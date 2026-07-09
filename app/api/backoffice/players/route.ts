@@ -1,20 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getToken } from "next-auth/jwt";
-
-const secret = process.env.NEXTAUTH_SECRET;
-
-function sanitizeText(value: string) {
-  return value.trim().replace(/["'`;<>]/g, "");
-}
+import { sanitizeText } from "@/lib/sanitize";
+import { requireToken } from "@/lib/token";
 
 function getId(value: unknown) {
   const id = Number(value);
   return Number.isInteger(id) && id > 0 ? id : null;
-}
-
-async function requireToken(request: Request) {
-  return getToken({ req: request as any, secret });
 }
 
 export async function GET(request: Request) {
@@ -25,9 +16,7 @@ export async function GET(request: Request) {
 
   const players = await prisma.player.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      team: true,
-    },
+    include: { team: true },
   });
 
   return NextResponse.json(players);
@@ -40,11 +29,16 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
+  const name = sanitizeText(body.name);
+  const number = sanitizeText(body.number);
   const teamId = getId(body?.teamId);
 
   if (!name || name.length > 100) {
     return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+  }
+
+  if (!number || Number(number) < 0 || Number(number) > 99) {
+    return NextResponse.json({ error: "Número inválido." }, { status: 400 });
   }
 
   if (!teamId) {
@@ -57,17 +51,15 @@ export async function POST(request: Request) {
   });
 
   if (!team) {
-    return NextResponse.json({ error: "Equipa não encontrada." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Equipa não encontrada." },
+      { status: 404 },
+    );
   }
 
   const player = await prisma.player.create({
-    data: {
-      name,
-      teamId,
-    },
-    include: {
-      team: true,
-    },
+    data: { name, number, teamId },
+    include: { team: true },
   });
 
   return NextResponse.json(player, { status: 201 });

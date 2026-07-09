@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getToken } from "next-auth/jwt";
-
-const secret = process.env.NEXTAUTH_SECRET;
+import { requireToken } from "@/lib/token";
+import { sanitizeText } from "@/lib/sanitize";
 
 type RouteContext = {
   params: {
@@ -10,17 +9,9 @@ type RouteContext = {
   };
 };
 
-function sanitizeText(value: string) {
-  return value.trim().replace(/["'`;<>]/g, "");
-}
-
 function getId(value: unknown) {
   const id = Number(value);
   return Number.isInteger(id) && id > 0 ? id : null;
-}
-
-async function requireToken(request: Request) {
-  return getToken({ req: request as any, secret });
 }
 
 export async function GET(request: Request, { params }: RouteContext) {
@@ -42,7 +33,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   });
 
   if (!player) {
-    return NextResponse.json({ error: "Jogador não encontrado." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Jogador não encontrado." },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json(player);
@@ -77,11 +71,17 @@ export async function PUT(request: Request, { params }: RouteContext) {
   ]);
 
   if (!player) {
-    return NextResponse.json({ error: "Jogador não encontrado." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Jogador não encontrado." },
+      { status: 404 },
+    );
   }
 
   if (!team) {
-    return NextResponse.json({ error: "Equipa não encontrada." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Equipa não encontrada." },
+      { status: 404 },
+    );
   }
 
   const updatedPlayer = await prisma.player.update({
@@ -115,7 +115,10 @@ export async function DELETE(request: Request, { params }: RouteContext) {
   });
 
   if (!player) {
-    return NextResponse.json({ error: "Jogador não encontrado." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Jogador não encontrado." },
+      { status: 404 },
+    );
   }
 
   await prisma.player.delete({

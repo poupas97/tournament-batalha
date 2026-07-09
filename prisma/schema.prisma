@@ -19,7 +19,6 @@ model User {
 model Team {
   id        Int      @id @default(autoincrement())
   name      String
-  color     String   @default("#2563eb")
   createdAt DateTime @default(now())
   players   Player[]
   staff     Staff[]
@@ -28,6 +27,7 @@ model Team {
 model Player {
   id        Int      @id @default(autoincrement())
   name      String
+  number    String
   teamId    Int
   team      Team     @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())

@@ -15,9 +15,6 @@ export default function BackofficePage() {
         <Link href="/backoffice/players" style={{ color: "#0366d6" }}>
           Jogadores
         </Link>
-        <Link href="/backoffice/products" style={{ color: "#0366d6" }}>
-          Produtos
-        </Link>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/backoffice/login" })}

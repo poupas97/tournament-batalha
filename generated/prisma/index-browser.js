@@ -132,13 +132,13 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.TeamScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  color: 'color',
   createdAt: 'createdAt'
 };
 
 exports.Prisma.PlayerScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  number: 'number',
   teamId: 'teamId',
   createdAt: 'createdAt'
 };

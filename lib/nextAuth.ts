@@ -3,8 +3,6 @@ import type { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
 import prisma from "./prisma";
 
-const secret = process.env.NEXTAUTH_SECRET || "dev-secret";
-
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -47,7 +45,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret,
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default authOptions;

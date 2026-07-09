@@ -1,27 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
-
-const secret = process.env.NEXTAUTH_SECRET;
+import { Player } from "@/generated/prisma";
+import { requireToken } from "@/lib/token";
+import { sanitizeText } from "@/lib/sanitize";
 
 type RouteContext = {
   params: {
     id: string;
   };
 };
-
-function sanitizeText(value: string) {
-  return value.trim().replace(/["'`;<>]/g, "");
-}
-
-function sanitizeColor(value: unknown) {
-  if (typeof value !== "string") {
-    return "#2563eb";
-  }
-
-  const color = value.trim();
-  return /^#[0-9a-fA-F]{6}$/.test(color) ? color : "#2563eb";
-}
 
 function getTeamId(id: string) {
   const teamId = Number(id);
@@ -39,10 +27,6 @@ function getMembersFromBody(body: any, key: "players" | "staff") {
     )
     .filter((name: string) => name.length > 0 && name.length <= 100)
     .map((name: string) => ({ name }));
-}
-
-async function requireToken(request: Request) {
-  return getToken({ req: request as any, secret });
 }
 
 export async function GET(request: Request, { params }: RouteContext) {
@@ -69,7 +53,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   });
 
   if (!team) {
-    return NextResponse.json({ error: "Equipa não encontrada." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Equipa não encontrada." },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json(team);
@@ -88,8 +75,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
-  const color = sanitizeColor(body?.color);
-  const players = getMembersFromBody(body, "players");
   const staff = getMembersFromBody(body, "staff");
 
   if (!name || name.length > 100) {
@@ -102,7 +87,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
   });
 
   if (!existingTeam) {
-    return NextResponse.json({ error: "Equipa não encontrada." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Equipa não encontrada." },
+      { status: 404 },
+    );
   }
 
   const team = await prisma.$transaction(async (tx) => {
@@ -113,8 +101,15 @@ export async function PUT(request: Request, { params }: RouteContext) {
       where: { id: teamId },
       data: {
         name,
-        color,
-        players: players.length > 0 ? { create: players } : undefined,
+        players:
+          body.players?.length > 0
+            ? {
+                create: (body.players as Player[]).map((it) => ({
+                  name: it.name,
+                  number: it.number,
+                })),
+              }
+            : undefined,
         staff: staff.length > 0 ? { create: staff } : undefined,
       },
       include: {

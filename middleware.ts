@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { requireToken } from "./lib/token";
 
 const PUBLIC_PATHS = ["/backoffice/login", "/backoffice/login/"];
-const secret = process.env.NEXTAUTH_SECRET || "dev-secret";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,7 +11,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = await getToken({ req: request as any, secret });
+  const token = await requireToken(request);
 
   if (PUBLIC_PATHS.includes(pathname)) {
     if (token) {

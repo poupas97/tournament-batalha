@@ -26,11 +26,7 @@ type BackofficeModalContextValue = {
 const BackofficeModalContext =
   createContext<BackofficeModalContextValue | null>(null);
 
-export function BackofficeModalProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function BackofficeModalProvider({ children }: { children: ReactNode }) {
   const [modal, setModal] = useState<ModalOptions | null>(null);
 
   const openModal = useCallback((options: ModalOptions) => {
@@ -46,7 +42,7 @@ export function BackofficeModalProvider({
       openModal,
       closeModal,
     }),
-    [openModal, closeModal]
+    [openModal, closeModal],
   );
 
   return (
@@ -70,7 +66,7 @@ export function useBackofficeModal() {
 
   if (!context) {
     throw new Error(
-      "useBackofficeModal deve ser usado dentro de BackofficeModalProvider."
+      "useBackofficeModal deve ser usado dentro de BackofficeModalProvider.",
     );
   }
 

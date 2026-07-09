@@ -1,4 +1,4 @@
-# App Gestão — Setup rápido
+# tournament-batalha
 
 Este README mostra como configurar e executar o projeto localmente usando Postgres no Docker (recomendado). Está escrito em português.
 
@@ -19,14 +19,14 @@ Arquivos relevantes
 
 Configuração e execução (passo a passo)
 
-1) Copie/edite o `.env` (já existe com valor padrão para Docker):
+1. Copie/edite o `.env` (já existe com valor padrão para Docker):
 
 ```bash
 # .env (exemplo)
 DATABASE_URL=postgresql://prisma:prisma@localhost:5432/app_gestao?schema=public
 ```
 
-2) Inicie o Postgres com Docker Compose
+2. Inicie o Postgres com Docker Compose
 
 - Se tem Docker Compose v2 (recomendado):
 
@@ -42,13 +42,13 @@ docker-compose up -d --build
 
 (Aguardar alguns segundos para o Postgres subir.)
 
-3) Gerar Prisma Client
+3. Gerar Prisma Client
 
 ```bash
 npm run prisma:generate
 ```
 
-4) Criar e aplicar migrações (cria as tabelas no Postgres)
+4. Criar e aplicar migrações (cria as tabelas no Postgres)
 
 ```bash
 npm run prisma:migrate
@@ -56,7 +56,7 @@ npm run prisma:migrate
 
 (se preferir passar um nome: `npm run prisma:migrate -- --name init`)
 
-6) Executar a aplicação Next.js
+6. Executar a aplicação Next.js
 
 ```bash
 npm run dev
