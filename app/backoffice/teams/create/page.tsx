@@ -1,6 +1,6 @@
 "use client";
 
-import FormTeam from "@/components/FormTeam";
+import BackofficeFormTeam from "@/components/FormTeam";
 import { ITeamFormValues } from "@/types/team";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ export default function CreateTeamPage() {
       <p style={{ marginBottom: "1rem" }}>
         Preencha os dados para criar uma nova equipa.
       </p>
-      <FormTeam handleSubmit={handleSubmit} />
+      <BackofficeFormTeam handleSubmit={handleSubmit} />
 
       <Link
         href="/backoffice/teams"

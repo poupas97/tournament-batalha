@@ -1157,12 +1157,12 @@ export namespace Prisma {
 
   export type TeamCountOutputType = {
     players: number
-    staff: number
+    staffs: number
   }
 
   export type TeamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     players?: boolean | TeamCountOutputTypeCountPlayersArgs
-    staff?: boolean | TeamCountOutputTypeCountStaffArgs
+    staffs?: boolean | TeamCountOutputTypeCountStaffsArgs
   }
 
   // Custom InputTypes
@@ -1186,7 +1186,7 @@ export namespace Prisma {
   /**
    * TeamCountOutputType without action
    */
-  export type TeamCountOutputTypeCountStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TeamCountOutputTypeCountStaffsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StaffWhereInput
   }
 
@@ -2425,7 +2425,7 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     players?: boolean | Team$playersArgs<ExtArgs>
-    staff?: boolean | Team$staffArgs<ExtArgs>
+    staffs?: boolean | Team$staffsArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
@@ -2450,7 +2450,7 @@ export namespace Prisma {
   export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     players?: boolean | Team$playersArgs<ExtArgs>
-    staff?: boolean | Team$staffArgs<ExtArgs>
+    staffs?: boolean | Team$staffsArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2460,7 +2460,7 @@ export namespace Prisma {
     name: "Team"
     objects: {
       players: Prisma.$PlayerPayload<ExtArgs>[]
-      staff: Prisma.$StaffPayload<ExtArgs>[]
+      staffs: Prisma.$StaffPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2861,7 +2861,7 @@ export namespace Prisma {
   export interface Prisma__TeamClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     players<T extends Team$playersArgs<ExtArgs> = {}>(args?: Subset<T, Team$playersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    staff<T extends Team$staffArgs<ExtArgs> = {}>(args?: Subset<T, Team$staffArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    staffs<T extends Team$staffsArgs<ExtArgs> = {}>(args?: Subset<T, Team$staffsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3311,9 +3311,9 @@ export namespace Prisma {
   }
 
   /**
-   * Team.staff
+   * Team.staffs
    */
-  export type Team$staffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Team$staffsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff
      */
@@ -5759,7 +5759,7 @@ export namespace Prisma {
     name?: StringFilter<"Team"> | string
     createdAt?: DateTimeFilter<"Team"> | Date | string
     players?: PlayerListRelationFilter
-    staff?: StaffListRelationFilter
+    staffs?: StaffListRelationFilter
   }
 
   export type TeamOrderByWithRelationInput = {
@@ -5767,7 +5767,7 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     players?: PlayerOrderByRelationAggregateInput
-    staff?: StaffOrderByRelationAggregateInput
+    staffs?: StaffOrderByRelationAggregateInput
   }
 
   export type TeamWhereUniqueInput = Prisma.AtLeast<{
@@ -5778,7 +5778,7 @@ export namespace Prisma {
     name?: StringFilter<"Team"> | string
     createdAt?: DateTimeFilter<"Team"> | Date | string
     players?: PlayerListRelationFilter
-    staff?: StaffListRelationFilter
+    staffs?: StaffListRelationFilter
   }, "id">
 
   export type TeamOrderByWithAggregationInput = {
@@ -5974,7 +5974,7 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     players?: PlayerCreateNestedManyWithoutTeamInput
-    staff?: StaffCreateNestedManyWithoutTeamInput
+    staffs?: StaffCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateInput = {
@@ -5982,14 +5982,14 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     players?: PlayerUncheckedCreateNestedManyWithoutTeamInput
-    staff?: StaffUncheckedCreateNestedManyWithoutTeamInput
+    staffs?: StaffUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     players?: PlayerUpdateManyWithoutTeamNestedInput
-    staff?: StaffUpdateManyWithoutTeamNestedInput
+    staffs?: StaffUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateInput = {
@@ -5997,7 +5997,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     players?: PlayerUncheckedUpdateManyWithoutTeamNestedInput
-    staff?: StaffUncheckedUpdateManyWithoutTeamNestedInput
+    staffs?: StaffUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamCreateManyInput = {
@@ -6072,7 +6072,7 @@ export namespace Prisma {
   export type StaffCreateInput = {
     name: string
     createdAt?: Date | string
-    team: TeamCreateNestedOneWithoutStaffInput
+    team: TeamCreateNestedOneWithoutStaffsInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -6085,7 +6085,7 @@ export namespace Prisma {
   export type StaffUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutStaffNestedInput
+    team?: TeamUpdateOneRequiredWithoutStaffsNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -6485,18 +6485,18 @@ export namespace Prisma {
     update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutPlayersInput, TeamUpdateWithoutPlayersInput>, TeamUncheckedUpdateWithoutPlayersInput>
   }
 
-  export type TeamCreateNestedOneWithoutStaffInput = {
-    create?: XOR<TeamCreateWithoutStaffInput, TeamUncheckedCreateWithoutStaffInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutStaffInput
+  export type TeamCreateNestedOneWithoutStaffsInput = {
+    create?: XOR<TeamCreateWithoutStaffsInput, TeamUncheckedCreateWithoutStaffsInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutStaffsInput
     connect?: TeamWhereUniqueInput
   }
 
-  export type TeamUpdateOneRequiredWithoutStaffNestedInput = {
-    create?: XOR<TeamCreateWithoutStaffInput, TeamUncheckedCreateWithoutStaffInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutStaffInput
-    upsert?: TeamUpsertWithoutStaffInput
+  export type TeamUpdateOneRequiredWithoutStaffsNestedInput = {
+    create?: XOR<TeamCreateWithoutStaffsInput, TeamUncheckedCreateWithoutStaffsInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutStaffsInput
+    upsert?: TeamUpsertWithoutStaffsInput
     connect?: TeamWhereUniqueInput
-    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutStaffInput, TeamUpdateWithoutStaffInput>, TeamUncheckedUpdateWithoutStaffInput>
+    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutStaffsInput, TeamUpdateWithoutStaffsInput>, TeamUncheckedUpdateWithoutStaffsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -6710,14 +6710,14 @@ export namespace Prisma {
   export type TeamCreateWithoutPlayersInput = {
     name: string
     createdAt?: Date | string
-    staff?: StaffCreateNestedManyWithoutTeamInput
+    staffs?: StaffCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutPlayersInput = {
     id?: number
     name: string
     createdAt?: Date | string
-    staff?: StaffUncheckedCreateNestedManyWithoutTeamInput
+    staffs?: StaffUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutPlayersInput = {
@@ -6739,52 +6739,52 @@ export namespace Prisma {
   export type TeamUpdateWithoutPlayersInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    staff?: StaffUpdateManyWithoutTeamNestedInput
+    staffs?: StaffUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutPlayersInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    staff?: StaffUncheckedUpdateManyWithoutTeamNestedInput
+    staffs?: StaffUncheckedUpdateManyWithoutTeamNestedInput
   }
 
-  export type TeamCreateWithoutStaffInput = {
+  export type TeamCreateWithoutStaffsInput = {
     name: string
     createdAt?: Date | string
     players?: PlayerCreateNestedManyWithoutTeamInput
   }
 
-  export type TeamUncheckedCreateWithoutStaffInput = {
+  export type TeamUncheckedCreateWithoutStaffsInput = {
     id?: number
     name: string
     createdAt?: Date | string
     players?: PlayerUncheckedCreateNestedManyWithoutTeamInput
   }
 
-  export type TeamCreateOrConnectWithoutStaffInput = {
+  export type TeamCreateOrConnectWithoutStaffsInput = {
     where: TeamWhereUniqueInput
-    create: XOR<TeamCreateWithoutStaffInput, TeamUncheckedCreateWithoutStaffInput>
+    create: XOR<TeamCreateWithoutStaffsInput, TeamUncheckedCreateWithoutStaffsInput>
   }
 
-  export type TeamUpsertWithoutStaffInput = {
-    update: XOR<TeamUpdateWithoutStaffInput, TeamUncheckedUpdateWithoutStaffInput>
-    create: XOR<TeamCreateWithoutStaffInput, TeamUncheckedCreateWithoutStaffInput>
+  export type TeamUpsertWithoutStaffsInput = {
+    update: XOR<TeamUpdateWithoutStaffsInput, TeamUncheckedUpdateWithoutStaffsInput>
+    create: XOR<TeamCreateWithoutStaffsInput, TeamUncheckedCreateWithoutStaffsInput>
     where?: TeamWhereInput
   }
 
-  export type TeamUpdateToOneWithWhereWithoutStaffInput = {
+  export type TeamUpdateToOneWithWhereWithoutStaffsInput = {
     where?: TeamWhereInput
-    data: XOR<TeamUpdateWithoutStaffInput, TeamUncheckedUpdateWithoutStaffInput>
+    data: XOR<TeamUpdateWithoutStaffsInput, TeamUncheckedUpdateWithoutStaffsInput>
   }
 
-  export type TeamUpdateWithoutStaffInput = {
+  export type TeamUpdateWithoutStaffsInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     players?: PlayerUpdateManyWithoutTeamNestedInput
   }
 
-  export type TeamUncheckedUpdateWithoutStaffInput = {
+  export type TeamUncheckedUpdateWithoutStaffsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

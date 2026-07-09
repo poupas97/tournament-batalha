@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
-import { Player } from "@/generated/prisma";
+import { Player, Staff } from "@/generated/prisma";
 import { requireToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
 
@@ -46,7 +46,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       players: {
         orderBy: { createdAt: "asc" },
       },
-      staff: {
+      staffs: {
         orderBy: { createdAt: "asc" },
       },
     },
@@ -110,13 +110,20 @@ export async function PUT(request: Request, { params }: RouteContext) {
                 })),
               }
             : undefined,
-        staff: staff.length > 0 ? { create: staff } : undefined,
+        staffs:
+          body.staffs?.length > 0
+            ? {
+                create: (body.staffs as Staff[]).map((it) => ({
+                  name: it.name,
+                })),
+              }
+            : undefined,
       },
       include: {
         players: {
           orderBy: { createdAt: "asc" },
         },
-        staff: {
+        staffs: {
           orderBy: { createdAt: "asc" },
         },
       },

@@ -14,12 +14,12 @@ export type IPlayerDraft = {
 export type ITeamFormValues = {
   name: string;
   players: IPlayerDraft[];
-  staff: IStaffDraft[];
+  staffs: IStaffDraft[];
 };
 
 export type TeamBEResponse = {
   id: number;
   name: string;
   players: Player[];
-  staff: Staff[];
+  staffs: Staff[];
 };

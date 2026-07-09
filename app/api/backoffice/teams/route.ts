@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
-import { Player } from "@/generated/prisma";
+import { Player, Staff } from "@/generated/prisma";
 import { requireToken } from "@/lib/token";
 
 export async function GET(request: Request) {
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { players: true, staff: true },
+        select: { players: true, staffs: true },
       },
     },
   });
@@ -47,11 +47,18 @@ export async function POST(request: Request) {
               })),
             }
           : undefined,
-      staff: body.staff?.length > 0 ? { create: body.staff } : undefined,
+      staffs:
+        body.staffs?.length > 0
+          ? {
+              create: (body.staffs as Staff[]).map((it) => ({
+                name: it.name,
+              })),
+            }
+          : undefined,
     },
     include: {
       players: true,
-      staff: true,
+      staffs: true,
     },
   });
 

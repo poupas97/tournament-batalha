@@ -10,7 +10,7 @@ type TeamSummary = {
   createdAt: string;
   _count: {
     players: number;
-    staff: number;
+    staffs: number;
   };
 };
 
@@ -63,17 +63,25 @@ export default function BackofficeTeamsPage() {
             columns={[
               { key: "name", header: "Nome" },
               { key: "_count.players", header: "Jogadores" },
-              { key: "_count.staff", header: "Staff" },
+              { key: "_count.staffs", header: "Staff" },
               {
                 key: "actions",
                 header: "Ações",
                 render: (team) => (
-                  <Link
-                    href={`/backoffice/teams/edit/${team.id}`}
-                    style={{ color: "#2563eb" }}
-                  >
-                    Editar
-                  </Link>
+                  <>
+                    <Link
+                      href={`/backoffice/teams/${team.id}`}
+                      style={{ color: "#2563eb" }}
+                    >
+                      Ver
+                    </Link>
+                    <Link
+                      href={`/backoffice/teams/edit/${team.id}`}
+                      style={{ color: "#2563eb" }}
+                    >
+                      Editar
+                    </Link>
+                  </>
                 ),
               },
             ]}

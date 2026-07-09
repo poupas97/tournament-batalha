@@ -6,7 +6,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { players: true, staff: true },
+        select: { players: true, staffs: true },
       },
     },
   });

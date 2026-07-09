@@ -1,14 +1,13 @@
 "use client";
 
-import BackofficeFormTeam from "@/components/FormTeam";
-import { ITeamFormValues, TeamBEResponse } from "@/types/team";
+import DetailsTeam from "@/components/DetailsTeam";
+import { TeamBEResponse } from "@/types/team";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function EditTeamPage() {
+export default function ViewTeamPage() {
   const params = useParams();
-  const router = useRouter();
   const teamId = params?.id;
   const [team, setTeam] = useState<TeamBEResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,36 +30,16 @@ export default function EditTeamPage() {
       .finally(() => setLoading(false));
   }, [teamId]);
 
-  async function handleSubmit(values: ITeamFormValues) {
-    const response = await fetch(`/api/backoffice/teams/${teamId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar equipa." }));
-      alert(error.error ?? "Erro ao guardar equipa.");
-      return;
-    }
-
-    router.push("/backoffice/teams");
-  }
-
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Editar equipa</h1>
+      <h1>Ver equipa</h1>
       <p style={{ marginBottom: "1rem" }}>
-        Atualize os dados da equipa, jogadores e staff associados.
+        Veja os dados da equipa, jogadores e staff associados.
       </p>
 
       {loading && <p>A carregar equipa...</p>}
 
-      {!loading && team && (
-        <BackofficeFormTeam initialValues={team} handleSubmit={handleSubmit} />
-      )}
+      {!loading && team && <DetailsTeam team={team} />}
 
       <Link
         href="/backoffice/teams"

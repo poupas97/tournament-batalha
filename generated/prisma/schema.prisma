@@ -21,7 +21,7 @@ model Team {
   name      String
   createdAt DateTime @default(now())
   players   Player[]
-  staff     Staff[]
+  staffs    Staff[]
 }
 
 model Player {

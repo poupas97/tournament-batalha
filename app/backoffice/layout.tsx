@@ -1,9 +1,10 @@
-import { BackofficeModalProvider } from "@/components/BackofficeModalProvider";
+import ModalProvider from "@/components/ModalProvider";
+import { ReactNode } from "react";
 
 export default function BackofficeLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  return <BackofficeModalProvider>{children}</BackofficeModalProvider>;
+  return <ModalProvider>{children}</ModalProvider>;
 }
