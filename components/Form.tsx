@@ -37,7 +37,9 @@ export default function Form<T extends Record<string, unknown>>({
     const hasRequiredValues = fields.every((field) => {
       const value = get(values, field.key);
 
-      return value !== undefined && value !== null && String(value).trim() !== "";
+      return (
+        value !== undefined && value !== null && String(value).trim() !== ""
+      );
     });
 
     if (!values || !hasRequiredValues) {

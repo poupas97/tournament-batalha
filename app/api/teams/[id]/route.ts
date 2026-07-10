@@ -1,19 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { RouteContext } from "@/types/api";
+import { getParamId } from "@/lib/api";
 
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
-function getTeamId(id: string) {
-  const teamId = Number(id);
-  return Number.isInteger(teamId) && teamId > 0 ? teamId : null;
-}
-
-export async function GET(request: Request, { params }: RouteContext) {
-  const teamId = getTeamId(params.id);
+export async function GET(request: Request, context: RouteContext) {
+  const teamId = getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }

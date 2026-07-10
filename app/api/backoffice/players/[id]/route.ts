@@ -1,26 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireToken } from "@/lib/token";
-import { sanitizeText } from "@/lib/sanitize";
+import { getParamId } from "@/lib/api";
+import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
+import { RouteContext } from "@/types/api";
 
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
-function getId(value: unknown) {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
-}
-
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
-  const playerId = getId(params.id);
+  const playerId = getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }
@@ -42,20 +33,20 @@ export async function GET(request: Request, { params }: RouteContext) {
   return NextResponse.json(player);
 }
 
-export async function PUT(request: Request, { params }: RouteContext) {
+export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
-  const playerId = getId(params.id);
+  const playerId = getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
-  const teamId = getId(body?.teamId);
+  const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
     return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
@@ -98,13 +89,13 @@ export async function PUT(request: Request, { params }: RouteContext) {
   return NextResponse.json(updatedPlayer);
 }
 
-export async function DELETE(request: Request, { params }: RouteContext) {
+export async function DELETE(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
-  const playerId = getId(params.id);
+  const playerId = getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }

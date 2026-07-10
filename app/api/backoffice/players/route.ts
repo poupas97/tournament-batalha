@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { requireToken } from "@/lib/token";
-
-function getId(value: unknown) {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
-}
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -31,7 +26,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body.name);
   const number = sanitizeText(body.number);
-  const teamId = getId(body?.teamId);
+  const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
     return NextResponse.json({ error: "Nome inválido." }, { status: 400 });

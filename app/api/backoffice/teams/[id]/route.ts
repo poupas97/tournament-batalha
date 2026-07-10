@@ -1,20 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getToken } from "next-auth/jwt";
 import { Player, Staff } from "@/generated/prisma";
 import { requireToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
-
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
-function getTeamId(id: string) {
-  const teamId = Number(id);
-  return Number.isInteger(teamId) && teamId > 0 ? teamId : null;
-}
+import { RouteContext } from "@/types/api";
+import { getParamId } from "@/lib/api";
 
 function getMembersFromBody(body: any, key: "players" | "staff") {
   if (!Array.isArray(body?.[key])) {
@@ -29,13 +19,13 @@ function getMembersFromBody(body: any, key: "players" | "staff") {
     .map((name: string) => ({ name }));
 }
 
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
-  const teamId = getTeamId(params.id);
+  const teamId = getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }
@@ -62,13 +52,13 @@ export async function GET(request: Request, { params }: RouteContext) {
   return NextResponse.json(team);
 }
 
-export async function PUT(request: Request, { params }: RouteContext) {
+export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
-  const teamId = getTeamId(params.id);
+  const teamId = getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }

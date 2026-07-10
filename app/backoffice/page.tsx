@@ -9,6 +9,9 @@ export default function BackofficePage() {
       <h1>Dashboard do Backoffice</h1>
       <p>Aqui você poderá gerenciar clientes e produtos.</p>
       <div style={{ display: "grid", gap: "1rem", marginTop: "1.5rem" }}>
+        <Link href="/backoffice/users" style={{ color: "#0366d6" }}>
+          Utilizadores
+        </Link>
         <Link href="/backoffice/teams" style={{ color: "#0366d6" }}>
           Equipas
         </Link>

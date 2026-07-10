@@ -6,15 +6,15 @@ import Form from "@/components/Form";
 import { IPlayerDraft, IStaffDraft, ITeamFormValues } from "@/types/team";
 import { useState } from "react";
 
-type BackofficeFormTeamProps = {
+type FormTeamProps = {
   initialValues?: ITeamFormValues;
   handleSubmit: (values: ITeamFormValues) => Promise<void>;
 };
 
-export default function BackofficeFormTeam({
+export default function FormTeam({
   initialValues,
   handleSubmit,
-}: BackofficeFormTeamProps) {
+}: FormTeamProps) {
   const { openModal, closeModal } = useModal();
   const [players, setPlayers] = useState<IPlayerDraft[]>(
     initialValues?.players || [],
