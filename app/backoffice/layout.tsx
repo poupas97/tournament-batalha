@@ -10,7 +10,9 @@ export default function BackofficeLayout({
   return (
     <ModalProvider>
       <BackofficeNavbar />
-      {children}
+      <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+        {children}
+      </main>
     </ModalProvider>
   );
 }
