@@ -3,12 +3,12 @@ import prisma from "@/lib/prisma";
 import { requireAdminToken } from "@/lib/token";
 import bcrypt from "bcryptjs";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, unauthorized } from "@/lib/api";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const userId = getParamId(context);

@@ -3,12 +3,12 @@ import prisma from "@/lib/prisma";
 import { requireAdminToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, unauthorized } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const user = getParamId(context);
@@ -43,7 +43,7 @@ export async function GET(request: Request, context: RouteContext) {
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const userId = getParamId(context);
@@ -84,7 +84,7 @@ export async function PUT(request: Request, context: RouteContext) {
 export async function DELETE(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const userId = getParamId(context);

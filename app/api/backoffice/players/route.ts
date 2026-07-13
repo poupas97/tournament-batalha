@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { requireToken } from "@/lib/token";
+import { unauthorized } from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const players = await prisma.player.findMany({
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const body = await request.json().catch(() => null);

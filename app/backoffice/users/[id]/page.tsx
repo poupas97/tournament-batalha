@@ -1,7 +1,6 @@
 "use client";
 
 import Detail from "@/components/Detail";
-import DetailsTeam from "@/components/DetailsTeam";
 import { UserBEResponse } from "@/types/user";
 import Link from "next/link";
 import { useParams } from "next/navigation";

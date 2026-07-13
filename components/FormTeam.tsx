@@ -5,15 +5,18 @@ import DataTable from "@/components/DataTable";
 import Form from "@/components/Form";
 import { IPlayerDraft, IStaffDraft, ITeamFormValues } from "@/types/team";
 import { useState } from "react";
+import { CompetitionBEResponse } from "@/types/competition";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
   handleSubmit: (values: ITeamFormValues) => Promise<void>;
+  competitions: CompetitionBEResponse[];
 };
 
 export default function FormTeam({
   initialValues,
   handleSubmit,
+  competitions,
 }: FormTeamProps) {
   const { openModal, closeModal } = useModal();
   const [players, setPlayers] = useState<IPlayerDraft[]>(
@@ -122,7 +125,15 @@ export default function FormTeam({
   return (
     <Form<ITeamFormValues>
       initialValues={initialValues}
-      fields={[{ key: "name", label: "Nome da equipa" }]}
+      fields={[
+        { key: "name", label: "Nome da equipa" },
+        {
+          key: "competitionId",
+          label: "Competição",
+          type: "select",
+          options: competitions.map((c) => ({ value: c.id, label: c.name })),
+        },
+      ]}
       onSubmit={onSubmit}
     >
       <h4>Jogadores</h4>

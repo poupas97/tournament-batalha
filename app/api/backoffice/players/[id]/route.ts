@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireToken } from "@/lib/token";
-import { getParamId } from "@/lib/api";
+import { getParamId, unauthorized } from "@/lib/api";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const playerId = getParamId(context);
@@ -36,7 +36,7 @@ export async function GET(request: Request, context: RouteContext) {
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const playerId = getParamId(context);
@@ -92,7 +92,7 @@ export async function PUT(request: Request, context: RouteContext) {
 export async function DELETE(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const playerId = getParamId(context);

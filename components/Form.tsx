@@ -1,13 +1,15 @@
 "use client";
 
-import { get } from "lodash";
+import get from "lodash/get";
+import set from "lodash/set";
 import { useState, type FormEvent, type ReactNode } from "react";
 
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
   label: string;
-  type?: "text" | "number" | "email" | "password" | "color";
+  type?: "text" | "number" | "email" | "password" | "select";
   placeholder?: string;
+  options?: { value: number; label: string }[];
 };
 
 type FormProps<T extends Record<string, unknown>> = {
@@ -23,7 +25,12 @@ export default function Form<T extends Record<string, unknown>>({
   onSubmit,
   children,
 }: FormProps<T>) {
-  const [values, setValues] = useState<T | undefined>(initialValues);
+  const [values, setValues] = useState<T | undefined>(
+    fields.reduce((acc, field) => {
+      set(acc, field.key, initialValues?.[field.key] ?? "");
+      return acc;
+    }, {} as T),
+  );
 
   function handleChange(key: keyof T, value: string) {
     setValues((current) => ({
@@ -60,17 +67,38 @@ export default function Form<T extends Record<string, unknown>>({
           style={{ display: "grid", gap: "0.4rem" }}
         >
           <span>{field.label}</span>
-          <input
-            type={field.type ?? "text"}
-            value={String(get(values, field.key) ?? "")}
-            onChange={(event) => handleChange(field.key, event.target.value)}
-            placeholder={field.placeholder}
-            style={{
-              padding: "0.7rem",
-              border: "1px solid #cbd5e1",
-              borderRadius: "6px",
-            }}
-          />
+
+          {field.options ? (
+            <select
+              value={String(get(values, field.key) ?? "")}
+              onChange={(event) => handleChange(field.key, event.target.value)}
+              style={{
+                padding: "0.7rem",
+                border: "1px solid #cbd5e1",
+                borderRadius: "6px",
+              }}
+            >
+              <option value="">Selecione...</option>
+
+              {field.options.map((it) => (
+                <option key={it.value} value={Number(it.value)}>
+                  {it.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type={field.type ?? "text"}
+              value={String(get(values, field.key) ?? "")}
+              onChange={(event) => handleChange(field.key, event.target.value)}
+              placeholder={field.placeholder}
+              style={{
+                padding: "0.7rem",
+                border: "1px solid #cbd5e1",
+                borderRadius: "6px",
+              }}
+            />
+          )}
         </label>
       ))}
 

@@ -1,16 +1,16 @@
 "use client";
 
-import { get } from "lodash";
+import get from "lodash/get";
 import { type ReactNode } from "react";
 
-type DetailField<T extends Record<string, unknown>> = {
-  key: keyof T;
+type DetailField = {
+  key: string;
   label: string;
 };
 
 type DetailProps<T extends Record<string, unknown>> = {
   data: T;
-  fields: DetailField<T>[];
+  fields: DetailField[];
   children?: ReactNode;
 };
 

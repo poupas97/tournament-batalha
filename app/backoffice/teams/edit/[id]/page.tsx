@@ -1,6 +1,7 @@
 "use client";
 
-import BackofficeFormTeam from "@/components/FormTeam";
+import FormTeam from "@/components/FormTeam";
+import { CompetitionBEResponse } from "@/types/competition";
 import { ITeamFormValues, TeamBEResponse } from "@/types/team";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ export default function EditTeamPage() {
   const router = useRouter();
   const teamId = params?.id;
   const [team, setTeam] = useState<TeamBEResponse | null>(null);
+  const [competitions, setCompetitions] = useState<CompetitionBEResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +29,20 @@ export default function EditTeamPage() {
       })
       .catch(() => {
         alert("Erro ao carregar a equipa.");
+      })
+      .finally(() => setLoading(false));
+
+    fetch(`/api/backoffice/competitions`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        setCompetitions(data);
+      })
+      .catch(() => {
+        alert("Erro ao carregar as competições.");
       })
       .finally(() => setLoading(false));
   }, [teamId]);
@@ -58,8 +74,12 @@ export default function EditTeamPage() {
 
       {loading && <p>A carregar equipa...</p>}
 
-      {!loading && team && (
-        <BackofficeFormTeam initialValues={team} handleSubmit={handleSubmit} />
+      {!loading && team && competitions && (
+        <FormTeam
+          initialValues={team}
+          handleSubmit={handleSubmit}
+          competitions={competitions}
+        />
       )}
 
       <Link

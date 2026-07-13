@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { Player, Staff } from "@/generated/prisma";
 import { requireToken } from "@/lib/token";
+import { unauthorized } from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const teams = await prisma.team.findMany({
     orderBy: { createdAt: "desc" },
     include: {
+      competition: true,
       _count: {
         select: { players: true, staffs: true },
       },
@@ -25,19 +27,28 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
+  const competitionId = sanitizeNumber(body.competitionId);
 
   if (!name || name.length > 100) {
     return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
   }
 
+  if (!competitionId) {
+    return NextResponse.json(
+      { error: "Competição inválida." },
+      { status: 400 },
+    );
+  }
+
   const team = await prisma.team.create({
     data: {
       name,
+      competitionId,
       players:
         body.players?.length > 0
           ? {

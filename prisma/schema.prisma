@@ -17,11 +17,13 @@ model User {
 }
 
 model Team {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  players   Player[]
-  staffs     Staff[]
+  id            Int      @id @default(autoincrement())
+  name          String
+  createdAt     DateTime @default(now())
+  players       Player[]
+  staffs        Staff[]
+  competitionId Int
+  competition   Competition   @relation(fields: [competitionId], references: [id])
 }
 
 model Player {
@@ -44,4 +46,11 @@ model Staff {
 enum Role {
   MANAGER
   ADMIN
+}
+
+model Competition {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  teams     Team[]
 }

@@ -53,6 +53,7 @@ export default function TeamsPage() {
             data={teams}
             columns={[
               { key: "name", header: "Nome" },
+              { key: "competition.name", header: "Competição" },
               { key: "_count.players", header: "Jogadores" },
               { key: "_count.staffs", header: "Staff" },
               {

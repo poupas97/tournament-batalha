@@ -12,6 +12,7 @@ export async function GET(request: Request, context: RouteContext) {
   const team = await prisma.team.findUnique({
     where: { id: teamId },
     include: {
+      competition: true,
       players: {
         orderBy: { createdAt: "asc" },
       },

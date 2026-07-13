@@ -4,7 +4,7 @@ import { Player, Staff } from "@/generated/prisma";
 import { requireToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, unauthorized } from "@/lib/api";
 
 function getMembersFromBody(body: any, key: "players" | "staff") {
   if (!Array.isArray(body?.[key])) {
@@ -22,7 +22,7 @@ function getMembersFromBody(body: any, key: "players" | "staff") {
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const teamId = getParamId(context);
@@ -33,6 +33,7 @@ export async function GET(request: Request, context: RouteContext) {
   const team = await prisma.team.findUnique({
     where: { id: teamId },
     include: {
+      competition: true,
       players: {
         orderBy: { createdAt: "asc" },
       },
@@ -55,7 +56,7 @@ export async function GET(request: Request, context: RouteContext) {
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
   if (!token) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    return unauthorized();
   }
 
   const teamId = getParamId(context);

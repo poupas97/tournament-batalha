@@ -5,6 +5,7 @@ export async function GET() {
   const teams = await prisma.team.findMany({
     orderBy: { createdAt: "desc" },
     include: {
+      competition: true,
       _count: {
         select: { players: true, staffs: true },
       },

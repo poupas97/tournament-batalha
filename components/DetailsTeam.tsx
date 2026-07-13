@@ -12,7 +12,10 @@ export default function DetailsTeam({ team }: DetailsTeamProps) {
   return (
     <Detail<TeamBEResponse>
       data={team}
-      fields={[{ key: "name", label: "Nome da equipa" }]}
+      fields={[
+        { key: "name", label: "Nome da equipa" },
+        { key: "competition.name", label: "Nome da competição" },
+      ]}
     >
       <h4>Jogadores</h4>
       <DataTable
