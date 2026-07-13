@@ -1,15 +1,15 @@
 "use client";
 
-import Form from "@/components/Form";
-import { ICompetitionFormValues } from "@/types/competition";
+import FormMatch from "@/components/FormMatch";
+import { IMatchFormValues } from "@/types/match";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function CreateCompetitionPage() {
+export default function CreateMatchPage() {
   const router = useRouter();
 
-  async function handleSubmit(values: ICompetitionFormValues) {
-    const response = await fetch("/api/backoffice/competitions", {
+  async function handleSubmit(values: IMatchFormValues) {
+    const response = await fetch("/api/backoffice/matches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
@@ -18,27 +18,24 @@ export default function CreateCompetitionPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao criar competição." }));
-      alert(error.error ?? "Erro ao criar competição.");
+        .catch(() => ({ error: "Erro ao criar jogos." }));
+      alert(error.error ?? "Erro ao criar jogos.");
       return;
     }
 
-    router.push("/backoffice/competitions");
+    router.push("/backoffice/matches");
   }
 
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Criar competição</h1>
+      <h1>Criar jogos</h1>
       <p style={{ marginBottom: "1rem" }}>
         Preencha os dados para criar uma nova competição.
       </p>
-      <Form<ICompetitionFormValues>
-        fields={[{ key: "name", label: "Nome" }]}
-        onSubmit={handleSubmit}
-      />
+      <FormMatch handleSubmit={handleSubmit} />
 
       <Link
-        href="/backoffice/competitions"
+        href="/backoffice/matches"
         style={{ display: "inline-block", marginTop: "1rem" }}
       >
         Voltar

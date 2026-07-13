@@ -7,9 +7,9 @@ import { useState, type FormEvent, type ReactNode } from "react";
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
   label: string;
-  type?: "text" | "number" | "email" | "password" | "select";
+  type?: "text" | "number" | "email" | "password" | "select" | "datetime-local";
   placeholder?: string;
-  options?: { value: number; label: string }[];
+  options?: { value: number | string; label: string }[];
 };
 
 type FormProps<T extends Record<string, unknown>> = {
@@ -18,6 +18,26 @@ type FormProps<T extends Record<string, unknown>> = {
   onSubmit?: (values: T) => void;
   children?: ReactNode;
 };
+
+function formatDateTimeLocalValue(value: unknown) {
+  if (!value) {
+    return "";
+  }
+
+  const date = value instanceof Date ? value : new Date(String(value));
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  const pad = (part: number) => String(part).padStart(2, "0");
+
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join("-") + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 export default function Form<T extends Record<string, unknown>>({
   initialValues,
@@ -81,7 +101,7 @@ export default function Form<T extends Record<string, unknown>>({
               <option value="">Selecione...</option>
 
               {field.options.map((it) => (
-                <option key={it.value} value={Number(it.value)}>
+                <option key={it.value} value={it.value}>
                   {it.label}
                 </option>
               ))}
@@ -89,7 +109,11 @@ export default function Form<T extends Record<string, unknown>>({
           ) : (
             <input
               type={field.type ?? "text"}
-              value={String(get(values, field.key) ?? "")}
+              value={
+                field.type === "datetime-local"
+                  ? formatDateTimeLocalValue(get(values, field.key))
+                  : String(get(values, field.key) ?? "")
+              }
               onChange={(event) => handleChange(field.key, event.target.value)}
               placeholder={field.placeholder}
               style={{

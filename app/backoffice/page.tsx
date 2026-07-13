@@ -15,6 +15,9 @@ export default function BackofficePage() {
         <Link href="/backoffice/competitions" style={{ color: "#0366d6" }}>
           Competições
         </Link>
+        <Link href="/backoffice/matches" style={{ color: "#0366d6" }}>
+          Jogos
+        </Link>
         <Link href="/backoffice/teams" style={{ color: "#0366d6" }}>
           Equipas
         </Link>

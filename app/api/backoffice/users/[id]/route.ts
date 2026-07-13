@@ -95,19 +95,19 @@ export async function DELETE(request: Request, context: RouteContext) {
     );
   }
 
-  const player = await prisma.player.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true },
   });
 
-  if (!player) {
+  if (!user) {
     return NextResponse.json(
       { error: "Utilizador não encontrado." },
       { status: 404 },
     );
   }
 
-  await prisma.player.delete({
+  await prisma.user.delete({
     where: { id: userId },
     select: {
       id: true,
