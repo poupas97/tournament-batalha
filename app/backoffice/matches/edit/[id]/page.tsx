@@ -50,11 +50,8 @@ export default function EditMatchPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Editar jogos</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Atualize os dados da jogos, jogadores e staff associados.
-      </p>
 
       {loading && <p>A carregar jogos...</p>}
 
@@ -68,6 +65,6 @@ export default function EditMatchPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

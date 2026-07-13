@@ -31,11 +31,8 @@ export default function ViewUserPage() {
   }, [userId]);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Ver utilizador</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Veja os dados da utilizador, jogadores e staff associados.
-      </p>
 
       {loading && <p>A carregar utilizador...</p>}
 
@@ -55,6 +52,6 @@ export default function ViewUserPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

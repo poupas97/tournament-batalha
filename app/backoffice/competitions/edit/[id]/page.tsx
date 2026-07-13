@@ -58,11 +58,8 @@ export default function EditCompetitionPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Editar competição</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Atualize os dados da competição, jogadores e staff associados.
-      </p>
 
       {loading && <p>A carregar competição...</p>}
 
@@ -80,6 +77,6 @@ export default function EditCompetitionPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

@@ -77,9 +77,8 @@ export default function EditUserPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Editar utilizador</h1>
-      <p style={{ marginBottom: "1rem" }}>Atualize os dados da utilizador.</p>
 
       {loading && <p>A carregar utilizador...</p>}
 
@@ -112,6 +111,6 @@ export default function EditUserPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

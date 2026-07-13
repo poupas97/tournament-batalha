@@ -32,11 +32,11 @@ function formatDateTimeLocalValue(value: unknown) {
 
   const pad = (part: number) => String(part).padStart(2, "0");
 
-  return [
-    date.getFullYear(),
-    pad(date.getMonth() + 1),
-    pad(date.getDate()),
-  ].join("-") + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return (
+    [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join(
+      "-",
+    ) + `T${pad(date.getHours())}:${pad(date.getMinutes())}`
+  );
 }
 
 export default function Form<T extends Record<string, unknown>>({
@@ -139,7 +139,7 @@ export default function Form<T extends Record<string, unknown>>({
           cursor: "pointer",
         }}
       >
-        {initialValues ? "Guardar" : "Adicionar"}
+        Guardar
       </button>
     </form>
   );

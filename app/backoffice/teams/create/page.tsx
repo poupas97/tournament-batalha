@@ -47,11 +47,8 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Criar equipa</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Preencha os dados para criar uma nova equipa.
-      </p>
 
       {competitions && !loading && (
         <FormTeam handleSubmit={handleSubmit} competitions={competitions} />
@@ -63,6 +60,6 @@ export default function CreateTeamPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

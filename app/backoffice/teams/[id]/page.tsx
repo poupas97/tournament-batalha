@@ -31,11 +31,8 @@ export default function ViewTeamPage() {
   }, [teamId]);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Ver equipa</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Veja os dados da equipa, jogadores e staff associados.
-      </p>
 
       {loading && <p>A carregar equipa...</p>}
 
@@ -47,6 +44,6 @@ export default function ViewTeamPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

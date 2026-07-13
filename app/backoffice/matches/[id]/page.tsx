@@ -2,53 +2,176 @@
 
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
+import MatchEventGrid from "@/components/MatchEventGrid";
+import { MatchStatus } from "@/generated/prisma";
 import { MatchBEResponse } from "@/types/match";
+import { MatchEventBEResponse } from "@/types/match-event";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function ViewMatchPage() {
   const params = useParams();
   const matchId = params?.id;
+
   const [match, setMatch] = useState<MatchBEResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadMatch = useCallback(async () => {
     if (!matchId) return;
 
-    fetch(`/api/backoffice/matches/${matchId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setMatch(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a competição.");
-      })
-      .finally(() => setLoading(false));
+    try {
+      const response = await fetch(`/api/backoffice/matches/${matchId}`, {
+        cache: "no-store",
+      });
+      const data = await response.json();
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      setMatch(data);
+    } catch {
+      alert("Erro ao carregar a jogo.");
+    } finally {
+      setLoading(false);
+    }
   }, [matchId]);
 
-  return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Ver competição</h1>
-      <p style={{ marginBottom: "1rem" }}>Veja os dados da competição.</p>
+  useEffect(() => {
+    loadMatch();
+  }, [loadMatch]);
 
-      {loading && <p>A carregar competição...</p>}
+  async function handleChangeStatus(status: MatchStatus) {
+    const response = await fetch(`/api/backoffice/matches/${matchId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Erro ao guardar o status." }));
+      alert(error.error ?? "Erro ao guardar o status.");
+      return;
+    }
+
+    await loadMatch();
+  }
+
+  async function handleRemoveEvent(matchEvent: MatchEventBEResponse) {
+    const response = await fetch(
+      `/api/backoffice/match-events/${matchEvent.id}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+
+    if (!response.ok) {
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Erro ao remover evento." }));
+      alert(error.error ?? "Erro ao remover evento.");
+      return;
+    }
+
+    await loadMatch();
+  }
+
+  return (
+    <>
+      <h1>Ver jogo</h1>
+
+      {loading && <p>A carregar jogo...</p>}
 
       {!loading && match && (
-        <Detail<MatchBEResponse>
-          data={match}
-          fields={[
-            { key: "competition.name", label: "Competição" },
-            { key: "date", label: "Data" },
-            { key: "round", label: "Ronda" },
-            { key: "homeTeam.name", label: "Equipa da Casa" },
-            { key: "awayTeam.name", label: "Equipa Visitante" },
-          ]}
-        />
+        <>
+          <Detail<MatchBEResponse>
+            data={match}
+            fields={[
+              { key: "competition.name", label: "Competição" },
+              { key: "date", label: "Data" },
+              { key: "round", label: "Ronda" },
+              { key: "homeTeam.name", label: "Equipa da Casa" },
+              { key: "awayTeam.name", label: "Equipa Visitante" },
+            ]}
+          />
+
+          <h3>Estado do jogo</h3>
+          <div
+            style={{
+              flex: 2,
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "1rem",
+            }}
+          >
+            {Object.keys(MatchStatus).map((it) => {
+              const key = it as keyof typeof MatchStatus;
+
+              return (
+                <button
+                  key={it}
+                  type="button"
+                  onClick={() => handleChangeStatus(key)}
+                  disabled={false}
+                  style={{
+                    padding: "0.6rem 1rem",
+                    border: "none",
+                    borderRadius: "6px",
+                    background: "#2563eb",
+                    color: "white",
+                    cursor: "pointer",
+                  }}
+                >
+                  {it}
+                </button>
+              );
+            })}
+          </div>
+
+          <h3>Eventos</h3>
+          <div style={{ display: "flex", gap: "2rem" }}>
+            <MatchEventGrid team={match.homeTeam} matchId={matchId as string} />
+            <MatchEventGrid team={match.awayTeam} matchId={matchId as string} />
+          </div>
+
+          <h3>Tabela de Eventos</h3>
+          {match.events && (
+            <DataTable
+              data={match.events}
+              columns={[
+                { key: "type", header: "Tipo" },
+                { key: "minute", header: "Minuto" },
+                { key: "player.name", header: "Jogador" },
+                { key: "staff.name", header: "Staff" },
+                { key: "team.name", header: "Equipa" },
+                {
+                  key: "actions",
+                  header: "Ações",
+                  render: (it) => (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveEvent(it)}
+                      style={{
+                        padding: 0,
+                        border: "none",
+                        background: "transparent",
+                        color: "crimson",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Remover
+                    </button>
+                  ),
+                },
+              ]}
+            />
+          )}
+        </>
       )}
 
       <Link
@@ -57,6 +180,6 @@ export default function ViewMatchPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

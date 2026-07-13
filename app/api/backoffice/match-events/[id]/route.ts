@@ -32,13 +32,6 @@ export async function GET(request: Request, context: RouteContext) {
           staffs: true,
         },
       },
-      events: {
-        include: {
-          team: true,
-          player: true,
-          staff: true,
-        },
-      },
     },
   });
 

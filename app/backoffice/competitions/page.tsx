@@ -36,7 +36,7 @@ export default function BackofficeCompetitionsPage() {
   }, []);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Competições</h1>
       <div>
         <Link
@@ -87,6 +87,6 @@ export default function BackofficeCompetitionsPage() {
           />
         </div>
       )}
-    </main>
+    </>
   );
 }

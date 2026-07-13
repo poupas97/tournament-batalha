@@ -75,6 +75,6 @@ export default function LoginPage() {
           Entrar
         </button>
       </form>
-    </main>
+    </>
   );
 }

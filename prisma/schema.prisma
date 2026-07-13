@@ -93,8 +93,8 @@ model MatchEvent {
   matchId Int
   match Match @relation(fields: [matchId], references: [id])
 
-  teamId Int?
-  team Team? @relation(fields: [teamId], references: [id])
+  teamId Int
+  team Team @relation(fields: [teamId], references: [id])
 
   playerId Int?
   player Player? @relation(fields: [playerId], references: [id])
@@ -102,7 +102,7 @@ model MatchEvent {
   staffId Int?
   staff Staff? @relation(fields: [staffId], references: [id])
 
-  minute Int?
+  minute Int
 
   type MatchEventType
 
@@ -111,8 +111,18 @@ model MatchEvent {
 
 enum MatchStatus {
   SCHEDULED
-  LIVE
-  FINISHED
+  
+  RT_START
+  RT_HALF_TIME
+  RT_RESTART
+  RT_END
+  ET_START
+  ET_HALF_TIME
+  ET_RESTART
+  ET_END
+  PENALTIES
+
+  INTERRUPTED
   POSTPONED
   CANCELED
 }
@@ -121,17 +131,6 @@ enum MatchEventType {
   GOAL
   OWN_GOAL
   PENALTY_GOAL
-
   YELLOW_CARD
   RED_CARD
-
-  TIMEOUT
-
-  RT_START
-  RT_HALF_TIME
-  RT_END
-  ET_START
-  ET_HALF_TIME
-  ET_END
-  PENALTY
 }

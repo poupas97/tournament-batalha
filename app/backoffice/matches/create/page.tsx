@@ -27,11 +27,9 @@ export default function CreateMatchPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Criar jogos</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Preencha os dados para criar uma nova competição.
-      </p>
+
       <FormMatch handleSubmit={handleSubmit} />
 
       <Link
@@ -40,6 +38,6 @@ export default function CreateMatchPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

@@ -34,9 +34,8 @@ export default function ViewCompetitionPage() {
   }, [competitionId]);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Ver competição</h1>
-      <p style={{ marginBottom: "1rem" }}>Veja os dados da competição.</p>
 
       {loading && <p>A carregar competição...</p>}
 
@@ -59,6 +58,6 @@ export default function ViewCompetitionPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

@@ -44,9 +44,11 @@ export default function DataTable<T extends Record<string, unknown>>({
           <tr key={index} style={{ borderBottom: "1px solid #eaeef2" }}>
             {columns.map((column) => (
               <td key={column.key} style={{ padding: "0.75rem" }}>
-                {column.render
-                  ? column.render(item)
-                  : String(get(item, column.key))}
+                <>
+                  {column.render
+                    ? column.render(item)
+                    : get(item, column.key, "")}
+                </>
               </td>
             ))}
           </tr>

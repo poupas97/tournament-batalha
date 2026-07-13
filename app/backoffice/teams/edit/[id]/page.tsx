@@ -66,11 +66,8 @@ export default function EditTeamPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Editar equipa</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Atualize os dados da equipa, jogadores e staff associados.
-      </p>
 
       {loading && <p>A carregar equipa...</p>}
 
@@ -88,6 +85,6 @@ export default function EditTeamPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

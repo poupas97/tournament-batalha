@@ -28,7 +28,7 @@ export default function BackofficeUsersPage() {
   }, []);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Utilizadores</h1>
       <div>
         <Link
@@ -79,6 +79,6 @@ export default function BackofficeUsersPage() {
           />
         </div>
       )}
-    </main>
+    </>
   );
 }

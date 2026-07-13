@@ -37,7 +37,7 @@ export default function BackofficeTeamsPage() {
   }, []);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Equipas</h1>
       <div>
         <Link
@@ -90,6 +90,6 @@ export default function BackofficeTeamsPage() {
           />
         </div>
       )}
-    </main>
+    </>
   );
 }

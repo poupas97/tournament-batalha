@@ -27,11 +27,9 @@ export default function CreateUserPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Criar utilizador</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Preencha os dados para criar uma nova utilizador.
-      </p>
+
       <Form<IUserFormValues>
         fields={[
           { key: "name", label: "Nome" },
@@ -47,6 +45,6 @@ export default function CreateUserPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

@@ -27,11 +27,9 @@ export default function CreateCompetitionPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Criar competição</h1>
-      <p style={{ marginBottom: "1rem" }}>
-        Preencha os dados para criar uma nova competição.
-      </p>
+
       <Form<ICompetitionFormValues>
         fields={[{ key: "name", label: "Nome" }]}
         onSubmit={handleSubmit}
@@ -43,6 +41,6 @@ export default function CreateCompetitionPage() {
       >
         Voltar
       </Link>
-    </main>
+    </>
   );
 }

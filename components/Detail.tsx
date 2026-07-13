@@ -29,7 +29,7 @@ export default function Detail<T extends Record<string, unknown>>({
         }}
       >
         {fields.map((it) => (
-          <div>
+          <div key={it.key}>
             <strong>{it.label}</strong>
             <div>{String(get(data, it.key) ?? "")}</div>
           </div>
