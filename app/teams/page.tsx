@@ -41,7 +41,7 @@ export default function TeamsPage() {
   }, []);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <>
       <h1>Equipas</h1>
 
       {loading && <p>A carregar equipas...</p>}
@@ -69,6 +69,6 @@ export default function TeamsPage() {
           />
         </div>
       )}
-    </main>
+    </>
   );
 }

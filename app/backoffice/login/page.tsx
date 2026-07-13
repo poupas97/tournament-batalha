@@ -28,14 +28,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      style={{
-        padding: "2rem",
-        fontFamily: "system-ui, sans-serif",
-        maxWidth: "420px",
-        margin: "0 auto",
-      }}
-    >
+    <>
       <h1>Login Backoffice</h1>
       <form
         onSubmit={handleSubmit}
