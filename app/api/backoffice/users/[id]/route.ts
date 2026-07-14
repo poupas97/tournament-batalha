@@ -11,7 +11,7 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const user = getParamId(context);
+  const user = await getParamId(context);
   if (!user) {
     return NextResponse.json(
       { error: "Utilizador inválido." },
@@ -46,7 +46,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const userId = getParamId(context);
+  const userId = await getParamId(context);
   if (!userId) {
     return NextResponse.json(
       { error: "Utilizador inválido." },
@@ -87,7 +87,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const userId = getParamId(context);
+  const userId = await getParamId(context);
   if (!userId) {
     return NextResponse.json(
       { error: "Utilizador inválido." },

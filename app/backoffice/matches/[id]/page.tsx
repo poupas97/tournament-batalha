@@ -97,6 +97,7 @@ export default function ViewMatchPage() {
               { key: "round", label: "Ronda" },
               { key: "homeTeam.name", label: "Equipa da Casa" },
               { key: "awayTeam.name", label: "Equipa Visitante" },
+              { key: "status", label: "Estado" },
             ]}
           />
 

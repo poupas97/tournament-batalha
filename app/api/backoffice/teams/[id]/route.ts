@@ -25,7 +25,7 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const teamId = getParamId(context);
+  const teamId = await getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }
@@ -59,7 +59,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const teamId = getParamId(context);
+  const teamId = await getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }

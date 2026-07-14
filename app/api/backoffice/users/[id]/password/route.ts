@@ -11,7 +11,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const userId = getParamId(context);
+  const userId = await getParamId(context);
   if (!userId) {
     return NextResponse.json(
       { error: "Utilizador inválido." },

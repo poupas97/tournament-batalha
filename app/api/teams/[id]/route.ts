@@ -4,7 +4,7 @@ import { RouteContext } from "@/types/api";
 import { getParamId } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
-  const teamId = getParamId(context);
+  const teamId = await getParamId(context);
   if (!teamId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }

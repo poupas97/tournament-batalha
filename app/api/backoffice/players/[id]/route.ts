@@ -11,7 +11,7 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const playerId = getParamId(context);
+  const playerId = await getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }
@@ -39,7 +39,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const playerId = getParamId(context);
+  const playerId = await getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }
@@ -95,7 +95,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const playerId = getParamId(context);
+  const playerId = await getParamId(context);
   if (!playerId) {
     return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
   }

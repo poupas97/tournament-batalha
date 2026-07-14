@@ -1,5 +1,5 @@
 export type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };

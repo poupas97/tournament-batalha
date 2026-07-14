@@ -10,6 +10,7 @@ export type IMatchFormValues = {
 };
 
 export type MatchBEResponse = {
+  id: number;
   date: string;
   round: string;
   competitionId: number;

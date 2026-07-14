@@ -1,8 +1,9 @@
 import { RouteContext } from "@/types/api";
 import { NextResponse } from "next/server";
 
-export function getParamId(context: RouteContext) {
-  const id = Number(context.params.id);
+export async function getParamId(context: RouteContext) {
+  const params = await context.params;
+  const id = Number(params.id);
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 

@@ -2,6 +2,7 @@
 
 import DataTable from "@/components/DataTable";
 import { MatchBEResponse } from "@/types/match";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function MatchesPage() {
@@ -47,6 +48,15 @@ export default function MatchesPage() {
               { key: "round", header: "Ronda" },
               { key: "homeTeam.name", header: "Equipa da Casa" },
               { key: "awayTeam.name", header: "Equipa Visitante" },
+              {
+                key: "actions",
+                header: "Ações",
+                render: (it) => (
+                  <Link href={`/matches/${it.id}`} style={{ color: "#2563eb" }}>
+                    Ver
+                  </Link>
+                ),
+              },
             ]}
           />
         </div>

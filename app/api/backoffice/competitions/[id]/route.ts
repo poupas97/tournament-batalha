@@ -11,7 +11,7 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const competitionId = getParamId(context);
+  const competitionId = await getParamId(context);
   if (!competitionId) {
     return NextResponse.json(
       { error: "Competição inválida." },
@@ -44,7 +44,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const competitionId = getParamId(context);
+  const competitionId = await getParamId(context);
   if (!competitionId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }

@@ -5,6 +5,7 @@ import { sanitizeEnum } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import { getParamId, unauthorized } from "@/lib/api";
 import { MatchStatus } from "@/generated/prisma";
+import { notifyMatch } from "@/lib/socket";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -12,7 +13,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const matchId = getParamId(context);
+  const matchId = await getParamId(context);
   if (!matchId) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }
@@ -35,6 +36,8 @@ export async function PUT(request: Request, context: RouteContext) {
       awayTeam: true,
     },
   });
+
+  notifyMatch(matchId);
 
   return NextResponse.json(match);
 }
