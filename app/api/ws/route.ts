@@ -1,4 +1,5 @@
 import { joinMatch, leaveMatch } from "@/lib/socket";
+import { SocketEvents } from "@/enums/socket";
 import {
   experimental_upgradeWebSocket,
   WebSocketData,
@@ -14,14 +15,13 @@ export function GET() {
       const message = JSON.parse(data.toString());
 
       switch (message.type) {
-        case "JOIN":
+        case SocketEvents.JOIN:
           currentMatchId = Number(message.matchId);
-
           joinMatch(currentMatchId, ws);
 
           break;
 
-        case "LEAVE":
+        case SocketEvents.LEAVE:
           if (currentMatchId !== null) {
             leaveMatch(currentMatchId, ws);
             currentMatchId = null;

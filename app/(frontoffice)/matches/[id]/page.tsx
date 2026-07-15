@@ -4,9 +4,11 @@ import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import { getSocket } from "@/lib/websocket";
 import { MatchBEResponse } from "@/types/match";
+import { SocketEvents } from "@/enums/socket";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { MatchStatus } from "@/generated/prisma";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -40,21 +42,24 @@ export default function ViewMatchPage() {
     const socket = getSocket();
 
     const onOpen = () => {
-      socket.send(
-        JSON.stringify({
-          type: "JOIN",
-          matchId,
-        }),
-      );
+      socket.send(JSON.stringify({ type: SocketEvents.JOIN, matchId }));
     };
 
     const onMessage = (event: MessageEvent) => {
-      const message = JSON.parse(event.data);
+      try {
+        const message = JSON.parse(event.data);
 
-      switch (message.type) {
-        case "MATCH_UPDATED":
-          loadMatch();
-          break;
+        switch (message.type) {
+          case SocketEvents.MATCH_STATUS:
+            if (!message.payload.status) break;
+            const status = message.payload.status as MatchStatus;
+
+            setMatch((current) => (current ? { ...current, status } : null));
+
+            break;
+        }
+      } catch (error) {
+        console.error("Socket message error", error);
       }
     };
 
@@ -62,16 +67,12 @@ export default function ViewMatchPage() {
     socket.addEventListener("message", onMessage);
 
     return () => {
-      socket.send(
-        JSON.stringify({
-          type: "LEAVE",
-        }),
-      );
+      socket.send(JSON.stringify({ type: SocketEvents.LEAVE }));
 
       socket.removeEventListener("open", onOpen);
       socket.removeEventListener("message", onMessage);
     };
-  }, [matchId, loadMatch]);
+  }, [matchId]);
 
   return (
     <>

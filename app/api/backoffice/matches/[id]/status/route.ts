@@ -5,7 +5,7 @@ import { sanitizeEnum } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import { getParamId, unauthorized } from "@/lib/api";
 import { MatchStatus } from "@/generated/prisma";
-import { notifyMatch } from "@/lib/socket";
+import { notifyMatchStatus } from "@/lib/socket";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -37,7 +37,7 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  notifyMatch(matchId);
+  notifyMatchStatus(matchId, { status: match.status });
 
   return NextResponse.json(match);
 }

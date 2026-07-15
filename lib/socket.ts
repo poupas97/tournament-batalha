@@ -1,4 +1,5 @@
 import { Match } from "@/generated/prisma";
+import { SocketEvents } from "@/enums/socket";
 import type WebSocket from "ws";
 
 const matchesRooms = new Map<number, Set<WebSocket>>();
@@ -13,7 +14,7 @@ export function joinMatch(matchId: Match["id"], ws: WebSocket) {
 
   room.add(ws);
 
-  console.log(`Match ${matchId}: ${room.size} clients`);
+  console.log(`Match ${matchId}; JOIN; ${room.size} clients`);
 }
 
 export function leaveMatch(matchId: Match["id"], ws: WebSocket) {
@@ -27,17 +28,22 @@ export function leaveMatch(matchId: Match["id"], ws: WebSocket) {
     matchesRooms.delete(matchId);
   }
 
-  console.log(`Match ${matchId}: ${room.size} clients`);
+  console.log(`Match ${matchId}; LEAVE; ${room.size} clients`);
 }
 
-export function notifyMatch(matchId: Match["id"]) {
+export function notifyMatchStatus(
+  matchId: Match["id"],
+  payload: Pick<Match, "status">,
+) {
   const room = matchesRooms.get(matchId);
 
   if (!room) return;
 
-  const json = JSON.stringify({ type: "MATCH_UPDATED" });
+  const json = JSON.stringify({ type: SocketEvents.MATCH_STATUS, payload });
 
   for (const client of room) {
     client.send(json);
   }
+
+  console.log(`Match ${matchId}; STATUS; ${room.size} clients`);
 }
