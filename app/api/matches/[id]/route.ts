@@ -27,6 +27,7 @@ export async function GET(request: Request, context: RouteContext) {
         },
       },
       events: {
+        orderBy: { createdAt: "desc" },
         include: {
           team: true,
           player: true,

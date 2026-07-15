@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireToken } from "@/lib/token";
-import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
+import { sanitizeEnum, sanitizeNumber } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireToken, unauthorized } from "@/lib/api";
+import { MatchEventType } from "@/generated/prisma";
+import { notifyRemoveMatchEvent } from "@/lib/socket";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -11,13 +12,13 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const matchId = await getParamId(context);
-  if (!matchId) {
+  const matchEventId = await getParamId(context);
+  if (!matchEventId) {
     return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
   }
 
   const match = await prisma.match.findUnique({
-    where: { id: matchId },
+    where: { id: matchEventId },
     include: {
       competition: true,
       homeTeam: {
@@ -51,48 +52,84 @@ export async function PUT(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const matchId = await getParamId(context);
-  if (!matchId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
-  }
-
-  const body = await request.json().catch(() => null);
-  const date = sanitizeText(body?.date);
-  const round = sanitizeText(body?.round);
-  const competitionId = sanitizeNumber(body.competitionId);
-  const homeTeamId = sanitizeNumber(body.homeTeamId);
-  const awayTeamId = sanitizeNumber(body.awayTeamId);
-
-  if (!date) {
-    return NextResponse.json({ error: "Data inválida." }, { status: 400 });
-  }
-
-  if (!round) {
-    return NextResponse.json({ error: "Ronda inválida." }, { status: 400 });
-  }
-
-  if (!competitionId) {
+  const matchEventId = await getParamId(context);
+  if (!matchEventId) {
     return NextResponse.json(
-      { error: "Competição inválida." },
+      { error: "Evento de jogo inválido." },
       { status: 400 },
     );
   }
 
-  const match = await prisma.match.update({
-    where: { id: matchId },
+  const body = await request.json().catch(() => null);
+  const matchId = sanitizeNumber(body?.matchId);
+  const type = sanitizeEnum(body?.type, MatchEventType);
+  const minute = sanitizeNumber(body?.minute);
+  const playerId = sanitizeNumber(body?.playerId);
+  const staffId = sanitizeNumber(body?.staffId);
+  const teamId = sanitizeNumber(body?.teamId);
+
+  if (!matchId) {
+    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+  }
+
+  if (!type) {
+    return NextResponse.json({ error: "Tipo inválido." }, { status: 400 });
+  }
+
+  if (!teamId) {
+    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+  }
+
+  const matchEvent = await prisma.matchEvent.create({
     data: {
-      date: new Date(date),
-      round,
-      competitionId,
-      homeTeamId,
-      awayTeamId,
+      matchId,
+      type,
+      minute: minute ?? 0,
+      playerId: playerId ?? undefined,
+      staffId: staffId ?? undefined,
+      teamId,
     },
     include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
+      player: true,
+      staff: true,
+      team: true,
     },
   });
 
-  return NextResponse.json(match);
+  return NextResponse.json(matchEvent);
+}
+
+export async function DELETE(request: Request, context: RouteContext) {
+  const token = await requireToken(request);
+  if (!token) {
+    return unauthorized();
+  }
+
+  const matchEventId = await getParamId(context);
+  if (!matchEventId) {
+    return NextResponse.json(
+      { error: "Utilizador inválido." },
+      { status: 400 },
+    );
+  }
+
+  const matchEvent = await prisma.matchEvent.findUnique({
+    where: { id: matchEventId },
+    select: { id: true, matchId: true },
+  });
+
+  if (!matchEvent) {
+    return NextResponse.json(
+      { error: "Evento de jogo não encontrado." },
+      { status: 404 },
+    );
+  }
+
+  await prisma.matchEvent.delete({
+    where: { id: matchEventId },
+  });
+
+  notifyRemoveMatchEvent(matchEvent.matchId, matchEvent);
+
+  return NextResponse.json({ success: true });
 }

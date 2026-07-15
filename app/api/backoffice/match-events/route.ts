@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeEnum, sanitizeNumber } from "@/lib/sanitize";
-import { requireToken } from "@/lib/token";
-import { unauthorized } from "@/lib/api";
+import { requireToken, unauthorized } from "@/lib/api";
 import { MatchEventType } from "@/generated/prisma";
+import { notifyAddMatchEvent } from "@/lib/socket";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
   }
 
-  const match = await prisma.matchEvent.create({
+  const matchEvent = await prisma.matchEvent.create({
     data: {
       matchId,
       type,
@@ -65,5 +65,7 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(match, { status: 201 });
+  notifyAddMatchEvent(matchId, matchEvent);
+
+  return NextResponse.json(matchEvent, { status: 201 });
 }

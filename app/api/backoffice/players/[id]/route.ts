@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireToken } from "@/lib/token";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireToken, unauthorized } from "@/lib/api";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 

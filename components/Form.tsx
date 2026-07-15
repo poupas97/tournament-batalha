@@ -2,7 +2,7 @@
 
 import get from "lodash/get";
 import set from "lodash/set";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { FormEvent, useState, type ReactNode } from "react";
 
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
@@ -59,7 +59,7 @@ export default function Form<T extends Record<string, unknown>>({
     }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const hasRequiredValues = fields.every((field) => {
       const value = get(values, field.key);

@@ -4,8 +4,6 @@ import Form from "@/components/Form";
 import { CompetitionBEResponse } from "@/types/competition";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
 import { TeamBEResponse } from "@/types/team";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type FormMatchProps = {

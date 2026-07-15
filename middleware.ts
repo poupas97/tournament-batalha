@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { requireToken } from "./lib/token";
+import { requireToken } from "./lib/api";
 
 const PUBLIC_PATHS = ["/backoffice/login", "/backoffice/login/"];
 

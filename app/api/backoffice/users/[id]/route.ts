@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdminToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireAdminToken, unauthorized } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);

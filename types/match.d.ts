@@ -1,4 +1,4 @@
-import { MatchStatus, Team } from "@/generated/prisma";
+import { MatchEvent, MatchStatus, Team } from "@/generated/prisma";
 import { TeamBEResponse } from "./team";
 
 export type IMatchFormValues = {

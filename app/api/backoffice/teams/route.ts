@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { Player, Staff } from "@/generated/prisma";
-import { requireToken } from "@/lib/token";
-import { unauthorized } from "@/lib/api";
+import { requireToken, unauthorized } from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);

@@ -9,9 +9,14 @@ import { IMatchEventFormValues } from "@/types/match-event";
 type MatchEventGridProps = {
   matchId: string;
   team: MatchBEResponse["homeTeam"] | MatchBEResponse["awayTeam"];
+  loadMatch: () => Promise<void>;
 };
 
-export default function MatchEventGrid({ team, matchId }: MatchEventGridProps) {
+export default function MatchEventGrid({
+  team,
+  matchId,
+  loadMatch,
+}: MatchEventGridProps) {
   const { openModal, closeModal } = useModal();
 
   const handleAddEvent =
@@ -37,6 +42,7 @@ export default function MatchEventGrid({ team, matchId }: MatchEventGridProps) {
       }
 
       closeModal();
+      await loadMatch();
     };
 
   const addPlayerMatchEventModal = (playerId: number) => () => {

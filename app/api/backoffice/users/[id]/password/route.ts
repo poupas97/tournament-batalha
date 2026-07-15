@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdminToken } from "@/lib/token";
 import bcrypt from "bcryptjs";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireAdminToken, unauthorized } from "@/lib/api";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);

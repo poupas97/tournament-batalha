@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireToken } from "@/lib/token";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireToken, unauthorized } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -33,6 +32,7 @@ export async function GET(request: Request, context: RouteContext) {
         },
       },
       events: {
+        orderBy: { createdAt: "desc" },
         include: {
           team: true,
           player: true,

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireToken } from "@/lib/token";
 import { sanitizeEnum } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireToken, unauthorized } from "@/lib/api";
 import { MatchStatus } from "@/generated/prisma";
 import { notifyMatchStatus } from "@/lib/socket";
 

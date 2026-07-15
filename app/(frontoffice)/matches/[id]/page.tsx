@@ -2,13 +2,22 @@
 
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
-import { getSocket } from "@/lib/websocket";
+import {
+  dispatchSocketMessage,
+  getSocket,
+  onSocket,
+  sendSocketMessage,
+} from "@/lib/websocket";
 import { MatchBEResponse } from "@/types/match";
 import { SocketEvents } from "@/enums/socket";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { MatchStatus } from "@/generated/prisma";
+import { useEffect, useState } from "react";
+import {
+  NotifyAddMatchEvent,
+  NotifyMatchStatus,
+  NotifyRemoveMatchEvent,
+} from "@/types/socket";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -16,61 +25,82 @@ export default function ViewMatchPage() {
   const [match, setMatch] = useState<MatchBEResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadMatch = useCallback(() => {
-    if (!matchId) return;
-
-    fetch(`/api/matches/${matchId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setMatch(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar o jogo.");
-      })
-      .finally(() => setLoading(false));
-  }, [matchId]);
-
   useEffect(() => {
+    const loadMatch = () => {
+      if (!matchId) return;
+
+      fetch(`/api/matches/${matchId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          setMatch(data);
+        })
+        .catch(() => {
+          alert("Erro ao carregar o jogo.");
+        })
+        .finally(() => setLoading(false));
+    };
+
     loadMatch();
-  }, [loadMatch]);
+  }, [matchId]);
 
   useEffect(() => {
     const socket = getSocket();
 
-    const onOpen = () => {
-      socket.send(JSON.stringify({ type: SocketEvents.JOIN, matchId }));
-    };
-
     const onMessage = (event: MessageEvent) => {
-      try {
-        const message = JSON.parse(event.data);
-
-        switch (message.type) {
-          case SocketEvents.MATCH_STATUS:
-            if (!message.payload.status) break;
-            const status = message.payload.status as MatchStatus;
-
-            setMatch((current) => (current ? { ...current, status } : null));
-
-            break;
-        }
-      } catch (error) {
-        console.error("Socket message error", error);
-      }
+      dispatchSocketMessage(event);
     };
 
-    socket.addEventListener("open", onOpen);
     socket.addEventListener("message", onMessage);
+    const cancelJoin = sendSocketMessage({ type: SocketEvents.JOIN, matchId });
+
+    const offStatus = onSocket(SocketEvents.MATCH_STATUS, (payload) => {
+      const { status } = payload as NotifyMatchStatus;
+
+      setMatch((current) => (current ? { ...current, status } : null));
+    });
+
+    const offAdd = onSocket(SocketEvents.ADD_MATCH_EVENT, (payload) => {
+      const event = payload as NotifyAddMatchEvent;
+
+      setMatch((current) => {
+        if (!current) return null;
+
+        return {
+          ...current,
+          events: [event, ...(current?.events || [])],
+        };
+      });
+    });
+
+    const offRemove = onSocket(SocketEvents.REMOVE_MATCH_EVENT, (payload) => {
+      const { id } = payload as NotifyRemoveMatchEvent;
+
+      setMatch((current) => {
+        if (!current) return null;
+
+        return {
+          ...current,
+          events: current.events?.filter((it) => it.id !== id),
+        };
+      });
+    });
 
     return () => {
-      socket.send(JSON.stringify({ type: SocketEvents.LEAVE }));
+      cancelJoin();
 
-      socket.removeEventListener("open", onOpen);
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: SocketEvents.LEAVE }));
+      }
+
       socket.removeEventListener("message", onMessage);
+
+      offStatus();
+      offAdd();
+      offRemove();
     };
   }, [matchId]);
 

@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Player, Staff } from "@/generated/prisma";
-import { requireToken } from "@/lib/token";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, unauthorized } from "@/lib/api";
+import { getParamId, requireToken, unauthorized } from "@/lib/api";
 
 function getMembersFromBody(body: any, key: "players" | "staff") {
   if (!Array.isArray(body?.[key])) {

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
-import { requireToken } from "@/lib/token";
 import bcrypt from "bcryptjs";
-import { unauthorized } from "@/lib/api";
+import { requireToken, unauthorized } from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);

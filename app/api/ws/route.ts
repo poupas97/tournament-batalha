@@ -5,35 +5,43 @@ import {
   WebSocketData,
 } from "@vercel/functions";
 
+type Context = {
+  currentMatchId: number | null;
+};
+
 export function GET() {
   return experimental_upgradeWebSocket((ws) => {
-    console.log("Client connected");
+    const context: Context = {
+      currentMatchId: null,
+    };
 
-    let currentMatchId: number | null = null;
+    console.log("Client connected");
 
     ws.on("message", (data: WebSocketData) => {
       const message = JSON.parse(data.toString());
 
       switch (message.type) {
-        case SocketEvents.JOIN:
-          currentMatchId = Number(message.matchId);
-          joinMatch(currentMatchId, ws);
+        case SocketEvents.JOIN: {
+          context.currentMatchId = Number(message.matchId);
+          joinMatch(context.currentMatchId, ws);
 
           break;
+        }
 
-        case SocketEvents.LEAVE:
-          if (currentMatchId !== null) {
-            leaveMatch(currentMatchId, ws);
-            currentMatchId = null;
+        case SocketEvents.LEAVE: {
+          if (context.currentMatchId !== null) {
+            leaveMatch(context.currentMatchId, ws);
+            context.currentMatchId = null;
           }
 
           break;
+        }
       }
     });
 
     ws.on("close", () => {
-      if (currentMatchId !== null) {
-        leaveMatch(currentMatchId, ws);
+      if (context.currentMatchId !== null) {
+        leaveMatch(context.currentMatchId, ws);
       }
 
       console.log("Client disconnected");

@@ -3,7 +3,7 @@
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import MatchEventGrid from "@/components/MatchEventGrid";
-import { MatchStatus } from "@/generated/prisma";
+import { MatchEvent, MatchStatus } from "@/generated/prisma";
 import { MatchBEResponse } from "@/types/match";
 import { MatchEventBEResponse } from "@/types/match-event";
 import Link from "next/link";
@@ -61,7 +61,7 @@ export default function ViewMatchPage() {
     await loadMatch();
   }
 
-  async function handleRemoveEvent(matchEvent: MatchEventBEResponse) {
+  async function handleRemoveEvent(matchEvent: MatchEvent) {
     const response = await fetch(
       `/api/backoffice/match-events/${matchEvent.id}`,
       {
@@ -136,8 +136,16 @@ export default function ViewMatchPage() {
 
           <h3>Eventos</h3>
           <div style={{ display: "flex", gap: "2rem" }}>
-            <MatchEventGrid team={match.homeTeam} matchId={matchId as string} />
-            <MatchEventGrid team={match.awayTeam} matchId={matchId as string} />
+            <MatchEventGrid
+              team={match.homeTeam}
+              matchId={matchId as string}
+              loadMatch={loadMatch}
+            />
+            <MatchEventGrid
+              team={match.awayTeam}
+              matchId={matchId as string}
+              loadMatch={loadMatch}
+            />
           </div>
 
           <h3>Tabela de Eventos</h3>
