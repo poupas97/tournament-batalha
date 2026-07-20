@@ -9,7 +9,7 @@ export async function requireToken(request: Request) {
 export async function requireAdminToken(request: Request) {
   const token = await requireToken(request);
 
-  return !token || token.role !== "ADMIN";
+  return token?.role === "ADMIN";
 }
 
 export async function getParamId(context: RouteContext) {

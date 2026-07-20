@@ -51,9 +51,9 @@ export default function EditMatchPage() {
 
   return (
     <>
-      <h1>Editar jogos</h1>
+      <h1>Editar jogo</h1>
 
-      {loading && <p>A carregar jogos...</p>}
+      {loading && <p>A carregar jogo...</p>}
 
       {!loading && match && (
         <FormMatch initialValues={match} handleSubmit={handleSubmit} />

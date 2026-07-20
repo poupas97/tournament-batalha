@@ -45,7 +45,10 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const competitionId = await getParamId(context);
   if (!competitionId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Competição inválida." },
+      { status: 400 },
+    );
   }
 
   const body = await request.json().catch(() => null);
@@ -62,7 +65,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!existingTeam) {
     return NextResponse.json(
-      { error: "Equipa não encontrada." },
+      { error: "Competição não encontrada." },
       { status: 404 },
     );
   }

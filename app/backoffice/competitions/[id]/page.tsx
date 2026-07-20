@@ -40,16 +40,18 @@ export default function ViewCompetitionPage() {
       {loading && <p>A carregar competição...</p>}
 
       {!loading && competition && (
-        <Detail<CompetitionBEResponse>
-          data={competition}
-          fields={[{ key: "name", label: "Nome da competição" }]}
-        >
+        <>
+          <Detail<CompetitionBEResponse>
+            data={competition}
+            fields={[{ key: "name", label: "Nome da competição" }]}
+          />
+
           <h4>Equipas</h4>
           <DataTable
             data={competition.teams}
             columns={[{ key: "name", header: "Nome" }]}
           />
-        </Detail>
+        </>
       )}
 
       <Link

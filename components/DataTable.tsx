@@ -1,8 +1,10 @@
+import { formatDateTime } from "@/lib/utils";
 import get from "lodash/get";
 
 type Column<T> = {
   key: string;
   header: string;
+  format?: "date";
   render?: (item: T) => React.ReactNode;
 };
 
@@ -42,12 +44,13 @@ export default function DataTable<T extends Record<string, unknown>>({
       <tbody>
         {data.map((item, index) => (
           <tr key={index} style={{ borderBottom: "1px solid #eaeef2" }}>
-            {columns.map((column) => (
-              <td key={column.key} style={{ padding: "0.75rem" }}>
+            {columns.map((it) => (
+              <td key={it.key} style={{ padding: "0.75rem" }}>
                 <>
-                  {column.render
-                    ? column.render(item)
-                    : get(item, column.key, "")}
+                  {it.render?.(item) ||
+                    (it.format === "date"
+                      ? formatDateTime(get(item, it.key) as string | undefined)
+                      : get(item, it.key, ""))}
                 </>
               </td>
             ))}

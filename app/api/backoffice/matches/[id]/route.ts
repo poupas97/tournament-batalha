@@ -60,7 +60,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const matchId = await getParamId(context);
   if (!matchId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
   }
 
   const body = await request.json().catch(() => null);

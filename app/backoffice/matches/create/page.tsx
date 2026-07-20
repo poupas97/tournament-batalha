@@ -28,7 +28,7 @@ export default function CreateMatchPage() {
 
   return (
     <>
-      <h1>Criar jogos</h1>
+      <h1>Criar jogo</h1>
 
       <FormMatch handleSubmit={handleSubmit} />
 

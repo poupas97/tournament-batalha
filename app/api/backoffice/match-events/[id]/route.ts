@@ -14,36 +14,29 @@ export async function GET(request: Request, context: RouteContext) {
 
   const matchEventId = await getParamId(context);
   if (!matchEventId) {
-    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Evento de jogo inválido." },
+      { status: 400 },
+    );
   }
 
-  const match = await prisma.match.findUnique({
+  const matchEvent = await prisma.matchEvent.findUnique({
     where: { id: matchEventId },
     include: {
-      competition: true,
-      homeTeam: {
-        include: {
-          players: true,
-          staffs: true,
-        },
-      },
-      awayTeam: {
-        include: {
-          players: true,
-          staffs: true,
-        },
-      },
+      player: true,
+      staff: true,
+      team: true,
     },
   });
 
-  if (!match) {
+  if (!matchEvent) {
     return NextResponse.json(
-      { error: "Jogo não encontrado." },
+      { error: "Evento de jogo não encontrado." },
       { status: 404 },
     );
   }
 
-  return NextResponse.json(match);
+  return NextResponse.json(matchEvent);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -108,7 +101,7 @@ export async function DELETE(request: Request, context: RouteContext) {
   const matchEventId = await getParamId(context);
   if (!matchEventId) {
     return NextResponse.json(
-      { error: "Utilizador inválido." },
+      { error: "Evento de jogo inválido." },
       { status: 400 },
     );
   }

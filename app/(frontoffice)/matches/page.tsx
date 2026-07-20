@@ -44,7 +44,7 @@ export default function MatchesPage() {
             data={matches}
             columns={[
               { key: "competition.name", header: "Competição" },
-              { key: "date", header: "Data" },
+              { key: "date", header: "Data", format: "date" },
               { key: "round", header: "Ronda" },
               { key: "homeTeam.name", header: "Equipa da Casa" },
               { key: "awayTeam.name", header: "Equipa Visitante" },

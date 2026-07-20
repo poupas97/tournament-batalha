@@ -2,6 +2,7 @@
 
 import DataTable from "@/components/DataTable";
 import { CompetitionBEResponse } from "@/types/competition";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CompetitionsPage() {
@@ -10,7 +11,7 @@ export default function CompetitionsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadTeams() {
+    async function loadCompetitions() {
       try {
         const response = await fetch("/api/competitions");
 
@@ -27,12 +28,12 @@ export default function CompetitionsPage() {
       }
     }
 
-    void loadTeams();
+    void loadCompetitions();
   }, []);
 
   return (
     <>
-      <h1>Jogos</h1>
+      <h1>Competições</h1>
 
       {loading && <p>A carregar competições...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
@@ -44,6 +45,18 @@ export default function CompetitionsPage() {
             columns={[
               { key: "name", header: "Nome" },
               { key: "_count.teams", header: "Equipas" },
+              {
+                key: "actions",
+                header: "Ações",
+                render: (team) => (
+                  <Link
+                    href={`/competitions/${team.id}`}
+                    style={{ color: "#2563eb" }}
+                  >
+                    Ver
+                  </Link>
+                ),
+              },
             ]}
           />
         </div>
