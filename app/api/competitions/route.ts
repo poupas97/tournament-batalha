@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getResponse } from "@/lib/api";
 
 export async function GET(request: Request) {
   const competitions = await prisma.competition.findMany({
@@ -11,5 +11,5 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json(competitions);
+  return getResponse(competitions);
 }

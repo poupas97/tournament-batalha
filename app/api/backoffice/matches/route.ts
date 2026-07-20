@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
-import { requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getResponse,
+  invalidParam,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -18,7 +23,7 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json(matches);
+  return getResponse(matches);
 }
 
 export async function POST(request: Request) {
@@ -35,18 +40,15 @@ export async function POST(request: Request) {
   const awayTeamId = sanitizeNumber(body.awayTeamId);
 
   if (!date) {
-    return NextResponse.json({ error: "Data inválida." }, { status: 400 });
+    return invalidParam("Date");
   }
 
   if (!round) {
-    return NextResponse.json({ error: "Ronda inválida." }, { status: 400 });
+    return invalidParam("Round");
   }
 
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválida." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
   const match = await prisma.match.create({
@@ -64,5 +66,5 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(match, { status: 201 });
+  return createdResponse(match);
 }

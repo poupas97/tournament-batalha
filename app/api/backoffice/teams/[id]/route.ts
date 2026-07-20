@@ -1,22 +1,16 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Player, Staff } from "@/generated/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, requireToken, unauthorized } from "@/lib/api";
-
-function getMembersFromBody(body: any, key: "players" | "staff") {
-  if (!Array.isArray(body?.[key])) {
-    return [];
-  }
-
-  return body[key]
-    .map((member: any) =>
-      typeof member?.name === "string" ? sanitizeText(member.name) : "",
-    )
-    .filter((name: string) => name.length > 0 && name.length <= 100)
-    .map((name: string) => ({ name }));
-}
+import {
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+  updatedResponse,
+} from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -26,7 +20,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const teamId = await getParamId(context);
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const team = await prisma.team.findUnique({
@@ -43,13 +37,10 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!team) {
-    return NextResponse.json(
-      { error: "Equipa não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Team");
   }
 
-  return NextResponse.json(team);
+  return getResponse(team);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -60,30 +51,26 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const teamId = await getParamId(context);
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
-  const staff = getMembersFromBody(body, "staff");
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
-  const existingTeam = await prisma.team.findUnique({
+  const existing = await prisma.team.findUnique({
     where: { id: teamId },
     select: { id: true },
   });
 
-  if (!existingTeam) {
-    return NextResponse.json(
-      { error: "Equipa não encontrada." },
-      { status: 404 },
-    );
+  if (!existing) {
+    return noFound("Team");
   }
 
-  const team = await prisma.$transaction(async (tx) => {
+  const teamUpdated = await prisma.$transaction(async (tx) => {
     await tx.player.deleteMany({ where: { teamId } });
     await tx.staff.deleteMany({ where: { teamId } });
 
@@ -120,5 +107,5 @@ export async function PUT(request: Request, context: RouteContext) {
     });
   });
 
-  return NextResponse.json(team);
+  return updatedResponse(teamUpdated);
 }

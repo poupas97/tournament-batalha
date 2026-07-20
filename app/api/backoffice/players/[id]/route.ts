@@ -1,6 +1,14 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getParamId, requireToken, unauthorized } from "@/lib/api";
+import {
+  deletedResponse,
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+  updatedResponse,
+} from "@/lib/api";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 
@@ -12,7 +20,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const playerId = await getParamId(context);
   if (!playerId) {
-    return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
+    return invalidParam("Player");
   }
 
   const player = await prisma.player.findUnique({
@@ -23,13 +31,10 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!player) {
-    return NextResponse.json(
-      { error: "Jogador não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Player");
   }
 
-  return NextResponse.json(player);
+  return getResponse(player);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -40,7 +45,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const playerId = await getParamId(context);
   if (!playerId) {
-    return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
+    return invalidParam("Player");
   }
 
   const body = await request.json().catch(() => null);
@@ -48,11 +53,11 @@ export async function PUT(request: Request, context: RouteContext) {
   const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const [player, team] = await Promise.all([
@@ -61,17 +66,20 @@ export async function PUT(request: Request, context: RouteContext) {
   ]);
 
   if (!player) {
-    return NextResponse.json(
-      { error: "Jogador não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Player");
   }
 
   if (!team) {
-    return NextResponse.json(
-      { error: "Equipa não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Team");
+  }
+
+  const existing = await prisma.player.findUnique({
+    where: { id: playerId },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    return noFound("Player");
   }
 
   const updatedPlayer = await prisma.player.update({
@@ -85,7 +93,7 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json(updatedPlayer);
+  return updatedResponse(updatedPlayer);
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
@@ -96,7 +104,7 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const playerId = await getParamId(context);
   if (!playerId) {
-    return NextResponse.json({ error: "Jogador inválido." }, { status: 400 });
+    return invalidParam("Player");
   }
 
   const player = await prisma.player.findUnique({
@@ -105,15 +113,12 @@ export async function DELETE(request: Request, context: RouteContext) {
   });
 
   if (!player) {
-    return NextResponse.json(
-      { error: "Jogador não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Player");
   }
 
   await prisma.player.delete({
     where: { id: playerId },
   });
 
-  return NextResponse.json({ success: true });
+  return deletedResponse();
 }

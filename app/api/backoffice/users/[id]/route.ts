@@ -1,8 +1,16 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, requireAdminToken, unauthorized } from "@/lib/api";
+import {
+  deletedResponse,
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireAdminToken,
+  unauthorized,
+  updatedResponse,
+} from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
@@ -12,10 +20,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const user = await getParamId(context);
   if (!user) {
-    return NextResponse.json(
-      { error: "Utilizador inválido." },
-      { status: 400 },
-    );
+    return invalidParam("User");
   }
 
   const player = await prisma.user.findUnique({
@@ -30,13 +35,10 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!player) {
-    return NextResponse.json(
-      { error: "Utilizador não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Player");
   }
 
-  return NextResponse.json(player);
+  return getResponse(player);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -47,10 +49,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const userId = await getParamId(context);
   if (!userId) {
-    return NextResponse.json(
-      { error: "Utilizador inválido." },
-      { status: 400 },
-    );
+    return invalidParam("User");
   }
 
   const body = await request.json().catch(() => null);
@@ -58,11 +57,20 @@ export async function PUT(request: Request, context: RouteContext) {
   const email = sanitizeText(body.email);
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
   if (!email || email.length > 100) {
-    return NextResponse.json({ error: "Email inválido." }, { status: 400 });
+    return invalidParam("Email");
+  }
+
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    return noFound("User");
   }
 
   const updatedUser = await prisma.user.update({
@@ -77,7 +85,7 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json(updatedUser);
+  return updatedResponse(updatedUser);
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
@@ -88,10 +96,7 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const userId = await getParamId(context);
   if (!userId) {
-    return NextResponse.json(
-      { error: "Utilizador inválido." },
-      { status: 400 },
-    );
+    return invalidParam("User");
   }
 
   const user = await prisma.user.findUnique({
@@ -100,10 +105,7 @@ export async function DELETE(request: Request, context: RouteContext) {
   });
 
   if (!user) {
-    return NextResponse.json(
-      { error: "Utilizador não encontrado." },
-      { status: 404 },
-    );
+    return noFound("User");
   }
 
   await prisma.user.delete({
@@ -117,5 +119,5 @@ export async function DELETE(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json({ success: true });
+  return deletedResponse();
 }

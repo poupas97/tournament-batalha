@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getResponse } from "@/lib/api";
 
-export async function GET() {
+export async function GET(request: Request) {
   const matches = await prisma.match.findMany({
     orderBy: { createdAt: "asc" },
     include: {
@@ -11,5 +11,5 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json(matches);
+  return getResponse(matches);
 }

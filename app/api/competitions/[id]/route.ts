@@ -1,15 +1,11 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const competitionId = await getParamId(context);
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválida." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
   const competition = await prisma.competition.findUnique({
@@ -22,11 +18,8 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!competition) {
-    return NextResponse.json(
-      { error: "Competição não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Competition");
   }
 
-  return NextResponse.json(competition);
+  return getResponse(competition);
 }

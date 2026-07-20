@@ -9,7 +9,7 @@ type Context = {
   currentMatchId: number | null;
 };
 
-export function GET() {
+export function GET(request: Request) {
   return experimental_upgradeWebSocket((ws) => {
     const context: Context = {
       currentMatchId: null,

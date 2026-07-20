@@ -1,8 +1,15 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, requireToken, unauthorized } from "@/lib/api";
+import {
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+  updatedResponse,
+} from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -12,7 +19,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const matchId = await getParamId(context);
   if (!matchId) {
-    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+    return invalidParam("Match");
   }
 
   const match = await prisma.match.findUnique({
@@ -43,13 +50,10 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!match) {
-    return NextResponse.json(
-      { error: "Jogo não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Match event");
   }
 
-  return NextResponse.json(match);
+  return getResponse(match);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -60,7 +64,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const matchId = await getParamId(context);
   if (!matchId) {
-    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+    return invalidParam("Match");
   }
 
   const body = await request.json().catch(() => null);
@@ -71,21 +75,27 @@ export async function PUT(request: Request, context: RouteContext) {
   const awayTeamId = sanitizeNumber(body.awayTeamId);
 
   if (!date) {
-    return NextResponse.json({ error: "Data inválida." }, { status: 400 });
+    return invalidParam("Date");
   }
 
   if (!round) {
-    return NextResponse.json({ error: "Ronda inválida." }, { status: 400 });
+    return invalidParam("Round");
   }
 
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválida." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
-  const match = await prisma.match.update({
+  const existing = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    return noFound("Match");
+  }
+
+  const matchUpdated = await prisma.match.update({
     where: { id: matchId },
     data: {
       date: new Date(date),
@@ -101,5 +111,5 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json(match);
+  return updatedResponse(matchUpdated);
 }

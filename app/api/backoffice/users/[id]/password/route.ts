@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { RouteContext } from "@/types/api";
-import { getParamId, requireAdminToken, unauthorized } from "@/lib/api";
+import {
+  getParamId,
+  invalidParam,
+  noFound,
+  requireAdminToken,
+  unauthorized,
+  updatedResponse,
+} from "@/lib/api";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireAdminToken(request);
@@ -12,10 +18,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const userId = await getParamId(context);
   if (!userId) {
-    return NextResponse.json(
-      { error: "Utilizador inválido." },
-      { status: 400 },
-    );
+    return invalidParam("User");
   }
 
   const body = await request.json().catch(() => null);
@@ -24,27 +27,21 @@ export async function PUT(request: Request, context: RouteContext) {
   const confirm = body.confirm;
 
   if (!actual || !password || !confirm || password !== confirm) {
-    return NextResponse.json({ error: "Password inválida." }, { status: 400 });
+    return invalidParam("Password");
   }
 
-  const user = await prisma.user.findUnique({
+  const existing = await prisma.user.findUnique({
     where: { id: userId },
   });
 
-  if (!user) {
-    return NextResponse.json(
-      { error: "Utilizador não encontrado." },
-      { status: 404 },
-    );
+  if (!existing) {
+    return noFound("User");
   }
 
-  const valid = await bcrypt.compare(actual, user.password);
+  const valid = await bcrypt.compare(actual, existing.password);
 
   if (!valid) {
-    return NextResponse.json(
-      { error: "Password atual incorreta." },
-      { status: 400 },
-    );
+    return invalidParam("Password");
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -63,5 +60,5 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json(updatedUser);
+  return updatedResponse(updatedUser);
 }

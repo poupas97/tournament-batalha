@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeEnum, sanitizeNumber } from "@/lib/sanitize";
-import { requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getResponse,
+  invalidParam,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 import { MatchEventType } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
 
@@ -20,7 +25,7 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json(matchEvents);
+  return getResponse(matchEvents);
 }
 
 export async function POST(request: Request) {
@@ -38,15 +43,15 @@ export async function POST(request: Request) {
   const teamId = sanitizeNumber(body?.teamId);
 
   if (!matchId) {
-    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+    return invalidParam("Match");
   }
 
   if (!type) {
-    return NextResponse.json({ error: "Tipo inválido." }, { status: 400 });
+    return invalidParam("Type");
   }
 
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const matchEvent = await prisma.matchEvent.create({
@@ -67,5 +72,5 @@ export async function POST(request: Request) {
 
   notifyAddMatchEvent(matchId, matchEvent);
 
-  return NextResponse.json(matchEvent, { status: 201 });
+  return createdResponse(matchEvent);
 }

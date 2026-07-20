@@ -1,8 +1,15 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
-import { getParamId, requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -12,10 +19,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const competitionId = await getParamId(context);
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválida." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
   const competition = await prisma.competition.findUnique({
@@ -28,13 +32,10 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!competition) {
-    return NextResponse.json(
-      { error: "Competição não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Competition");
   }
 
-  return NextResponse.json(competition);
+  return getResponse(competition);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -45,32 +46,26 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const competitionId = await getParamId(context);
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválida." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
-  const existingTeam = await prisma.competition.findUnique({
+  const existing = await prisma.competition.findUnique({
     where: { id: competitionId },
     select: { id: true },
   });
 
-  if (!existingTeam) {
-    return NextResponse.json(
-      { error: "Competição não encontrada." },
-      { status: 404 },
-    );
+  if (!existing) {
+    return noFound("Competition");
   }
 
-  const competition = await prisma.competition.update({
+  const competitionUpdated = await prisma.competition.update({
     where: { id: competitionId },
     data: {
       name,
@@ -82,5 +77,5 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  return NextResponse.json(competition);
+  return createdResponse(competitionUpdated);
 }

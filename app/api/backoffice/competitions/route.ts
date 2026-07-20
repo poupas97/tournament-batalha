@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
-import { requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getResponse,
+  invalidParam,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -18,7 +23,7 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json(competitions);
+  return getResponse(competitions);
 }
 
 export async function POST(request: Request) {
@@ -31,7 +36,7 @@ export async function POST(request: Request) {
   const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
   const competition = await prisma.competition.create({
@@ -43,5 +48,5 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(competition, { status: 201 });
+  return createdResponse(competition);
 }

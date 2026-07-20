@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import bcrypt from "bcryptjs";
-import { requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getResponse,
+  invalidParam,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -21,7 +26,7 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json(users);
+  return getResponse(users);
 }
 
 export async function POST(request: Request) {
@@ -36,16 +41,16 @@ export async function POST(request: Request) {
   const password = await bcrypt.hash(body.password, 12);
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
   if (!email || email.length > 100) {
-    return NextResponse.json({ error: "Email inválido." }, { status: 400 });
+    return invalidParam("Email");
   }
 
   const user = await prisma.user.create({
     data: { name, email, password },
   });
 
-  return NextResponse.json(user, { status: 201 });
+  return createdResponse(user);
 }

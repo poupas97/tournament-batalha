@@ -1,12 +1,11 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const teamId = await getParamId(context);
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const team = await prisma.team.findUnique({
@@ -23,11 +22,8 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!team) {
-    return NextResponse.json(
-      { error: "Equipa não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Team");
   }
 
-  return NextResponse.json(team);
+  return getResponse(team);
 }

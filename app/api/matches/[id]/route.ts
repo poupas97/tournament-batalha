@@ -1,13 +1,12 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
-import { getParamId } from "@/lib/api";
+import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const matchId = await getParamId(context);
 
   if (!matchId) {
-    return NextResponse.json({ error: "Jogo inválido." }, { status: 400 });
+    return invalidParam("Match");
   }
 
   const match = await prisma.match.findUnique({
@@ -38,11 +37,8 @@ export async function GET(request: Request, context: RouteContext) {
   });
 
   if (!match) {
-    return NextResponse.json(
-      { error: "Jogo não encontrado." },
-      { status: 404 },
-    );
+    return noFound("Match");
   }
 
-  return NextResponse.json(match);
+  return getResponse(match);
 }

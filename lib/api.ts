@@ -19,5 +19,29 @@ export async function getParamId(context: RouteContext) {
 }
 
 export function unauthorized() {
-  return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+
+export function noFound(entity: string) {
+  return NextResponse.json({ error: `Not found - ${entity}` }, { status: 404 });
+}
+
+export function invalidParam(entity: string) {
+  return NextResponse.json({ error: `Invalid - ${entity}` }, { status: 400 });
+}
+
+export function getResponse<T>(entity: T) {
+  return NextResponse.json(entity);
+}
+
+export function createdResponse<T>(entity: T) {
+  return NextResponse.json(entity, { status: 201 });
+}
+
+export function updatedResponse<T>(entity: T) {
+  return NextResponse.json(entity, { status: 204 });
+}
+
+export function deletedResponse() {
+  return NextResponse.json({ success: true }, { status: 202 });
 }

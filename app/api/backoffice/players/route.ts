@@ -1,7 +1,13 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
-import { requireToken, unauthorized } from "@/lib/api";
+import {
+  createdResponse,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -14,7 +20,7 @@ export async function GET(request: Request) {
     include: { team: true },
   });
 
-  return NextResponse.json(players);
+  return getResponse(players);
 }
 
 export async function POST(request: Request) {
@@ -29,15 +35,15 @@ export async function POST(request: Request) {
   const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
-    return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
+    return invalidParam("Name");
   }
 
   if (!number || Number(number) < 0 || Number(number) > 99) {
-    return NextResponse.json({ error: "Número inválido." }, { status: 400 });
+    return invalidParam("Number");
   }
 
   if (!teamId) {
-    return NextResponse.json({ error: "Equipa inválida." }, { status: 400 });
+    return invalidParam("Team");
   }
 
   const team = await prisma.team.findUnique({
@@ -46,10 +52,7 @@ export async function POST(request: Request) {
   });
 
   if (!team) {
-    return NextResponse.json(
-      { error: "Equipa não encontrada." },
-      { status: 404 },
-    );
+    return noFound("Team");
   }
 
   const player = await prisma.player.create({
@@ -57,5 +60,5 @@ export async function POST(request: Request) {
     include: { team: true },
   });
 
-  return NextResponse.json(player, { status: 201 });
+  return createdResponse(player);
 }

@@ -1,16 +1,12 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getParamId } from "@/lib/api";
+import { getParamId, getResponse, invalidParam } from "@/lib/api";
 import { RouteContext } from "@/types/api";
 
 export async function GET(request: Request, context: RouteContext) {
   const competitionId = await getParamId(context);
 
   if (!competitionId) {
-    return NextResponse.json(
-      { error: "Competição inválido." },
-      { status: 400 },
-    );
+    return invalidParam("Competition");
   }
 
   const rankingScores = await prisma.$queryRaw`
@@ -182,5 +178,5 @@ export async function GET(request: Request, context: RouteContext) {
         team_name ASC;
     `;
 
-  return NextResponse.json({ rankingScores, rankingTeams });
+  return getResponse({ rankingScores, rankingTeams });
 }
