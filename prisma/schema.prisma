@@ -62,6 +62,10 @@ model Competition {
   createdAt DateTime @default(now())
   teams     Team[]
   matches     Match[]
+  active    Boolean @default(true)
+  config    CompetitionConfig
+  qualified    Int?
+  opponents    Int?
 }
 
 model Match {
@@ -133,4 +137,9 @@ enum MatchEventType {
   PENALTY_GOAL
   YELLOW_CARD
   RED_CARD
+}
+
+enum CompetitionConfig {
+  LEAGUE
+  GROUP
 }
