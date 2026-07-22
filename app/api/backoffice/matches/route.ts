@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   }
 
   const matches = await prisma.match.findMany({
-    orderBy: { createdAt: "asc" },
+    orderBy: [{ competition: { name: "asc" } }, { round: "asc" }],
     include: {
       competition: true,
       homeTeam: true,

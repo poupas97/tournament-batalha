@@ -92,6 +92,9 @@ export default function ViewMatchPage() {
             data={match}
             fields={[
               { key: "competition.name", label: "Competição" },
+              { key: "competition.config", label: "Configuração" },
+              { key: "competition.opponents", label: "Oponentes" },
+              { key: "competition.qualified", label: "Qualificados" },
               { key: "date", label: "Data", format: "date" },
               { key: "round", label: "Ronda" },
               { key: "homeTeam.name", label: "Equipa da Casa" },
