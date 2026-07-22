@@ -4,7 +4,7 @@ import { requireToken } from "./lib/api";
 
 const PUBLIC_PATHS = ["/backoffice/login", "/backoffice/login/"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith("/backoffice")) {
