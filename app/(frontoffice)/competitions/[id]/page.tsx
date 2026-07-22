@@ -2,7 +2,7 @@
 
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
-import { Player } from "@/generated/prisma";
+import Title from "@/components/Title";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -87,9 +87,10 @@ export default function ViewCompetitionPage() {
 
   return (
     <>
-      <h1>Ver competição</h1>
+      <Title label="Ver competição" back />
 
       {loading && <p>A carregar competição...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
       {!loading && competition && (
         <Detail<CompetitionBEResponse>
@@ -151,13 +152,6 @@ export default function ViewCompetitionPage() {
           />
         </>
       )}
-
-      <Link
-        href="/competitions"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

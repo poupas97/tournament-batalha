@@ -1,8 +1,8 @@
 "use client";
 
 import Detail from "@/components/Detail";
+import Title from "@/components/Title";
 import { UserBEResponse } from "@/types/user";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -32,7 +32,7 @@ export default function ViewUserPage() {
 
   return (
     <>
-      <h1>Ver utilizador</h1>
+      <Title label="Ver utilizador" back />
 
       {loading && <p>A carregar utilizador...</p>}
 
@@ -45,13 +45,6 @@ export default function ViewUserPage() {
           ]}
         />
       )}
-
-      <Link
-        href="/backoffice/users"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

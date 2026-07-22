@@ -1,8 +1,8 @@
 "use client";
 
 import DetailsTeam from "@/components/DetailsTeam";
+import Title from "@/components/Title";
 import { TeamBEResponse } from "@/types/team";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -32,18 +32,11 @@ export default function ViewTeamPage() {
 
   return (
     <>
-      <h1>Ver equipa</h1>
+      <Title label="Ver equipa" back />
 
       {loading && <p>A carregar equipa...</p>}
 
       {!loading && team && <DetailsTeam team={team} />}
-
-      <Link
-        href="/teams"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

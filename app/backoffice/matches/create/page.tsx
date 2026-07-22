@@ -1,8 +1,8 @@
 "use client";
 
 import FormMatch from "@/components/FormMatch";
+import Title from "@/components/Title";
 import { IMatchFormValues } from "@/types/match";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CreateMatchPage() {
@@ -28,16 +28,9 @@ export default function CreateMatchPage() {
 
   return (
     <>
-      <h1>Criar jogo</h1>
+      <Title label="Criar jogo" back />
 
       <FormMatch handleSubmit={handleSubmit} />
-
-      <Link
-        href="/backoffice/matches"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

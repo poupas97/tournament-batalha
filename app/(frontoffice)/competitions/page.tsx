@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -33,7 +34,7 @@ export default function CompetitionsPage() {
 
   return (
     <>
-      <h1>Competições</h1>
+      <Title label="Competições" />
 
       {loading && <p>A carregar competições...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

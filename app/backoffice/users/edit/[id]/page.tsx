@@ -1,12 +1,12 @@
 "use client";
 
 import Form from "@/components/Form";
+import Title from "@/components/Title";
 import {
   IUserFormValues,
   IUserPasswordFormValues,
   UserBEResponse,
 } from "@/types/user";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -78,7 +78,7 @@ export default function EditUserPage() {
 
   return (
     <>
-      <h1>Editar utilizador</h1>
+      <Title label="Editar utilizador" back />
 
       {loading && <p>A carregar utilizador...</p>}
 
@@ -104,13 +104,6 @@ export default function EditUserPage() {
           />
         </>
       )}
-
-      <Link
-        href="/backoffice/users"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

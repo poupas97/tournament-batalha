@@ -1,12 +1,12 @@
 "use client";
 
 import Form from "@/components/Form";
+import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
 import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -60,7 +60,7 @@ export default function EditCompetitionPage() {
 
   return (
     <>
-      <h1>Editar competição</h1>
+      <Title label="Editar competição" back />
 
       {loading && <p>A carregar competição...</p>}
 
@@ -85,13 +85,6 @@ export default function EditCompetitionPage() {
           onSubmit={handleSubmit}
         />
       )}
-
-      <Link
-        href="/backoffice/competitions"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

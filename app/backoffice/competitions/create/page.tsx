@@ -1,8 +1,9 @@
 "use client";
 
 import Form from "@/components/Form";
+import Title from "@/components/Title";
+import { CompetitionConfig } from "@/generated/prisma";
 import { ICompetitionFormValues } from "@/types/competition";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CreateCompetitionPage() {
@@ -28,7 +29,7 @@ export default function CreateCompetitionPage() {
 
   return (
     <>
-      <h1>Criar competição</h1>
+      <Title label="Criar competição" back />
 
       <Form<ICompetitionFormValues>
         fields={[
@@ -47,13 +48,6 @@ export default function CreateCompetitionPage() {
         ]}
         onSubmit={handleSubmit}
       />
-
-      <Link
-        href="/backoffice/competitions"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import FormMatch from "@/components/FormMatch";
+import Title from "@/components/Title";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -51,20 +51,13 @@ export default function EditMatchPage() {
 
   return (
     <>
-      <h1>Editar jogo</h1>
+      <Title label="Editar jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
 
       {!loading && match && (
         <FormMatch initialValues={match} handleSubmit={handleSubmit} />
       )}
-
-      <Link
-        href="/backoffice/matches"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

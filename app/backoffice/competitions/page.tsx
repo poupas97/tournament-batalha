@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -41,7 +42,7 @@ export default function BackofficeCompetitionsPage() {
 
   return (
     <>
-      <h1>Competições</h1>
+      <Title label="Competições" />
 
       <div>
         <Link

@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -37,7 +38,8 @@ export default function BackofficeMatchesPage() {
 
   return (
     <>
-      <h1>Jogos</h1>
+      <Title label="Jogos" />
+
       <div>
         <Link
           href="/backoffice/matches/create"

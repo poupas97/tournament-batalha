@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import { MatchBEResponse } from "@/types/match";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -33,7 +34,7 @@ export default function MatchesPage() {
 
   return (
     <>
-      <h1>Jogos</h1>
+      <Title label="Jogos" />
 
       {loading && <p>A carregar jogos...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

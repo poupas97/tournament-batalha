@@ -1,9 +1,9 @@
 "use client";
 
 import FormTeam from "@/components/FormTeam";
+import Title from "@/components/Title";
 import { CompetitionBEResponse } from "@/types/competition";
 import { ITeamFormValues, TeamBEResponse } from "@/types/team";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -67,7 +67,7 @@ export default function EditTeamPage() {
 
   return (
     <>
-      <h1>Editar equipa</h1>
+      <Title label="Editar equipa" back />
 
       {loading && <p>A carregar equipa...</p>}
 
@@ -78,13 +78,6 @@ export default function EditTeamPage() {
           competitions={competitions}
         />
       )}
-
-      <Link
-        href="/backoffice/teams"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

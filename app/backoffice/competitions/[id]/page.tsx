@@ -2,8 +2,8 @@
 
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
+import Title from "@/components/Title";
 import { CompetitionBEResponse } from "@/types/competition";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -35,7 +35,7 @@ export default function ViewCompetitionPage() {
 
   return (
     <>
-      <h1>Ver competição</h1>
+      <Title label="Ver competição" back />
 
       {loading && <p>A carregar competição...</p>}
 
@@ -59,13 +59,6 @@ export default function ViewCompetitionPage() {
           />
         </>
       )}
-
-      <Link
-        href="/backoffice/competitions"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

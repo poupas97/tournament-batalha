@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -42,7 +43,7 @@ export default function TeamsPage() {
 
   return (
     <>
-      <h1>Equipas</h1>
+      <Title label="Equipas" />
 
       {loading && <p>A carregar equipas...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

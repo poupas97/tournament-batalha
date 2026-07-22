@@ -3,6 +3,7 @@
 import { SubmitEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import Title from "@/components/Title";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,7 +30,8 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1>Login Backoffice</h1>
+      <Title label="Login Backoffice" />
+
       <form
         onSubmit={handleSubmit}
         style={{ display: "grid", gap: "1rem", marginTop: "1.5rem" }}

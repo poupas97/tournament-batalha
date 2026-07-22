@@ -1,7 +1,9 @@
+import Title from "@/components/Title";
+
 export default function BackofficePage() {
   return (
     <>
-      <h1>Dashboard do Backoffice</h1>
+      <Title label="Dashboard do Backoffice" />
       <p>Escolhe uma área na navegação para gerir o torneio.</p>
     </>
   );

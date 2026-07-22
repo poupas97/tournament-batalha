@@ -10,7 +10,6 @@ import {
 } from "@/lib/websocket";
 import { MatchBEResponse } from "@/types/match";
 import { SocketEvents } from "@/enums/socket";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -18,6 +17,7 @@ import {
   NotifyMatchStatus,
   NotifyRemoveMatchEvent,
 } from "@/types/socket";
+import Title from "@/components/Title";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -106,7 +106,7 @@ export default function ViewMatchPage() {
 
   return (
     <>
-      <h1>Ver Jogo</h1>
+      <Title label="Ver Jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
 
@@ -139,13 +139,6 @@ export default function ViewMatchPage() {
           )}
         </>
       )}
-
-      <Link
-        href="/matches"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

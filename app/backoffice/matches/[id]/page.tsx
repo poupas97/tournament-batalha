@@ -3,10 +3,9 @@
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import MatchEventGrid from "@/components/MatchEventGrid";
+import Title from "@/components/Title";
 import { MatchEvent, MatchStatus } from "@/generated/prisma";
 import { MatchBEResponse } from "@/types/match";
-import { MatchEventBEResponse } from "@/types/match-event";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -83,7 +82,7 @@ export default function ViewMatchPage() {
 
   return (
     <>
-      <h1>Ver jogo</h1>
+      <Title label="Ver jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
 
@@ -182,13 +181,6 @@ export default function ViewMatchPage() {
           )}
         </>
       )}
-
-      <Link
-        href="/backoffice/matches"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }

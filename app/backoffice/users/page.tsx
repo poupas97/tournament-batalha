@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import Title from "@/components/Title";
 import { User } from "@/generated/prisma";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -29,7 +30,8 @@ export default function BackofficeUsersPage() {
 
   return (
     <>
-      <h1>Utilizadores</h1>
+      <Title label="Utilizadores" />
+
       <div>
         <Link
           href="/backoffice/users/create"

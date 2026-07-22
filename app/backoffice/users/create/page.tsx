@@ -1,8 +1,8 @@
 "use client";
 
 import Form from "@/components/Form";
+import Title from "@/components/Title";
 import { IUserFormValues } from "@/types/user";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CreateUserPage() {
@@ -28,7 +28,7 @@ export default function CreateUserPage() {
 
   return (
     <>
-      <h1>Criar utilizador</h1>
+      <Title label="Criar utilizador" back />
 
       <Form<IUserFormValues>
         fields={[
@@ -38,13 +38,6 @@ export default function CreateUserPage() {
         ]}
         onSubmit={handleSubmit}
       />
-
-      <Link
-        href="/backoffice/users"
-        style={{ display: "inline-block", marginTop: "1rem" }}
-      >
-        Voltar
-      </Link>
     </>
   );
 }
