@@ -1,6 +1,7 @@
 "use client";
 
 import Form from "@/components/Form";
+import { CompetitionConfig } from "@/generated/prisma";
 import {
   CompetitionBEResponse,
   ICompetitionFormValues,
@@ -66,7 +67,21 @@ export default function EditCompetitionPage() {
       {!loading && competition && (
         <Form<ICompetitionFormValues>
           initialValues={competition}
-          fields={[{ key: "name", label: "Nome" }]}
+          fields={[
+            { key: "name", label: "Nome" },
+            {
+              key: "config",
+              label: "Configuracao",
+              type: "select",
+              options: Object.keys(CompetitionConfig).map((it) => ({
+                label: it,
+                value: it,
+              })),
+            },
+            { key: "qualified", label: "Qualificados" },
+            { key: "opponents", label: "Oponentes" },
+            { key: "active", label: "Ativo", type: "checkbox" },
+          ]}
           onSubmit={handleSubmit}
         />
       )}

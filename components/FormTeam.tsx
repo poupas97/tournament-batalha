@@ -126,7 +126,7 @@ export default function FormTeam({
     <Form<ITeamFormValues>
       initialValues={initialValues}
       fields={[
-        { key: "name", label: "Nome da equipa" },
+        { key: "name", label: "Nome" },
         {
           key: "competitionId",
           label: "Competição",

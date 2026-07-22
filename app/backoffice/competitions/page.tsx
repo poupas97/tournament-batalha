@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import { CompetitionConfig } from "@/generated/prisma";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -8,6 +9,9 @@ type CompetitionSummary = {
   id: number;
   name: string;
   createdAt: string;
+  config: CompetitionConfig;
+  qualifed?: number;
+  opponents?: number;
   _count: {
     teams: number;
   };
@@ -38,6 +42,7 @@ export default function BackofficeCompetitionsPage() {
   return (
     <>
       <h1>Competições</h1>
+
       <div>
         <Link
           href="/backoffice/competitions/create"
@@ -61,6 +66,10 @@ export default function BackofficeCompetitionsPage() {
           <DataTable
             columns={[
               { key: "name", header: "Nome" },
+              { key: "config", header: "Configuração" },
+              { key: "qualified", header: "Qualificados" },
+              { key: "opponents", header: "Oponentes" },
+              { key: "active", header: "Ativo", format: "boolean" },
               { key: "_count.teams", header: "Equipas" },
               {
                 key: "actions",

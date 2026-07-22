@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   const teams = await prisma.team.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ name: "asc" }, { competition: { name: "asc" } }],
     include: {
       competition: true,
       _count: {

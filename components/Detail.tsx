@@ -6,7 +6,7 @@ import get from "lodash/get";
 type DetailField = {
   key: string;
   label: string;
-  format?: "date";
+  format?: "date" | "boolean";
 };
 
 type DetailProps<T extends Record<string, unknown>> = {
@@ -26,18 +26,26 @@ export default function Detail<T extends Record<string, unknown>>({
         gap: "1rem",
       }}
     >
-      {fields.map((it) => (
-        <div key={it.key}>
-          <strong>{it.label}</strong>
-          <div>
-            <>
-              {it.format === "date"
-                ? formatDateTime(get(data, it.key) as string | undefined)
-                : get(data, it.key, "")}
-            </>
+      {fields.map((it) => {
+        const value = get(data, it.key, "");
+
+        return (
+          <div key={it.key}>
+            <strong>{it.label}</strong>
+            <div>
+              <>
+                {it.format === "date"
+                  ? formatDateTime(value as string | undefined)
+                  : it.format === "boolean"
+                    ? value
+                      ? "Sim"
+                      : "Não"
+                    : value}
+              </>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import get from "lodash/get";
 type Column<T> = {
   key: string;
   header: string;
-  format?: "date";
+  format?: "date" | "boolean";
   render?: (item: T) => React.ReactNode;
 };
 
@@ -44,16 +44,24 @@ export default function DataTable<T extends Record<string, unknown>>({
       <tbody>
         {data.map((item, index) => (
           <tr key={index} style={{ borderBottom: "1px solid #eaeef2" }}>
-            {columns.map((it) => (
-              <td key={it.key} style={{ padding: "0.75rem" }}>
-                <>
-                  {it.render?.(item) ||
-                    (it.format === "date"
-                      ? formatDateTime(get(item, it.key) as string | undefined)
-                      : get(item, it.key, ""))}
-                </>
-              </td>
-            ))}
+            {columns.map((it) => {
+              const value = get(item, it.key, "");
+
+              return (
+                <td key={it.key} style={{ padding: "0.75rem" }}>
+                  <>
+                    {it.render?.(item) ||
+                      (it.format === "date"
+                        ? formatDateTime(value as string)
+                        : it.format === "boolean"
+                          ? value
+                            ? "Sim"
+                            : "Não"
+                          : value)}
+                  </>
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>

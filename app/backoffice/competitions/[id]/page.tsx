@@ -43,7 +43,13 @@ export default function ViewCompetitionPage() {
         <>
           <Detail<CompetitionBEResponse>
             data={competition}
-            fields={[{ key: "name", label: "Nome da competição" }]}
+            fields={[
+              { key: "name", label: "Nome" },
+              { key: "config", label: "Configuração" },
+              { key: "qualified", label: "Qualificados" },
+              { key: "opponents", label: "Oponentes" },
+              { key: "active", label: "Ativo", format: "boolean" },
+            ]}
           />
 
           <h4>Equipas</h4>

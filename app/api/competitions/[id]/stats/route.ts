@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { getParamId, getResponse, invalidParam } from "@/lib/api";
+import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
 import { RouteContext } from "@/types/api";
 
 export async function GET(request: Request, context: RouteContext) {
@@ -7,6 +7,15 @@ export async function GET(request: Request, context: RouteContext) {
 
   if (!competitionId) {
     return invalidParam("Competition");
+  }
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId, active: true },
+    select: { id: true },
+  });
+
+  if (!competition) {
+    return noFound("Competition");
   }
 
   const rankingScores = await prisma.$queryRaw`

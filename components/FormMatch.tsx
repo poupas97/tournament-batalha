@@ -86,13 +86,13 @@ export default function FormMatch({
         },
         {
           key: "homeTeamId",
-          label: "Equipa da Casa",
+          label: "Equipa visitada",
           type: "select",
           options: teams.map((t) => ({ value: t.id, label: t.name })),
         },
         {
           key: "awayTeamId",
-          label: "Equipa Visitante",
+          label: "Equipa visitante",
           type: "select",
           options: teams.map((t) => ({ value: t.id, label: t.name })),
         },

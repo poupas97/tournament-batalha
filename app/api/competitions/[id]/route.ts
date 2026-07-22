@@ -9,7 +9,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, active: true },
     include: {
       teams: {
         orderBy: { createdAt: "asc" },

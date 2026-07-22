@@ -7,7 +7,14 @@ import { FormEvent, useState, type ReactNode } from "react";
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
   label: string;
-  type?: "text" | "number" | "email" | "password" | "select" | "datetime-local";
+  type?:
+    | "text"
+    | "number"
+    | "email"
+    | "password"
+    | "select"
+    | "datetime-local"
+    | "checkbox";
   placeholder?: string;
   options?: { value: number | string; label: string }[];
 };
@@ -52,7 +59,7 @@ export default function Form<T extends Record<string, unknown>>({
     }, {} as T),
   );
 
-  function handleChange(key: keyof T, value: string) {
+  function handleChange(key: keyof T, value: string | boolean) {
     setValues((current) => ({
       ...(current || ({} as T)),
       [key]: value as T[keyof T],
@@ -106,6 +113,18 @@ export default function Form<T extends Record<string, unknown>>({
                 </option>
               ))}
             </select>
+          ) : field.type === "checkbox" ? (
+            <input
+              type="checkbox"
+              checked={Boolean(get(values, field.key))}
+              onChange={(event) =>
+                handleChange(field.key, event.target.checked)
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
           ) : (
             <input
               type={field.type ?? "text"}

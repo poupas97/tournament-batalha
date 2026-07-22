@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/competitions", label: "Competições" },
-  { href: "/matches", label: "Jogos" },
   { href: "/teams", label: "Equipas" },
+  { href: "/matches", label: "Jogos" },
 ];
 
 export default function Navbar() {

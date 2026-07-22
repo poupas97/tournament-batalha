@@ -8,8 +8,8 @@ const navItems = [
   { href: "/backoffice", label: "Dashboard" },
   { href: "/backoffice/users", label: "Utilizadores" },
   { href: "/backoffice/competitions", label: "Competições" },
-  { href: "/backoffice/matches", label: "Jogos" },
   { href: "/backoffice/teams", label: "Equipas" },
+  { href: "/backoffice/matches", label: "Jogos" },
 ];
 
 export default function BackofficeNavbar() {

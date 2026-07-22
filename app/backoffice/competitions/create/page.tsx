@@ -31,7 +31,20 @@ export default function CreateCompetitionPage() {
       <h1>Criar competição</h1>
 
       <Form<ICompetitionFormValues>
-        fields={[{ key: "name", label: "Nome" }]}
+        fields={[
+          { key: "name", label: "Nome" },
+          {
+            key: "config",
+            label: "Configuracao",
+            type: "select",
+            options: Object.keys(CompetitionConfig).map((it) => ({
+              label: it,
+              value: it,
+            })),
+          },
+          { key: "qualified", label: "Qualificados" },
+          { key: "opponents", label: "Oponentes" },
+        ]}
         onSubmit={handleSubmit}
       />
 
