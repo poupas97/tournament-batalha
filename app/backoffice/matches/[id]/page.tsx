@@ -5,6 +5,7 @@ import Detail from "@/components/Detail";
 import MatchEventGrid from "@/components/MatchEventGrid";
 import Title from "@/components/Title";
 import { MatchEvent, MatchStatus } from "@/generated/prisma";
+import { canTransition } from "@/lib/match";
 import { MatchBEResponse } from "@/types/match";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -108,32 +109,19 @@ export default function ViewMatchPage() {
             style={{
               flex: 2,
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "1rem",
+              gridTemplateColumns: "repeat(5, 1fr)",
+              gap: 16,
             }}
           >
-            {Object.keys(MatchStatus).map((it) => {
-              const key = it as keyof typeof MatchStatus;
-
-              return (
-                <button
-                  key={it}
-                  type="button"
-                  onClick={() => handleChangeStatus(key)}
-                  disabled={false}
-                  style={{
-                    padding: "0.6rem 1rem",
-                    border: "none",
-                    borderRadius: "6px",
-                    background: "#2563eb",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  {it}
-                </button>
-              );
-            })}
+            {Object.values(MatchStatus).map((status) => (
+              <button
+                key={status}
+                disabled={!canTransition(match.status, status)}
+                onClick={() => handleChangeStatus(status)}
+              >
+                {status}
+              </button>
+            ))}
           </div>
 
           <h3>Eventos</h3>

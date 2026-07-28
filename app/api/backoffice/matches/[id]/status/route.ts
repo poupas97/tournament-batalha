@@ -30,7 +30,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Status");
   }
 
-  const existing = await prisma.competition.findUnique({
+  const existing = await prisma.match.findUnique({
     where: { id: matchId },
     select: { id: true },
   });
