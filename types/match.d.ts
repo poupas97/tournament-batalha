@@ -5,19 +5,22 @@ export type IMatchFormValues = {
   date: string;
   round: string;
   competitionId: number;
-  homeTeamId?: number;
-  awayTeamId?: number;
+  homeTeamId?: number | null;
+  awayTeamId?: number | null;
 };
 
 export type MatchBEResponse = {
   id: number;
   date: string;
+  group?: string | null;
   round: string;
   competitionId: number;
-  homeTeamId?: number;
+  homeTeamId?: number | null;
   homeTeam?: TeamBEResponse;
-  awayTeamId?: number;
+  awayTeamId?: number | null;
   awayTeam?: TeamBEResponse;
+  homePlaceholder?: string;
+  awayPlaceholder?: string;
   events?: MatchEvent[];
   status: MatchStatus;
 };

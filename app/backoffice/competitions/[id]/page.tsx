@@ -4,6 +4,7 @@ import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import Title from "@/components/Title";
 import { CompetitionBEResponse } from "@/types/competition";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -89,6 +90,10 @@ export default function ViewCompetitionPage() {
           >
             Sorteio
           </button>
+
+          <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
+            Ver sorteio
+          </Link>
         </>
       )}
     </>

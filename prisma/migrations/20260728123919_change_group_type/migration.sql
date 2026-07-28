@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Match" ALTER COLUMN "group" SET DATA TYPE TEXT;

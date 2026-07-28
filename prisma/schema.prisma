@@ -80,6 +80,7 @@ model Match {
   awayTeamId Int?
   awayTeam Team? @relation("AwayTeam", fields: [awayTeamId], references: [id])
 
+  group String?
   round String
 
   date DateTime
