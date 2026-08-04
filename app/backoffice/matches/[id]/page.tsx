@@ -124,7 +124,6 @@ export default function ViewMatchPage() {
             ))}
           </div>
 
-          <h3>Eventos</h3>
           <div style={{ display: "flex", gap: "2rem" }}>
             <MatchEventGrid
               team={match.homeTeam}

@@ -125,6 +125,10 @@ export async function POST(request: Request, context: RouteContext) {
   const matches = [...initialMatches, ...knockoutMatches];
 
   const createdMatches = await prisma.$transaction(async (tx) => {
+    await tx.matchEvent.deleteMany({
+      where: { match: { competitionId: competition.id } },
+    });
+
     await tx.match.deleteMany({
       where: { competitionId: competition.id },
     });

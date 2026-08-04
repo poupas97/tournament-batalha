@@ -63,8 +63,15 @@ model Competition {
   teams     Team[]
   matches     Match[]
   active    Boolean @default(true)
+  // Competition format:
+  // - LEAGUE: each team plays against `opponents` different opponents.
+  // - GROUP: `opponents` defines the number of teams per group.
   config    CompetitionConfig
-  qualified    Int?
+  // Number of teams that qualify for the knockout stage.
+  // Must be a power of two (2, 4, 8, 16, ...).
+  qualified    Int? 
+  // LEAGUE: number of different opponents each team plays.
+  // GROUP: number of teams in each group.
   opponents    Int?
 }
 

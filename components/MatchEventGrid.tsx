@@ -97,38 +97,45 @@ export default function MatchEventGrid({
   return (
     <div
       style={{
-        flex: 2,
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "1rem",
+        flex: 1,
       }}
     >
-      {team?.players.map((it) => (
-        <div
-          key={it.id}
-          onClick={addPlayerMatchEventModal(it.id)}
-          style={{
-            cursor: "pointer",
-            border: "1px solid black",
-            backgroundColor: "aqua",
-          }}
-        >
-          {it.name}
-        </div>
-      ))}
-      {team?.staffs.map((it) => (
-        <div
-          key={it.id}
-          onClick={addStaffMatchEventModal(it.id)}
-          style={{
-            cursor: "pointer",
-            border: "1px solid black",
-            backgroundColor: "greenyellow",
-          }}
-        >
-          {it.name}
-        </div>
-      ))}
+      <h3>Equipa: {team?.name}</h3>
+      <div
+        style={{
+          flex: 2,
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "1rem",
+        }}
+      >
+        {team?.players.map((it) => (
+          <div
+            key={it.id}
+            onClick={addPlayerMatchEventModal(it.id)}
+            style={{
+              cursor: "pointer",
+              border: "1px solid black",
+              backgroundColor: "aqua",
+            }}
+          >
+            {it.number} - {it.name}
+          </div>
+        ))}
+        {team?.staffs.map((it) => (
+          <div
+            key={it.id}
+            onClick={addStaffMatchEventModal(it.id)}
+            style={{
+              cursor: "pointer",
+              border: "1px solid black",
+              backgroundColor: "greenyellow",
+            }}
+          >
+            {it.name}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -40,3 +40,15 @@ export type KnockoutSeed = {
   group?: string;
   standing: LeagueStanding;
 };
+
+export type CompetitionShuffleGroup = {
+  group?: string;
+  standings: LeagueStanding[];
+  matches: MatchBEResponse[];
+};
+
+export type CompetitionForShuffle = {
+  config: CompetitionConfig;
+  qualified?: number | null;
+  teams: TeamBEResponse[];
+};

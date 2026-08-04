@@ -5,8 +5,16 @@ import {
   Prisma,
   Team,
 } from "@/generated/prisma";
-import { KnockoutSeed, LeagueStanding } from "@/types/competition";
-import { MatchBEResponse } from "@/types/match";
+import {
+  CompetitionForShuffle,
+  KnockoutSeed,
+  LeagueStanding,
+} from "@/types/competition";
+import {
+  MatchBEResponse,
+  MatchForPlaceholders,
+  RoundMatch,
+} from "@/types/match";
 import { TeamBEResponse } from "@/types/team";
 
 const stagesByQualified: Record<number, string[]> = {
@@ -17,19 +25,18 @@ const stagesByQualified: Record<number, string[]> = {
   32: ["1/16 final", "1/8 final", "1/4 final", "1/2 final", "Final"],
 };
 
+const bracketSeeds: Record<number, number[]> = {
+  2: [1, 2],
+  4: [1, 4, 2, 3],
+  8: [1, 8, 4, 5, 2, 7, 3, 6],
+  16: [1, 16, 8, 9, 5, 12, 4, 13, 3, 14, 6, 11, 7, 10, 2, 15],
+  32: [
+    1, 32, 16, 17, 8, 25, 9, 24, 5, 28, 12, 21, 13, 20, 4, 29, 3, 30, 14, 19,
+    11, 22, 6, 27, 7, 26, 10, 23, 15, 18, 2, 31,
+  ],
+};
+
 const knockoutRounds = new Set(Object.values(stagesByQualified).flat());
-
-type CompetitionForShuffle = {
-  config: CompetitionConfig;
-  qualified?: number | null;
-  teams: TeamBEResponse[];
-};
-
-export type CompetitionShuffleGroup = {
-  group?: string;
-  standings: LeagueStanding[];
-  matches: MatchBEResponse[];
-};
 
 export function canCreateLeague(numberOfTeams: number, opponents: number) {
   return (
@@ -44,44 +51,55 @@ export function createGroupMatches(
   competitionId: number,
   teams: Team[],
   teamsPerGroup: number,
-): Prisma.MatchCreateManyInput[] {
+) {
+  const groups = createGroups(teams, teamsPerGroup);
+  const groupRounds = groups.map((group) => createLeagueRounds(group));
   const matches: Prisma.MatchCreateManyInput[] = [];
+  const maxRounds = Math.max(...groupRounds.map((r) => r.length));
 
-  const shuffled = [...teams].sort(() => Math.random() - 0.5);
+  let day = 0;
 
-  const numberOfGroups = Math.ceil(shuffled.length / teamsPerGroup);
-  const baseSize = Math.floor(shuffled.length / numberOfGroups);
-  const remainder = shuffled.length % numberOfGroups;
+  for (let roundIndex = 0; roundIndex < maxRounds; roundIndex++) {
+    for (let groupIndex = 0; groupIndex < groupRounds.length; groupIndex++) {
+      const round = groupRounds[groupIndex][roundIndex];
 
+      if (!round) continue;
+
+      round.forEach(({ home, away }) => {
+        matches.push({
+          competitionId,
+          homeTeamId: home.id,
+          awayTeamId: away.id,
+          group: getGroupLabel(groupIndex + 1),
+          round: `Jornada ${roundIndex + 1}`,
+          date: getMatchDate(day),
+        });
+      });
+
+      day++;
+    }
+  }
+
+  return matches;
+}
+
+function createGroups(teams: Team[], teamsPerGroup: number): Team[][] {
+  const shuffled = shuffle(teams);
+  const totalGroups = Math.ceil(shuffled.length / teamsPerGroup);
+  const baseSize = Math.floor(shuffled.length / totalGroups);
   const groups: Team[][] = [];
 
+  let remainder = shuffled.length % totalGroups;
   let index = 0;
 
-  for (let groupIndex = 0; groupIndex < numberOfGroups; groupIndex++) {
-    const size = baseSize + (groupIndex < remainder ? 1 : 0);
-
+  for (let i = 0; i < totalGroups; i++) {
+    const size = baseSize + (remainder-- > 0 ? 1 : 0);
     groups.push(shuffled.slice(index, index + size));
+
     index += size;
   }
 
-  groups.forEach((group, groupIndex) => {
-    let gameNumber = 1;
-
-    for (let i = 0; i < group.length; i++) {
-      for (let j = i + 1; j < group.length; j++) {
-        matches.push({
-          competitionId,
-          homeTeamId: group[i].id,
-          awayTeamId: group[j].id,
-          group: getGroupLabel(groupIndex + 1),
-          round: `Jogo ${gameNumber++}`,
-          date: new Date(),
-        });
-      }
-    }
-  });
-
-  return matches;
+  return groups;
 }
 
 export function createLeagueMatches(
@@ -89,68 +107,25 @@ export function createLeagueMatches(
   teams: Team[],
   opponents: number,
 ) {
+  const rounds = createLeagueRounds(teams);
   const matches: Prisma.MatchCreateManyInput[] = [];
 
-  const degree = new Map<number, number>();
-  const played = new Set<string>();
-
-  for (const team of teams) {
-    degree.set(team.id, 0);
-  }
-
-  function key(a: number, b: number) {
-    return a < b ? `${a}-${b}` : `${b}-${a}`;
-  }
-
-  function backtrack(): boolean {
-    const team = teams.find((t) => degree.get(t.id)! < opponents);
-
-    if (!team) {
-      return true;
-    }
-
-    for (const opponent of teams) {
-      if (team.id === opponent.id) continue;
-
-      if (degree.get(opponent.id)! >= opponents) continue;
-
-      const pair = key(team.id, opponent.id);
-
-      if (played.has(pair)) continue;
-
-      played.add(pair);
-      degree.set(team.id, degree.get(team.id)! + 1);
-      degree.set(opponent.id, degree.get(opponent.id)! + 1);
-
+  rounds.slice(0, opponents).forEach((round, roundIndex) => {
+    round.forEach(({ home, away }) => {
       matches.push({
         competitionId,
-        homeTeamId: team.id,
-        awayTeamId: opponent.id,
-        round: `Jogo ${matches.length + 1}`,
-        date: new Date(),
+        homeTeamId: home.id,
+        awayTeamId: away.id,
+        round: `Jornada ${roundIndex + 1}`,
+        date: getMatchDate(roundIndex),
       });
-
-      if (backtrack()) {
-        return true;
-      }
-
-      matches.pop();
-      played.delete(pair);
-      degree.set(team.id, degree.get(team.id)! - 1);
-      degree.set(opponent.id, degree.get(opponent.id)! - 1);
-    }
-
-    return false;
-  }
-
-  if (!backtrack()) {
-    throw new Error("Unable to generate league matches.");
-  }
+    });
+  });
 
   return matches;
 }
 
-export function calculateLeagueStandings(
+function calculateLeagueStandings(
   teams: TeamBEResponse[],
   matches: MatchBEResponse[],
 ): LeagueStanding[] {
@@ -238,7 +213,7 @@ export function calculateLeagueStandings(
   return table;
 }
 
-export function calculateGroupStandings(matches: MatchBEResponse[]) {
+function calculateGroupStandings(matches: MatchBEResponse[]) {
   const teamsByGroup = new Map<string, Map<number, TeamBEResponse>>();
   const matchesByGroup = new Map<string, MatchBEResponse[]>();
 
@@ -273,11 +248,11 @@ export function calculateGroupStandings(matches: MatchBEResponse[]) {
     }));
 }
 
-export function getStages(qualified: number): string[] {
+function getStages(qualified: number): string[] {
   return stagesByQualified[qualified] ?? [];
 }
 
-export function isKnockoutRound(round: string) {
+function isKnockoutRound(round: string) {
   return knockoutRounds.has(round);
 }
 
@@ -295,7 +270,7 @@ export function createKnockoutMatches(
       matches.push({
         competitionId,
         round: stage,
-        date: new Date(),
+        date: getMatchDate(matches.length),
       });
     }
 
@@ -329,7 +304,7 @@ function compareStandings(a: LeagueStanding, b: LeagueStanding) {
   return a.team.name.localeCompare(b.team.name);
 }
 
-export function getQualifiedSeeds({
+function getQualifiedSeeds({
   config,
   qualified,
   teams,
@@ -368,11 +343,8 @@ export function getQualifiedSeeds({
     }));
 }
 
-export function createLeagueQualificationSources(qualified: number) {
-  return Array.from(
-    { length: qualified },
-    (_, index) => `${index + 1}.º classificado`,
-  );
+function createLeagueQualificationSources(qualified: number) {
+  return (bracketSeeds[qualified] ?? []).map((seed) => `${seed}.º class`);
 }
 
 export function getMatchScore(match: MatchBEResponse) {
@@ -401,10 +373,7 @@ export function getMatchScore(match: MatchBEResponse) {
   return { homeGoals, awayGoals };
 }
 
-export function groupMatchesByStage(
-  matches: MatchBEResponse[],
-  stages: string[],
-) {
+function groupMatchesByStage(matches: MatchBEResponse[], stages: string[]) {
   const matchesByStage = new Map<string, MatchBEResponse[]>();
 
   for (const match of matches) {
@@ -468,7 +437,7 @@ export function getCompetitionShuffleView(
   };
 }
 
-export function createKnockoutPlaceholders(
+function createKnockoutPlaceholders(
   qualificationSources: string[],
   stages: string[],
 ) {
@@ -485,12 +454,12 @@ export function createKnockoutPlaceholders(
     placeholders.set(
       stage,
       Array.from({ length: matchesInRound }, (_, index) => {
+        const seedIndex = index * 2;
+
         if (stageIndex === 0) {
           return {
-            home: qualificationSources[index] ?? "-",
-            away:
-              qualificationSources[qualificationSources.length - 1 - index] ??
-              "-",
+            home: qualificationSources[seedIndex] ?? "-",
+            away: qualificationSources[seedIndex + 1] ?? "-",
           };
         }
 
@@ -498,8 +467,8 @@ export function createKnockoutPlaceholders(
         const previousMatch = index * 2 + 1;
 
         return {
-          home: `Vencedor ${previousStage} ${previousMatch}`,
-          away: `Vencedor ${previousStage} ${previousMatch + 1}`,
+          home: `Venc ${previousStage} ${previousMatch}`,
+          away: `Venc ${previousStage} ${previousMatch + 1}`,
         };
       }),
     );
@@ -507,13 +476,6 @@ export function createKnockoutPlaceholders(
 
   return placeholders;
 }
-
-type MatchForPlaceholders = {
-  round: string;
-  group?: string | null;
-  homeTeamId?: number | null;
-  awayTeamId?: number | null;
-};
 
 function createGroupQualificationSourcesFromMatches(
   matches: MatchForPlaceholders[],
@@ -547,7 +509,9 @@ function createGroupQualificationSourcesFromMatches(
     position++;
   }
 
-  return sources.slice(0, qualified);
+  const order = bracketSeeds[qualified] ?? [];
+
+  return order.map((seed) => sources[seed - 1]);
 }
 
 export function addKnockoutPlaceholders<T extends MatchForPlaceholders>({
@@ -590,4 +554,63 @@ export function addKnockoutPlaceholders<T extends MatchForPlaceholders>({
 
 function getGroupLabel(index: number) {
   return String.fromCharCode(64 + index);
+}
+
+function getMatchDate(day: number, hour = 9) {
+  const date = new Date();
+
+  date.setHours(hour, 0, 0, 0);
+  date.setDate(date.getDate() + day);
+
+  return date;
+}
+
+function shuffle<T>(items: T[]): T[] {
+  const result = [...items];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
+function createLeagueRounds(teams: Team[]): RoundMatch[][] {
+  const list = [...teams];
+
+  if (list.length % 2 !== 0) {
+    list.push(null as never);
+  }
+
+  const rounds: RoundMatch[][] = [];
+  const totalRounds = list.length - 1;
+  const half = list.length / 2;
+
+  for (let round = 0; round < totalRounds; round++) {
+    const matches: RoundMatch[] = [];
+
+    for (let i = 0; i < half; i++) {
+      const home = list[i];
+      const away = list[list.length - 1 - i];
+
+      if (home && away) {
+        matches.push(
+          round % 2 === 0 ? { home, away } : { home: away, away: home },
+        );
+      }
+    }
+
+    rounds.push(matches);
+
+    const fixed = list[0];
+    const rotating = list.slice(1);
+
+    rotating.unshift(rotating.pop()!);
+
+    list.splice(0, list.length, fixed, ...rotating);
+  }
+
+  return rounds;
 }

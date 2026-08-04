@@ -1,11 +1,11 @@
 import { MatchStatus } from "@/generated/prisma";
-import {
-  CompetitionShuffleGroup,
-  getCompetitionShuffleView,
-  getMatchScore,
-} from "@/lib/shuffle";
+import { getCompetitionShuffleView, getMatchScore } from "@/lib/shuffle";
 import { formatDateTime } from "@/lib/utils";
-import { CompetitionBEResponse, LeagueStanding } from "@/types/competition";
+import {
+  CompetitionBEResponse,
+  CompetitionShuffleGroup,
+  LeagueStanding,
+} from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import { useRouter } from "next/navigation";
 
@@ -82,10 +82,11 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
       >
         <div style={{ fontWeight: 600, flex: 1 }}>
           {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
-          {showScore && <span style={{ float: "right" }}>{homeGoals}</span>}
         </div>
 
-        <div style={{ color: "#666" }}>{showScore ? "Resultado" : "vs"}</div>
+        <div style={{ color: "#666" }}>
+          {showScore ? `${homeGoals} vs ${awayGoals}` : "vs"}
+        </div>
 
         <div
           style={{
@@ -96,7 +97,6 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
           }}
         >
           {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
-          {showScore && <span style={{ float: "right" }}>{awayGoals}</span>}
         </div>
       </div>
     </div>
@@ -211,7 +211,7 @@ function ScheduleMatches({ matches }: { matches: MatchBEResponse[] }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
         gap: 24,
       }}
     >

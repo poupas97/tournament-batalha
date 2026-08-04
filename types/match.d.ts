@@ -24,3 +24,15 @@ export type MatchBEResponse = {
   events?: MatchEvent[];
   status: MatchStatus;
 };
+
+export type MatchForPlaceholders = {
+  round: string;
+  group?: string | null;
+  homeTeamId?: number | null;
+  awayTeamId?: number | null;
+};
+
+export type RoundMatch = {
+  home: Team;
+  away: Team;
+};
