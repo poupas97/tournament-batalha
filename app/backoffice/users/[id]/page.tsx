@@ -16,7 +16,11 @@ export default function ViewUserPage() {
 
   return (
     <>
-      <Title label="Ver utilizador" back />
+      <Title
+        label="Ver utilizador"
+        back
+        edit={`/backoffice/users/${userId}/edit`}
+      />
 
       {loading && <p>A carregar utilizador...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

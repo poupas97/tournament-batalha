@@ -35,7 +35,11 @@ export default function ViewCompetitionPage() {
 
   return (
     <>
-      <Title label="Ver competição" back />
+      <Title
+        label="Ver competição"
+        back
+        edit={`/backoffice/competitions/${competitionId}/edit`}
+      />
 
       {loading && <p>A carregar competição...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

@@ -86,7 +86,7 @@ export default function Form<T extends Record<string, unknown>>({
   return (
     <form
       onSubmit={handleSubmit}
-      style={{ maxWidth: "480px", display: "grid", gap: "1rem" }}
+      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
     >
       {fields.map((field) => (
         <label

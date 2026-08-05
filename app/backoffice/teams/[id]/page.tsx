@@ -16,7 +16,11 @@ export default function ViewTeamPage() {
 
   return (
     <>
-      <Title label="Ver equipa" back />
+      <Title
+        label="Ver equipa"
+        back
+        edit={`/backoffice/teams/${teamId}/edit`}
+      />
 
       {loading && <p>A carregar equipa...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

@@ -147,7 +147,11 @@ export default function ViewMatchPage() {
 
   return (
     <>
-      <Title label="Ver jogo" back />
+      <Title
+        label="Ver jogo"
+        back
+        edit={`/backoffice/matches/${matchId}/edit`}
+      />
 
       {loading && <p>A carregar jogo...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
