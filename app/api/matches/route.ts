@@ -3,7 +3,7 @@ import { getResponse } from "@/lib/api";
 
 export async function GET(request: Request) {
   const matches = await prisma.match.findMany({
-    orderBy: [{ competition: { name: "asc" } }, { round: "asc" }],
+    orderBy: [{ competition: { name: "asc" } }, { date: "asc" }],
     include: {
       competition: true,
       homeTeam: true,

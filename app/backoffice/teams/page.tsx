@@ -2,8 +2,9 @@
 
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type TeamSummary = {
   id: number;
@@ -16,26 +17,11 @@ type TeamSummary = {
 };
 
 export default function BackofficeTeamsPage() {
-  const [teams, setTeams] = useState<TeamSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/backoffice/teams")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setTeams(data);
-      })
-      .catch(() => {
-        setError("Erro ao carregar equipas.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error } = useGetState<TeamSummary[]>(
+    "/api/backoffice/teams",
+  );
 
   return (
     <>
@@ -59,36 +45,17 @@ export default function BackofficeTeamsPage() {
       {loading && <p>A carregar equipas...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
+            data={data}
+            clickableRow={(it) => router.push(`/backoffice/teams/${it.id}`)}
             columns={[
               { key: "name", header: "Nome" },
               { key: "competition.name", header: "Competição" },
               { key: "_count.players", header: "Jogadores" },
               { key: "_count.staffs", header: "Staff" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <>
-                    <Link
-                      href={`/backoffice/teams/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Ver
-                    </Link>
-                    <Link
-                      href={`/backoffice/teams/edit/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Editar
-                    </Link>
-                  </>
-                ),
-              },
             ]}
-            data={teams}
           />
         </div>
       )}

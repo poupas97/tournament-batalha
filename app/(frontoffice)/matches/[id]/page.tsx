@@ -11,41 +11,22 @@ import {
 import { MatchBEResponse } from "@/types/match";
 import { SocketEvents } from "@/enums/socket";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   NotifyAddMatchEvent,
   NotifyMatchStatus,
   NotifyRemoveMatchEvent,
 } from "@/types/socket";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 
 export default function ViewMatchPage() {
   const params = useParams();
   const matchId = params?.id;
-  const [match, setMatch] = useState<MatchBEResponse | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadMatch = () => {
-      if (!matchId) return;
-
-      fetch(`/api/matches/${matchId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            alert(data.error);
-            return;
-          }
-          setMatch(data);
-        })
-        .catch(() => {
-          alert("Erro ao carregar o jogo.");
-        })
-        .finally(() => setLoading(false));
-    };
-
-    loadMatch();
-  }, [matchId]);
+  const { data, loading, error, setData } = useGetState<MatchBEResponse>(
+    matchId ? `/api/matches/${matchId}` : undefined,
+  );
 
   useEffect(() => {
     const socket = getSocket();
@@ -60,13 +41,13 @@ export default function ViewMatchPage() {
     const offStatus = onSocket(SocketEvents.MATCH_STATUS, (payload) => {
       const { status } = payload as NotifyMatchStatus;
 
-      setMatch((current) => (current ? { ...current, status } : null));
+      setData({ status });
     });
 
     const offAdd = onSocket(SocketEvents.ADD_MATCH_EVENT, (payload) => {
       const event = payload as NotifyAddMatchEvent;
 
-      setMatch((current) => {
+      setData((current) => {
         if (!current) return null;
 
         return {
@@ -79,7 +60,7 @@ export default function ViewMatchPage() {
     const offRemove = onSocket(SocketEvents.REMOVE_MATCH_EVENT, (payload) => {
       const { id } = payload as NotifyRemoveMatchEvent;
 
-      setMatch((current) => {
+      setData((current) => {
         if (!current) return null;
 
         return {
@@ -109,11 +90,12 @@ export default function ViewMatchPage() {
       <Title label="Ver Jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && match && (
+      {!loading && data && (
         <>
           <Detail<MatchBEResponse>
-            data={match}
+            data={data}
             fields={[
               { key: "competition.name", label: "Competição" },
               { key: "competition.config", label: "Configuração" },
@@ -128,9 +110,9 @@ export default function ViewMatchPage() {
           />
 
           <h3>Tabela de Eventos</h3>
-          {match.events && (
+          {data.events && (
             <DataTable
-              data={match.events}
+              data={data.events}
               columns={[
                 { key: "type", header: "Tipo" },
                 { key: "minute", header: "Minuto" },

@@ -51,17 +51,15 @@ export function createGroupMatches(
   competitionId: number,
   teams: Team[],
   teamsPerGroup: number,
-) {
+): Prisma.MatchCreateManyInput[] {
   const groups = createGroups(teams, teamsPerGroup);
-  const groupRounds = groups.map((group) => createLeagueRounds(group));
+  const roundsPerGroup = groups.map((group) => createLeagueRounds(group));
   const matches: Prisma.MatchCreateManyInput[] = [];
-  const maxRounds = Math.max(...groupRounds.map((r) => r.length));
-
-  let day = 0;
+  const maxRounds = Math.max(...roundsPerGroup.map((rounds) => rounds.length));
 
   for (let roundIndex = 0; roundIndex < maxRounds; roundIndex++) {
-    for (let groupIndex = 0; groupIndex < groupRounds.length; groupIndex++) {
-      const round = groupRounds[groupIndex][roundIndex];
+    for (let groupIndex = 0; groupIndex < roundsPerGroup.length; groupIndex++) {
+      const round = roundsPerGroup[groupIndex][roundIndex];
 
       if (!round) continue;
 
@@ -72,11 +70,9 @@ export function createGroupMatches(
           awayTeamId: away.id,
           group: getGroupLabel(groupIndex + 1),
           round: `Jornada ${roundIndex + 1}`,
-          date: getMatchDate(day),
+          date: getMatchDate(matches.length),
         });
       });
-
-      day++;
     }
   }
 
@@ -106,7 +102,7 @@ export function createLeagueMatches(
   competitionId: number,
   teams: Team[],
   opponents: number,
-) {
+): Prisma.MatchCreateManyInput[] {
   const rounds = createLeagueRounds(teams);
   const matches: Prisma.MatchCreateManyInput[] = [];
 
@@ -117,7 +113,7 @@ export function createLeagueMatches(
         homeTeamId: home.id,
         awayTeamId: away.id,
         round: `Jornada ${roundIndex + 1}`,
-        date: getMatchDate(roundIndex),
+        date: getMatchDate(matches.length),
       });
     });
   });
@@ -556,13 +552,18 @@ function getGroupLabel(index: number) {
   return String.fromCharCode(64 + index);
 }
 
-function getMatchDate(day: number, hour = 9) {
-  const date = new Date();
+function getMatchDate(index: number, intervalMinutes = 60, startDate?: Date) {
+  const start = startDate ? new Date(startDate) : new Date();
 
-  date.setHours(hour, 0, 0, 0);
-  date.setDate(date.getDate() + day);
+  // by default, start from the next day at 9:00 AM
+  if (!startDate) {
+    start.setDate(start.getDate() + 1);
+    start.setHours(9, 0, 0, 0);
+  }
 
-  return date;
+  start.setMinutes(start.getMinutes() + index * intervalMinutes);
+
+  return start;
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -595,11 +596,11 @@ function createLeagueRounds(teams: Team[]): RoundMatch[][] {
       const home = list[i];
       const away = list[list.length - 1 - i];
 
-      if (home && away) {
-        matches.push(
-          round % 2 === 0 ? { home, away } : { home: away, away: home },
-        );
-      }
+      if (!home || !away) continue;
+
+      matches.push(
+        round % 2 === 0 ? { home, away } : { home: away, away: home },
+      );
     }
 
     rounds.push(matches);
@@ -608,7 +609,6 @@ function createLeagueRounds(teams: Team[]): RoundMatch[][] {
     const rotating = list.slice(1);
 
     rotating.unshift(rotating.pop()!);
-
     list.splice(0, list.length, fixed, ...rotating);
   }
 

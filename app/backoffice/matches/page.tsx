@@ -2,8 +2,9 @@
 
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type MatchSummary = {
   id: number;
@@ -15,26 +16,11 @@ type MatchSummary = {
 };
 
 export default function BackofficeMatchesPage() {
-  const [matches, setMatches] = useState<MatchSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/backoffice/matches")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setMatches(data);
-      })
-      .catch(() => {
-        setError("Erro ao carregar jogos.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error } = useGetState<MatchSummary[]>(
+    "/api/backoffice/matches",
+  );
 
   return (
     <>
@@ -58,37 +44,18 @@ export default function BackofficeMatchesPage() {
       {loading && <p>A carregar jogos...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
+            data={data}
+            clickableRow={(it) => router.push(`/backoffice/matches/${it.id}`)}
             columns={[
               { key: "competition.name", header: "Competição" },
               { key: "date", header: "Data", format: "date" },
               { key: "round", header: "Ronda" },
               { key: "homeTeam.name", header: "Equipa da Casa" },
               { key: "awayTeam.name", header: "Equipa Visitante" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <>
-                    <Link
-                      href={`/backoffice/matches/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Ver
-                    </Link>
-                    <Link
-                      href={`/backoffice/matches/edit/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Editar
-                    </Link>
-                  </>
-                ),
-              },
             ]}
-            data={matches}
           />
         </div>
       )}

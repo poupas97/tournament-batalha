@@ -2,38 +2,22 @@
 
 import Form from "@/components/Form";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import {
   IUserFormValues,
   IUserPasswordFormValues,
   UserBEResponse,
 } from "@/types/user";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function EditUserPage() {
   const params = useParams();
   const router = useRouter();
   const userId = params?.id;
-  const [user, setUser] = useState<UserBEResponse | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!userId) return;
-
-    fetch(`/api/backoffice/users/${userId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setUser(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a utilizador.");
-      })
-      .finally(() => setLoading(false));
-  }, [userId]);
+  const { data, loading, error } = useGetState<UserBEResponse>(
+    userId ? `/api/backoffice/users/${userId}` : undefined,
+  );
 
   async function handleSubmit(values: IUserFormValues) {
     const response = await fetch(`/api/backoffice/users/${userId}`, {
@@ -81,11 +65,12 @@ export default function EditUserPage() {
       <Title label="Editar utilizador" back />
 
       {loading && <p>A carregar utilizador...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && user && (
+      {!loading && data && (
         <>
           <Form<IUserFormValues>
-            initialValues={user}
+            initialValues={data}
             fields={[
               { key: "name", label: "Nome" },
               { key: "email", label: "Email", type: "email" },

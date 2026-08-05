@@ -2,34 +2,18 @@
 
 import FormMatch from "@/components/FormMatch";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function EditMatchPage() {
   const params = useParams();
   const router = useRouter();
   const matchId = params?.id;
-  const [match, setMatch] = useState<MatchBEResponse | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!matchId) return;
-
-    fetch(`/api/backoffice/matches/${matchId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setMatch(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a jogos.");
-      })
-      .finally(() => setLoading(false));
-  }, [matchId]);
+  const { data, loading, error } = useGetState<MatchBEResponse>(
+    matchId ? `/api/backoffice/matches/${matchId}` : undefined,
+  );
 
   async function handleSubmit(values: IMatchFormValues) {
     const response = await fetch(`/api/backoffice/matches/${matchId}`, {
@@ -54,9 +38,10 @@ export default function EditMatchPage() {
       <Title label="Editar jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && match && (
-        <FormMatch initialValues={match} handleSubmit={handleSubmit} />
+      {!loading && data && (
+        <FormMatch initialValues={data} handleSubmit={handleSubmit} />
       )}
     </>
   );

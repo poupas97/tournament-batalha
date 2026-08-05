@@ -2,35 +2,15 @@
 
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CompetitionsPage() {
-  const [competitions, setCompetitions] = useState<CompetitionBEResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    async function loadCompetitions() {
-      try {
-        const response = await fetch("/api/competitions");
-
-        if (!response.ok) {
-          throw new Error("Não foi possível carregar as competições.");
-        }
-
-        const data = (await response.json()) as CompetitionBEResponse[];
-        setCompetitions(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadCompetitions();
-  }, []);
+  const { data, loading, error } =
+    useGetState<CompetitionBEResponse[]>("/api/competitions");
 
   return (
     <>
@@ -39,25 +19,14 @@ export default function CompetitionsPage() {
       {loading && <p>A carregar competições...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
-            data={competitions}
+            data={data}
+            clickableRow={(it) => router.push(`/competitions/${it.id}`)}
             columns={[
               { key: "name", header: "Nome" },
               { key: "_count.teams", header: "Equipas" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <Link
-                    href={`/competitions/${team.id}`}
-                    style={{ color: "#2563eb" }}
-                  >
-                    Ver
-                  </Link>
-                ),
-              },
             ]}
           />
         </div>

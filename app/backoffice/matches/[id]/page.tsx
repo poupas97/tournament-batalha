@@ -2,66 +2,100 @@
 
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
+import Form from "@/components/Form";
 import MatchEventGrid from "@/components/MatchEventGrid";
+import { useModal } from "@/components/ModalProvider";
 import Title from "@/components/Title";
-import { MatchEvent, MatchStatus } from "@/generated/prisma";
+import { MatchEvent, MatchEventType, MatchStatus } from "@/generated/prisma";
+import useGetState from "@/hooks/useGetState";
 import { canTransition } from "@/lib/match";
 import { MatchBEResponse } from "@/types/match";
+import { IMatchEventFormValues } from "@/types/match-event";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 
 export default function ViewMatchPage() {
   const params = useParams();
   const matchId = params?.id;
 
-  const [match, setMatch] = useState<MatchBEResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error, setData } = useGetState<MatchBEResponse>(
+    `/api/backoffice/matches/${matchId}`,
+  );
 
-  const loadMatch = useCallback(async () => {
-    if (!matchId) return;
+  const { openModal, closeModal } = useModal();
 
-    try {
-      const response = await fetch(`/api/backoffice/matches/${matchId}`, {
-        cache: "no-store",
-      });
-      const data = await response.json();
-
-      if (data.error) {
-        alert(data.error);
-        return;
-      }
-
-      setMatch(data);
-    } catch {
-      alert("Erro ao carregar a jogo.");
-    } finally {
-      setLoading(false);
-    }
-  }, [matchId]);
-
-  useEffect(() => {
-    loadMatch();
-  }, [loadMatch]);
-
-  async function handleChangeStatus(status: MatchStatus) {
+  const handleChangeStatus = async (status: MatchStatus) => {
     const response = await fetch(`/api/backoffice/matches/${matchId}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar o status." }));
-      alert(error.error ?? "Erro ao guardar o status.");
+    const responseData = (await response
+      .json()
+      .catch(() => null)) as MatchBEResponse | null;
+
+    if (!responseData) {
+      alert("Erro ao guardar o status.");
       return;
     }
 
-    await loadMatch();
-  }
+    setData((prev) => (prev ? { ...prev, ...responseData } : prev));
+  };
 
-  async function handleRemoveEvent(matchEvent: MatchEvent) {
+  const handleAddEvent =
+    (key: "playerId" | "staffId", id: number, teamId: number) =>
+    async (values: IMatchEventFormValues) => {
+      const response = await fetch("/api/backoffice/match-events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, teamId, matchId, [key]: id }),
+      });
+
+      const responseData = (await response
+        .json()
+        .catch(() => null)) as MatchEvent | null;
+
+      if (!responseData) {
+        alert("Erro ao guardar evento.");
+        return;
+      }
+
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              events: [responseData, ...(prev.events || []), responseData],
+            }
+          : prev,
+      );
+
+      closeModal();
+    };
+
+  const addStaffMatchEvent = (staffId: number, teamId: number) => () => {
+    openModal({
+      title: "Adicionar evento",
+      content: (
+        <Form<IMatchEventFormValues>
+          fields={[
+            {
+              key: "type",
+              label: "Tipo",
+              type: "select",
+              options: [
+                MatchEventType.YELLOW_CARD,
+                MatchEventType.RED_CARD,
+              ].map((it) => ({ label: it, value: it })),
+            },
+            { key: "minute", label: "Minuto" },
+          ]}
+          onSubmit={handleAddEvent("staffId", staffId, teamId)}
+        />
+      ),
+    });
+  };
+
+  const handleRemoveEvent = async (matchEvent: MatchEvent) => {
     const response = await fetch(
       `/api/backoffice/match-events/${matchEvent.id}`,
       {
@@ -78,19 +112,50 @@ export default function ViewMatchPage() {
       return;
     }
 
-    await loadMatch();
-  }
+    setData((prev) =>
+      prev
+        ? {
+            ...prev,
+            events: prev.events?.filter((it) => it.id !== matchEvent.id),
+          }
+        : prev,
+    );
+  };
+
+  const addPlayerMatchEvent = (playerId: number, teamId: number) => () => {
+    openModal({
+      title: "Adicionar evento",
+      content: (
+        <Form<IMatchEventFormValues>
+          fields={[
+            {
+              key: "type",
+              label: "Tipo",
+              type: "select",
+              options: Object.keys(MatchEventType).map((it) => ({
+                label: it,
+                value: it,
+              })),
+            },
+            { key: "minute", label: "Minuto" },
+          ]}
+          onSubmit={handleAddEvent("playerId", playerId, teamId)}
+        />
+      ),
+    });
+  };
 
   return (
     <>
       <Title label="Ver jogo" back />
 
       {loading && <p>A carregar jogo...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && match && (
+      {!loading && data && (
         <>
           <Detail<MatchBEResponse>
-            data={match}
+            data={data}
             fields={[
               { key: "competition.name", label: "Competição" },
               { key: "competition.config", label: "Configuração" },
@@ -116,7 +181,7 @@ export default function ViewMatchPage() {
             {Object.values(MatchStatus).map((status) => (
               <button
                 key={status}
-                disabled={!canTransition(match.status, status)}
+                disabled={!canTransition(data.status, status)}
                 onClick={() => handleChangeStatus(status)}
               >
                 {status}
@@ -126,21 +191,21 @@ export default function ViewMatchPage() {
 
           <div style={{ display: "flex", gap: "2rem" }}>
             <MatchEventGrid
-              team={match.homeTeam}
-              matchId={matchId as string}
-              loadMatch={loadMatch}
+              team={data.homeTeam}
+              addPlayerMatchEvent={addPlayerMatchEvent}
+              addStaffMatchEvent={addStaffMatchEvent}
             />
             <MatchEventGrid
-              team={match.awayTeam}
-              matchId={matchId as string}
-              loadMatch={loadMatch}
+              team={data.awayTeam}
+              addPlayerMatchEvent={addPlayerMatchEvent}
+              addStaffMatchEvent={addStaffMatchEvent}
             />
           </div>
 
           <h3>Tabela de Eventos</h3>
-          {match.events && (
+          {data.events && (
             <DataTable
-              data={match.events}
+              data={data.events}
               columns={[
                 { key: "type", header: "Tipo" },
                 { key: "minute", header: "Minuto" },

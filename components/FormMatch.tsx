@@ -1,10 +1,10 @@
 "use client";
 
 import Form from "@/components/Form";
+import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
 import { TeamBEResponse } from "@/types/team";
-import { useEffect, useState } from "react";
 
 type FormMatchProps = {
   initialValues?: MatchBEResponse;
@@ -15,43 +15,27 @@ export default function FormMatch({
   initialValues,
   handleSubmit,
 }: FormMatchProps) {
-  const [competitions, setCompetitions] = useState<CompetitionBEResponse[]>([]);
-  const [teams, setTeams] = useState<TeamBEResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: competitions,
+    loading: competitionsLoading,
+    error: competitionsError,
+  } = useGetState<CompetitionBEResponse[]>("/api/backoffice/competitions");
 
-  useEffect(() => {
-    fetch(`/api/backoffice/competitions`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setCompetitions(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar as competições.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const {
+    data: teams,
+    loading: teamsLoading,
+    error: teamsError,
+  } = useGetState<TeamBEResponse[]>("/api/backoffice/teams");
 
-  useEffect(() => {
-    fetch(`/api/backoffice/teams`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setTeams(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar as equipas.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading || !competitions.length || !teams.length) return;
+  if (
+    teamsLoading ||
+    competitionsLoading ||
+    !competitions?.length ||
+    !teams?.length ||
+    competitionsError ||
+    teamsError
+  )
+    return;
 
   return (
     <Form<IMatchFormValues>

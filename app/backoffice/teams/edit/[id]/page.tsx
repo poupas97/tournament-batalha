@@ -2,6 +2,7 @@
 
 import FormTeam from "@/components/FormTeam";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { ITeamFormValues, TeamBEResponse } from "@/types/team";
 import { useParams, useRouter } from "next/navigation";
@@ -11,41 +12,18 @@ export default function EditTeamPage() {
   const params = useParams();
   const router = useRouter();
   const teamId = params?.id;
-  const [team, setTeam] = useState<TeamBEResponse | null>(null);
-  const [competitions, setCompetitions] = useState<CompetitionBEResponse[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!teamId) return;
+  const {
+    data: teamData,
+    loading: teamLoading,
+    error: teamError,
+  } = useGetState<TeamBEResponse>(`/api/backoffice/teams/${teamId}`);
 
-    fetch(`/api/backoffice/teams/${teamId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setTeam(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a equipa.");
-      })
-      .finally(() => setLoading(false));
-
-    fetch(`/api/backoffice/competitions`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setCompetitions(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar as competições.");
-      })
-      .finally(() => setLoading(false));
-  }, [teamId]);
+  const {
+    data: competitionsData,
+    loading: competitionsLoading,
+    error: competitionsError,
+  } = useGetState<CompetitionBEResponse[]>("/api/backoffice/competitions");
 
   async function handleSubmit(values: ITeamFormValues) {
     const response = await fetch(`/api/backoffice/teams/${teamId}`, {
@@ -69,13 +47,19 @@ export default function EditTeamPage() {
     <>
       <Title label="Editar equipa" back />
 
-      {loading && <p>A carregar equipa...</p>}
+      {teamLoading && <p>A carregar equipa...</p>}
+      {teamError && <p style={{ color: "crimson" }}>{teamError}</p>}
 
-      {!loading && team && competitions && (
+      {competitionsLoading && <p>A carregar competições...</p>}
+      {competitionsError && (
+        <p style={{ color: "crimson" }}>{competitionsError}</p>
+      )}
+
+      {!teamLoading && teamData && competitionsData && (
         <FormTeam
-          initialValues={team}
+          initialValues={teamData}
           handleSubmit={handleSubmit}
-          competitions={competitions}
+          competitions={competitionsData}
         />
       )}
     </>

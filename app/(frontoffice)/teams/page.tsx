@@ -2,8 +2,8 @@
 
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import useGetState from "@/hooks/useGetState";
+import { useRouter } from "next/navigation";
 
 type TeamSummary = {
   id: number;
@@ -16,30 +16,9 @@ type TeamSummary = {
 };
 
 export default function TeamsPage() {
-  const [teams, setTeams] = useState<TeamSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    async function loadTeams() {
-      try {
-        const response = await fetch("/api/teams");
-
-        if (!response.ok) {
-          throw new Error("Não foi possível carregar as equipas.");
-        }
-
-        const data = (await response.json()) as TeamSummary[];
-        setTeams(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadTeams();
-  }, []);
+  const { data, loading, error } = useGetState<TeamSummary[]>("/api/teams");
 
   return (
     <>
@@ -48,24 +27,16 @@ export default function TeamsPage() {
       {loading && <p>A carregar equipas...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
-            data={teams}
+            data={data}
+            clickableRow={(it) => router.push(`/teams/${it.id}`)}
             columns={[
               { key: "name", header: "Nome" },
               { key: "competition.name", header: "Competição" },
               { key: "_count.players", header: "Jogadores" },
               { key: "_count.staffs", header: "Staff" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <Link href={`/teams/${team.id}`} style={{ color: "#2563eb" }}>
-                    Ver
-                  </Link>
-                ),
-              },
             ]}
           />
         </div>

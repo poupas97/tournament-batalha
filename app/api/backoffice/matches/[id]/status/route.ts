@@ -41,14 +41,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const match = await prisma.match.update({
     where: { id: matchId },
-    data: {
-      status,
-    },
-    include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
-    },
+    data: { status },
   });
 
   notifyMatchStatus(matchId, { status: match.status });

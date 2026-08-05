@@ -2,35 +2,15 @@
 
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { MatchBEResponse } from "@/types/match";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MatchesPage() {
-  const [matches, setMatches] = useState<MatchBEResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    async function loadTeams() {
-      try {
-        const response = await fetch("/api/matches");
-
-        if (!response.ok) {
-          throw new Error("Não foi possível carregar as jogos.");
-        }
-
-        const data = (await response.json()) as MatchBEResponse[];
-        setMatches(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadTeams();
-  }, []);
+  const { data, loading, error } =
+    useGetState<MatchBEResponse[]>("/api/matches");
 
   return (
     <>
@@ -39,25 +19,17 @@ export default function MatchesPage() {
       {loading && <p>A carregar jogos...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
-            data={matches}
+            data={data}
+            clickableRow={(it) => router.push(`/matches/${it.id}`)}
             columns={[
               { key: "competition.name", header: "Competição" },
               { key: "date", header: "Data", format: "date" },
               { key: "round", header: "Ronda" },
               { key: "homeTeam.name", header: "Equipa da Casa" },
               { key: "awayTeam.name", header: "Equipa Visitante" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (it) => (
-                  <Link href={`/matches/${it.id}`} style={{ color: "#2563eb" }}>
-                    Ver
-                  </Link>
-                ),
-              },
             ]}
           />
         </div>

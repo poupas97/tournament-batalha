@@ -3,36 +3,18 @@
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function ViewCompetitionPage() {
   const params = useParams();
   const competitionId = params?.id;
-  const [competition, setCompetition] = useState<CompetitionBEResponse | null>(
-    null,
+
+  const { data, loading, error } = useGetState<CompetitionBEResponse>(
+    competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
   );
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!competitionId) return;
-
-    fetch(`/api/backoffice/competitions/${competitionId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setCompetition(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a competição.");
-      })
-      .finally(() => setLoading(false));
-  }, [competitionId]);
 
   async function onShuffle() {
     fetch(`/api/backoffice/competitions/${competitionId}/shuffle`, {
@@ -48,8 +30,7 @@ export default function ViewCompetitionPage() {
       })
       .catch(() => {
         alert("Erro ao fazer sorteio.");
-      })
-      .finally(() => setLoading(false));
+      });
   }
 
   return (
@@ -57,11 +38,12 @@ export default function ViewCompetitionPage() {
       <Title label="Ver competição" back />
 
       {loading && <p>A carregar competição...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && competition && (
+      {!loading && data && (
         <>
           <Detail<CompetitionBEResponse>
-            data={competition}
+            data={data}
             fields={[
               { key: "name", label: "Nome" },
               { key: "config", label: "Configuração" },
@@ -73,7 +55,7 @@ export default function ViewCompetitionPage() {
 
           <h4>Equipas</h4>
           <DataTable
-            data={competition.teams}
+            data={data.teams}
             columns={[{ key: "name", header: "Nome" }]}
           />
 

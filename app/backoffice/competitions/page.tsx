@@ -3,8 +3,9 @@
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
+import useGetState from "@/hooks/useGetState";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type CompetitionSummary = {
   id: number;
@@ -19,26 +20,11 @@ type CompetitionSummary = {
 };
 
 export default function BackofficeCompetitionsPage() {
-  const [competitions, setCompetitions] = useState<CompetitionSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/backoffice/competitions")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setCompetitions(data);
-      })
-      .catch(() => {
-        setError("Erro ao carregar competições.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error } = useGetState<CompetitionSummary[]>(
+    "/api/backoffice/competitions",
+  );
 
   return (
     <>
@@ -62,9 +48,13 @@ export default function BackofficeCompetitionsPage() {
       {loading && <p>A carregar competições...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
+            data={data}
+            clickableRow={(it) =>
+              router.push(`/backoffice/competitions/${it.id}`)
+            }
             columns={[
               { key: "name", header: "Nome" },
               { key: "config", header: "Configuração" },
@@ -72,28 +62,7 @@ export default function BackofficeCompetitionsPage() {
               { key: "opponents", header: "Oponentes" },
               { key: "active", header: "Ativo", format: "boolean" },
               { key: "_count.teams", header: "Equipas" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <>
-                    <Link
-                      href={`/backoffice/competitions/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Ver
-                    </Link>
-                    <Link
-                      href={`/backoffice/competitions/edit/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Editar
-                    </Link>
-                  </>
-                ),
-              },
             ]}
-            data={competitions}
           />
         </div>
       )}

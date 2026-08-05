@@ -12,12 +12,14 @@ type DataTableProps<T extends Record<string, unknown>> = {
   columns: Column<T>[];
   data: T[];
   emptyMessage?: string;
+  clickableRow?: (item: T) => void;
 };
 
 export default function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
   emptyMessage = "Sem dados para mostrar.",
+  clickableRow,
 }: DataTableProps<T>) {
   if (!data.length) {
     return <p>{emptyMessage}</p>;
@@ -43,7 +45,14 @@ export default function DataTable<T extends Record<string, unknown>>({
       </thead>
       <tbody>
         {data.map((item, index) => (
-          <tr key={index} style={{ borderBottom: "1px solid #eaeef2" }}>
+          <tr
+            key={index}
+            onClick={() => clickableRow?.(item)}
+            style={{
+              cursor: clickableRow ? "pointer" : "default",
+              borderBottom: "1px solid #eaeef2",
+            }}
+          >
             {columns.map((it) => {
               const value = get(item, it.key, "");
 

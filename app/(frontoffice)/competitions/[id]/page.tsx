@@ -3,10 +3,10 @@
 import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 type Stats = {
   rankingScores:
@@ -39,71 +39,47 @@ type Stats = {
 export default function ViewCompetitionPage() {
   const params = useParams();
   const competitionId = params?.id;
-  const [competition, setTeam] = useState<CompetitionBEResponse | null>(null);
-  const [stats, setStats] = useState<Stats>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!competitionId) return;
+  const {
+    data: competitionData,
+    loading: competitionLoading,
+    error: competitionError,
+  } = useGetState<CompetitionBEResponse>(
+    competitionId ? `/api/competitions/${competitionId}` : undefined,
+  );
 
-    fetch(`/api/competitions/${competitionId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setTeam(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a equipa.");
-      })
-      .finally(() => setLoading(false));
-  }, [competitionId]);
-
-  useEffect(() => {
-    async function loadStats() {
-      try {
-        const response = await fetch(
-          `/api/competitions/${competitionId}/stats`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Não foi possível carregar as estatisticas.");
-        }
-
-        const data = (await response.json()) as Stats;
-        setStats(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadStats();
-  }, [competitionId]);
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+  } = useGetState<Stats>(
+    competitionId ? `/api/competitions/${competitionId}/stats` : undefined,
+  );
 
   return (
     <>
       <Title label="Ver competição" back />
 
-      {loading && <p>A carregar competição...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {competitionLoading && <p>A carregar competição...</p>}
+      {competitionError && (
+        <p style={{ color: "crimson" }}>{competitionError}</p>
+      )}
 
-      {!loading && competition && (
+      {statsLoading && <p>A carregar estatísticas...</p>}
+      {statsError && <p style={{ color: "crimson" }}>{statsError}</p>}
+
+      {!competitionLoading && competitionData && (
         <Detail<CompetitionBEResponse>
-          data={competition}
+          data={competitionData}
           fields={[{ key: "name", label: "Nome da competição" }]}
         />
       )}
 
-      {!loading && stats && (
+      {!statsLoading && statsData && (
         <>
           <h4>Classificações</h4>
           <DataTable
-            data={stats.rankingTeams || []}
+            data={statsData.rankingTeams || []}
             columns={[
               { key: "position", header: "º" },
               {
@@ -130,7 +106,7 @@ export default function ViewCompetitionPage() {
 
           <h4>Marcadores</h4>
           <DataTable
-            data={stats.rankingScores || []}
+            data={statsData.rankingScores || []}
             columns={[
               { key: "position", header: "º" },
               {

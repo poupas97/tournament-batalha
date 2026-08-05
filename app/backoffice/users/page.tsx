@@ -3,30 +3,14 @@
 import DataTable from "@/components/DataTable";
 import Title from "@/components/Title";
 import { User } from "@/generated/prisma";
+import useGetState from "@/hooks/useGetState";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function BackofficeUsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/backoffice/users")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setUsers(data);
-      })
-      .catch(() => {
-        setError("Erro ao carregar utilizadores.");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error } = useGetState<User[]>("/api/backoffice/users");
 
   return (
     <>
@@ -50,33 +34,14 @@ export default function BackofficeUsersPage() {
       {loading && <p>A carregar utilizadores...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && data && (
         <div style={{ marginTop: "1.5rem" }}>
           <DataTable
-            data={users}
+            data={data}
+            clickableRow={(it) => router.push(`/backoffice/users/${it.id}`)}
             columns={[
               { key: "name", header: "Nome" },
               { key: "email", header: "Email" },
-              {
-                key: "actions",
-                header: "Ações",
-                render: (team) => (
-                  <>
-                    <Link
-                      href={`/backoffice/users/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Ver
-                    </Link>
-                    <Link
-                      href={`/backoffice/users/edit/${team.id}`}
-                      style={{ color: "#2563eb" }}
-                    >
-                      Editar
-                    </Link>
-                  </>
-                ),
-              },
             ]}
           />
         </div>

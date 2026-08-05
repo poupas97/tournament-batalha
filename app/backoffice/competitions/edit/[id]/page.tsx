@@ -3,39 +3,21 @@
 import Form from "@/components/Form";
 import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
+import useGetState from "@/hooks/useGetState";
 import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function EditCompetitionPage() {
   const params = useParams();
   const router = useRouter();
   const competitionId = params?.id;
-  const [competition, setCompetition] = useState<CompetitionBEResponse | null>(
-    null,
+
+  const { data, loading, error } = useGetState<CompetitionBEResponse>(
+    competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
   );
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!competitionId) return;
-
-    fetch(`/api/backoffice/competitions/${competitionId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        setCompetition(data);
-      })
-      .catch(() => {
-        alert("Erro ao carregar a competição.");
-      })
-      .finally(() => setLoading(false));
-  }, [competitionId]);
 
   async function handleSubmit(values: ICompetitionFormValues) {
     const response = await fetch(
@@ -63,10 +45,11 @@ export default function EditCompetitionPage() {
       <Title label="Editar competição" back />
 
       {loading && <p>A carregar competição...</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {!loading && competition && (
+      {!loading && data && (
         <Form<ICompetitionFormValues>
-          initialValues={competition}
+          initialValues={data}
           fields={[
             { key: "name", label: "Nome" },
             {
