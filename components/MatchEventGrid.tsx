@@ -14,11 +14,7 @@ export default function MatchEventGrid({
   addStaffMatchEvent,
 }: MatchEventGridProps) {
   return (
-    <div
-      style={{
-        flex: 1,
-      }}
-    >
+    <div style={{ flex: 1 }}>
       <h3>Equipa: {team?.name}</h3>
       <div
         style={{
@@ -34,7 +30,7 @@ export default function MatchEventGrid({
             onClick={addPlayerMatchEvent(it.id, team.id)}
             style={{
               cursor: "pointer",
-              border: "1px solid black",
+              border: "0.05rem solid black",
               backgroundColor: "aqua",
             }}
           >
@@ -47,7 +43,7 @@ export default function MatchEventGrid({
             onClick={addStaffMatchEvent(it.id, team.id)}
             style={{
               cursor: "pointer",
-              border: "1px solid black",
+              border: "0.05rem solid black",
               backgroundColor: "greenyellow",
             }}
           >

@@ -1,32 +1,38 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireToken } from "./lib/api";
+import { UserRole } from "./generated/prisma";
 
-const PUBLIC_PATHS = ["/backoffice/login", "/backoffice/login/"];
+const PUBLIC_PATHS = ["/backoffice/login"];
+const ADMIN_PATHS = ["/backoffice/users"];
+
+function matchesPath(pathname: string, paths: string[]) {
+  return paths.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+}
+
+function redirect(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+
+  return NextResponse.redirect(url);
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (!pathname.startsWith("/backoffice")) {
-    return NextResponse.next();
-  }
-
   const token = await requireToken(request);
 
-  if (PUBLIC_PATHS.includes(pathname)) {
-    if (token) {
-      const dashboardUrl = request.nextUrl.clone();
-      dashboardUrl.pathname = "/backoffice";
-      return NextResponse.redirect(dashboardUrl);
-    }
-
-    return NextResponse.next();
+  if (matchesPath(pathname, PUBLIC_PATHS)) {
+    return token ? redirect(request, "/backoffice") : NextResponse.next();
   }
 
   if (!token) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/backoffice/login";
-    return NextResponse.redirect(loginUrl);
+    return redirect(request, "/backoffice/login");
+  }
+
+  if (matchesPath(pathname, ADMIN_PATHS) && token.role !== UserRole.ADMIN) {
+    return redirect(request, "/backoffice");
   }
 
   return NextResponse.next();

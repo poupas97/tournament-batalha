@@ -39,7 +39,7 @@ export function createdResponse<T>(entity: T) {
 }
 
 export function updatedResponse<T>(entity: T) {
-  return NextResponse.json(entity, { status: 204 });
+  return NextResponse.json(entity, { status: 200 });
 }
 
 export function deletedResponse() {

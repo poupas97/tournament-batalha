@@ -7,7 +7,6 @@ type SideModalProps = {
   title: string;
   onClose: () => void;
   children: ReactNode;
-  width?: CSSProperties["width"];
   footer?: ReactNode;
 };
 
@@ -16,7 +15,6 @@ export default function SideModal({
   title,
   onClose,
   children,
-  width = "20vw",
   footer,
 }: SideModalProps) {
   const titleId = useId();
@@ -62,14 +60,11 @@ export default function SideModal({
         aria-labelledby={titleId}
         onMouseDown={(event) => event.stopPropagation()}
         style={{
-          width,
-          minWidth: "320px",
-          maxWidth: "100vw",
-          height: "100vh",
+          width: "33%",
+          height: "100%",
           display: "flex",
           flexDirection: "column",
           background: "white",
-          boxShadow: "-20px 0 45px rgba(15, 23, 42, 0.22)",
         }}
       >
         <header
@@ -79,24 +74,19 @@ export default function SideModal({
             alignItems: "center",
             gap: "1rem",
             padding: "1rem",
-            borderBottom: "1px solid #d0d7de",
+            borderBottom: "0.05rem solid #d0d7de",
           }}
         >
-          <h2 id={titleId} style={{ margin: 0, fontSize: "1.1rem" }}>
-            {title}
-          </h2>
+          <h2 id={titleId}>{title}</h2>
           <button
             type="button"
             aria-label="Fechar modal"
             onClick={onClose}
             style={{
-              width: "2rem",
-              height: "2rem",
-              border: "1px solid #cbd5e1",
-              borderRadius: "6px",
+              border: "0.05rem solid #cbd5e1",
+              borderRadius: "0.5rem",
               background: "white",
               cursor: "pointer",
-              lineHeight: 1,
             }}
           >
             ×
@@ -111,7 +101,7 @@ export default function SideModal({
           <footer
             style={{
               padding: "1rem",
-              borderTop: "1px solid #d0d7de",
+              borderTop: "0.05rem solid #d0d7de",
             }}
           >
             {footer}

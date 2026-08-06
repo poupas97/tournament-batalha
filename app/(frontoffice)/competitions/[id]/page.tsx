@@ -1,11 +1,10 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
+import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 
 type Stats = {
@@ -60,74 +59,63 @@ export default function ViewCompetitionPage() {
     <>
       <Title label="Ver competição" back />
 
-      {competitionLoading && <p>A carregar competição...</p>}
-      {competitionError && (
-        <p style={{ color: "crimson" }}>{competitionError}</p>
-      )}
+      <Detail<CompetitionBEResponse>
+        loading={competitionLoading}
+        error={competitionError}
+        data={competitionData}
+        fields={[
+          { key: "name", label: "Nome" },
+          { key: "_count.teams", label: "Equipas" },
+          { key: "config", label: "Configuração" },
+          { key: "qualified", label: "Qualificados" },
+          { key: "opponents", label: "Oponentes" },
+        ]}
+      />
 
-      {statsLoading && <p>A carregar estatísticas...</p>}
-      {statsError && <p style={{ color: "crimson" }}>{statsError}</p>}
+      {/* <h4>Classificações</h4>
+      <GridTable
+        loading={statsLoading}
+        error={statsError}
+        data={statsData?.rankingTeams || []}
+        clickableRow={(it) => router.push(`/teams/${it.teamId}`)}
+        notChangeRoute
+        columns={[
+          { key: "position", header: "º" },
+          { key: "teamName", header: "Equipa" },
+          { key: "matches", header: "Jogos" },
+          { key: "wins", header: "V" },
+          { key: "draws", header: "E" },
+          { key: "losses", header: "D" },
+          { key: "goalsAgainst", header: "GM" },
+          { key: "goalsFor", header: "GS" },
+          { key: "goalDifference", header: "DG" },
+        ]}
+      /> */}
 
-      {!competitionLoading && competitionData && (
-        <Detail<CompetitionBEResponse>
-          data={competitionData}
-          fields={[{ key: "name", label: "Nome da competição" }]}
-        />
-      )}
+      <h4>Equipas</h4>
+      <GridTable
+        loading={competitionLoading}
+        error={competitionError}
+        data={competitionData?.teams}
+        clickableRow={(it) => `/teams/${it.id}`}
+        notChangeRoute
+        columns={[{ key: "name", header: "Nome" }]}
+      />
 
-      {!statsLoading && statsData && (
-        <>
-          <h4>Classificações</h4>
-          <DataTable
-            data={statsData.rankingTeams || []}
-            columns={[
-              { key: "position", header: "º" },
-              {
-                key: "teamName",
-                header: "Equipa",
-                render: (it) => (
-                  <Link
-                    href={`/teams/${it.teamId}`}
-                    style={{ color: "#2563eb" }}
-                  >
-                    {it.teamName}
-                  </Link>
-                ),
-              },
-              { key: "matches", header: "Jogos" },
-              { key: "wins", header: "V" },
-              { key: "draws", header: "E" },
-              { key: "losses", header: "D" },
-              { key: "goalsAgainst", header: "GM" },
-              { key: "goalsFor", header: "GS" },
-              { key: "goalDifference", header: "DG" },
-            ]}
-          />
-
-          <h4>Marcadores</h4>
-          <DataTable
-            data={statsData.rankingScores || []}
-            columns={[
-              { key: "position", header: "º" },
-              {
-                key: "playerName",
-                header: "Nome",
-                render: (it) => (
-                  <Link
-                    href={`/players/${it.playerId}`}
-                    style={{ color: "#2563eb" }}
-                  >
-                    {it.playerName}
-                  </Link>
-                ),
-              },
-              { key: "goals", header: "Golos" },
-              { key: "teamName", header: "Equipa" },
-              { key: "matches", header: "Jogos" },
-            ]}
-          />
-        </>
-      )}
+      <h4>Marcadores</h4>
+      <GridTable
+        loading={statsLoading}
+        error={statsError}
+        data={statsData?.rankingScores || []}
+        notChangeRoute
+        columns={[
+          { key: "position", header: "º" },
+          { key: "playerName", header: "Nome" },
+          { key: "teamName", header: "Equipa" },
+          { key: "goals", header: "Golos" },
+          { key: "matches", header: "Jogos" },
+        ]}
+      />
     </>
   );
 }

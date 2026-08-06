@@ -153,93 +153,91 @@ export default function ViewMatchPage() {
         edit={`/backoffice/matches/${matchId}/edit`}
       />
 
-      {loading && <p>A carregar jogo...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      <Detail<MatchBEResponse>
+        loading={loading}
+        error={error}
+        data={data}
+        fields={[
+          { key: "competition.name", label: "Competição" },
+          { key: "competition.config", label: "Configuração" },
+          { key: "competition.opponents", label: "Oponentes" },
+          { key: "competition.qualified", label: "Qualificados" },
+          { key: "date", label: "Data", format: "date" },
+          { key: "round", label: "Ronda" },
+          { key: "homeTeam.name", label: "Equipa da Casa" },
+          { key: "awayTeam.name", label: "Equipa Visitante" },
+          { key: "status", label: "Estado" },
+        ]}
+      />
 
-      {!loading && data && (
-        <>
-          <Detail<MatchBEResponse>
-            data={data}
-            fields={[
-              { key: "competition.name", label: "Competição" },
-              { key: "competition.config", label: "Configuração" },
-              { key: "competition.opponents", label: "Oponentes" },
-              { key: "competition.qualified", label: "Qualificados" },
-              { key: "date", label: "Data", format: "date" },
-              { key: "round", label: "Ronda" },
-              { key: "homeTeam.name", label: "Equipa da Casa" },
-              { key: "awayTeam.name", label: "Equipa Visitante" },
-              { key: "status", label: "Estado" },
-            ]}
-          />
-
-          <h3>Estado do jogo</h3>
-          <div
-            style={{
-              flex: 2,
-              display: "grid",
-              gridTemplateColumns: "repeat(5, 1fr)",
-              gap: 16,
-            }}
-          >
-            {Object.values(MatchStatus).map((status) => (
-              <button
-                key={status}
-                disabled={!canTransition(data.status, status)}
-                onClick={() => handleChangeStatus(status)}
-              >
-                {status}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", gap: "2rem" }}>
-            <MatchEventGrid
-              team={data.homeTeam}
-              addPlayerMatchEvent={addPlayerMatchEvent}
-              addStaffMatchEvent={addStaffMatchEvent}
-            />
-            <MatchEventGrid
-              team={data.awayTeam}
-              addPlayerMatchEvent={addPlayerMatchEvent}
-              addStaffMatchEvent={addStaffMatchEvent}
-            />
-          </div>
-
-          <h3>Tabela de Eventos</h3>
-          {data.events && (
-            <DataTable
-              data={data.events}
-              columns={[
-                { key: "type", header: "Tipo" },
-                { key: "minute", header: "Minuto" },
-                { key: "player.name", header: "Jogador" },
-                { key: "staff.name", header: "Staff" },
-                { key: "team.name", header: "Equipa" },
-                {
-                  key: "actions",
-                  header: "Ações",
-                  render: (it) => (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveEvent(it)}
-                      style={{
-                        padding: 0,
-                        border: "none",
-                        background: "transparent",
-                        color: "crimson",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Remover
-                    </button>
-                  ),
-                },
-              ]}
-            />
-          )}
-        </>
+      <h3>Estado do jogo</h3>
+      {data && (
+        <div
+          style={{
+            flex: 2,
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: "1rem",
+          }}
+        >
+          {Object.values(MatchStatus).map((status) => (
+            <button
+              key={status}
+              disabled={!canTransition(data.status, status)}
+              onClick={() => handleChangeStatus(status)}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
       )}
+
+      {data && (
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <MatchEventGrid
+            team={data.homeTeam}
+            addPlayerMatchEvent={addPlayerMatchEvent}
+            addStaffMatchEvent={addStaffMatchEvent}
+          />
+          <MatchEventGrid
+            team={data.awayTeam}
+            addPlayerMatchEvent={addPlayerMatchEvent}
+            addStaffMatchEvent={addStaffMatchEvent}
+          />
+        </div>
+      )}
+
+      <h3>Tabela de Eventos</h3>
+
+      <DataTable
+        data={data?.events || []}
+        columns={[
+          { key: "type", header: "Tipo" },
+          { key: "minute", header: "Minuto" },
+          { key: "player.name", header: "Jogador" },
+          { key: "staff.name", header: "Staff" },
+          { key: "team.name", header: "Equipa" },
+          {
+            key: "actions",
+            header: "Ações",
+            render: (it) => (
+              <button
+                type="button"
+                onClick={() => handleRemoveEvent(it)}
+                style={{
+                  padding: 0,
+                  border: "none",
+                  background: "transparent",
+                  color: "crimson",
+                  cursor: "pointer",
+                }}
+              >
+                Remover
+              </button>
+            ),
+          },
+        ]}
+      />
     </>
   );
 }

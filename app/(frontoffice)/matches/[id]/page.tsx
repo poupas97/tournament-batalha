@@ -48,7 +48,7 @@ export default function ViewMatchPage() {
       const event = payload as NotifyAddMatchEvent;
 
       setData((current) => {
-        if (!current) return null;
+        if (!current) return undefined;
 
         return {
           ...current,
@@ -61,7 +61,7 @@ export default function ViewMatchPage() {
       const { id } = payload as NotifyRemoveMatchEvent;
 
       setData((current) => {
-        if (!current) return null;
+        if (!current) return undefined;
 
         return {
           ...current,
@@ -89,41 +89,36 @@ export default function ViewMatchPage() {
     <>
       <Title label="Ver Jogo" back />
 
-      {loading && <p>A carregar jogo...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      <Detail<MatchBEResponse>
+        loading={loading}
+        error={error}
+        data={data}
+        fields={[
+          { key: "competition.name", label: "Competição" },
+          { key: "competition.config", label: "Configuração" },
+          { key: "competition.opponents", label: "Oponentes" },
+          { key: "competition.qualified", label: "Qualificados" },
+          { key: "date", label: "Data", format: "date" },
+          { key: "round", label: "Ronda" },
+          { key: "homeTeam.name", label: "Equipa da Casa" },
+          { key: "awayTeam.name", label: "Equipa Visitante" },
+          { key: "status", label: "Estado" },
+        ]}
+      />
 
-      {!loading && data && (
-        <>
-          <Detail<MatchBEResponse>
-            data={data}
-            fields={[
-              { key: "competition.name", label: "Competição" },
-              { key: "competition.config", label: "Configuração" },
-              { key: "competition.opponents", label: "Oponentes" },
-              { key: "competition.qualified", label: "Qualificados" },
-              { key: "date", label: "Data", format: "date" },
-              { key: "round", label: "Ronda" },
-              { key: "homeTeam.name", label: "Equipa da Casa" },
-              { key: "awayTeam.name", label: "Equipa Visitante" },
-              { key: "status", label: "Estado" },
-            ]}
-          />
-
-          <h3>Tabela de Eventos</h3>
-          {data.events && (
-            <DataTable
-              data={data.events}
-              columns={[
-                { key: "type", header: "Tipo" },
-                { key: "minute", header: "Minuto" },
-                { key: "player.name", header: "Jogador" },
-                { key: "staff.name", header: "Staff" },
-                { key: "team.name", header: "Equipa" },
-              ]}
-            />
-          )}
-        </>
-      )}
+      <h3>Tabela de Eventos</h3>
+      <DataTable
+        // loading={loading}
+        // error={error}
+        data={data?.events || []}
+        columns={[
+          { key: "type", header: "Tipo" },
+          { key: "minute", header: "Minuto" },
+          { key: "player.name", header: "Jogador" },
+          { key: "staff.name", header: "Staff" },
+          { key: "team.name", header: "Equipa" },
+        ]}
+      />
     </>
   );
 }

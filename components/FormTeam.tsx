@@ -3,7 +3,11 @@
 import { useModal } from "@/components/ModalProvider";
 import DataTable from "@/components/DataTable";
 import Form from "@/components/Form";
-import { IPlayerDraft, IStaffDraft, ITeamFormValues } from "@/types/team";
+import {
+  IPlayerFormValues,
+  IStaffFormValues,
+  ITeamFormValues,
+} from "@/types/team";
 import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
 
@@ -19,10 +23,10 @@ export default function FormTeam({
   competitions,
 }: FormTeamProps) {
   const { openModal, closeModal } = useModal();
-  const [players, setPlayers] = useState<IPlayerDraft[]>(
+  const [players, setPlayers] = useState<IPlayerFormValues[]>(
     initialValues?.players || [],
   );
-  const [staffs, setStaffs] = useState<IStaffDraft[]>(
+  const [staffs, setStaffs] = useState<IStaffFormValues[]>(
     initialValues?.staffs || [],
   );
 
@@ -30,7 +34,7 @@ export default function FormTeam({
     handleSubmit({ ...values, players, staffs });
   }
 
-  function handleAddPlayer(values: IPlayerDraft) {
+  function handleAddPlayer(values: IPlayerFormValues) {
     const name = values.name.trim();
     const number = values.number.trim();
 
@@ -43,7 +47,7 @@ export default function FormTeam({
     closeModal();
   }
 
-  function handleEditPlayer(player: IPlayerDraft) {
+  function handleEditPlayer(player: IPlayerFormValues) {
     const index = players.findIndex((it) => it.id === player.id);
 
     if (index === -1) {
@@ -58,27 +62,28 @@ export default function FormTeam({
     closeModal();
   }
 
-  function removePlayer(player: IPlayerDraft) {
+  function removePlayer(player: IPlayerFormValues) {
     setPlayers((current) => current.filter((it) => it.id !== player.id));
   }
 
-  const openPlayerModal = (player?: IPlayerDraft) => () => {
+  const openPlayerModal = (player?: IPlayerFormValues) => () => {
     openModal({
       title: player ? "Editar jogador" : "Adicionar jogador",
       content: (
-        <Form<IPlayerDraft>
+        <Form<IPlayerFormValues>
           initialValues={player}
           fields={[
             { key: "name", label: "Nome" },
             { key: "number", label: "Nº" },
           ]}
           onSubmit={player ? handleEditPlayer : handleAddPlayer}
+          vertical
         />
       ),
     });
   };
 
-  function handleAddStaff(values: IStaffDraft) {
+  function handleAddStaff(values: IStaffFormValues) {
     const name = values.name.trim();
 
     if (!name) {
@@ -90,7 +95,7 @@ export default function FormTeam({
     closeModal();
   }
 
-  function handleEditStaff(staff: IStaffDraft) {
+  function handleEditStaff(staff: IStaffFormValues) {
     const index = staffs.findIndex((it) => it.id === staff.id);
 
     if (index === -1) {
@@ -105,18 +110,19 @@ export default function FormTeam({
     closeModal();
   }
 
-  function removeStaff(staff: IStaffDraft) {
+  function removeStaff(staff: IStaffFormValues) {
     setStaffs((current) => current.filter((it) => it.id !== staff.id));
   }
 
-  const openStaffModal = (staff?: IStaffDraft) => () => {
+  const openStaffModal = (staff?: IStaffFormValues) => () => {
     openModal({
       title: staff ? "Editar staff" : "Adicionar staff",
       content: (
-        <Form<IStaffDraft>
+        <Form<IStaffFormValues>
           initialValues={staff}
           fields={[{ key: "name", label: "Nome" }]}
           onSubmit={staff ? handleEditStaff : handleAddStaff}
+          vertical
         />
       ),
     });
@@ -141,9 +147,9 @@ export default function FormTeam({
         type="button"
         onClick={openPlayerModal()}
         style={{
-          padding: "0.6rem 1rem",
+          padding: "1rem",
           border: "none",
-          borderRadius: "6px",
+          borderRadius: "0.5rem",
           background: "#2563eb",
           color: "white",
           cursor: "pointer",
@@ -199,9 +205,9 @@ export default function FormTeam({
         type="button"
         onClick={openStaffModal()}
         style={{
-          padding: "0.6rem 1rem",
+          padding: "1rem",
           border: "none",
-          borderRadius: "6px",
+          borderRadius: "0.5rem",
           background: "#2563eb",
           color: "white",
           cursor: "pointer",

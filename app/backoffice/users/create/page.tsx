@@ -23,7 +23,7 @@ export default function CreateUserPage() {
       return;
     }
 
-    router.push("/backoffice/users");
+    router.back();
   }
 
   return (

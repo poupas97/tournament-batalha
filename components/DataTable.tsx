@@ -1,30 +1,12 @@
 import { formatDateTime } from "@/lib/utils";
+import { DataTableProps } from "@/types/grid-table";
 import get from "lodash/get";
 
-type Column<T> = {
-  key: string;
-  header: string;
-  format?: "date" | "boolean";
-  render?: (item: T) => React.ReactNode;
-};
-
-type DataTableProps<T extends Record<string, unknown>> = {
-  columns: Column<T>[];
-  data: T[];
-  emptyMessage?: string;
-  clickableRow?: (item: T) => void;
-};
-
-export default function DataTable<T extends Record<string, unknown>>({
+export default function DataTable<T>({
   columns,
   data,
-  emptyMessage = "Sem dados para mostrar.",
   clickableRow,
 }: DataTableProps<T>) {
-  if (!data.length) {
-    return <p>{emptyMessage}</p>;
-  }
-
   return (
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <thead>
@@ -34,8 +16,8 @@ export default function DataTable<T extends Record<string, unknown>>({
               key={column.key}
               style={{
                 textAlign: "left",
-                padding: "0.75rem",
-                borderBottom: "1px solid #d0d7de",
+                padding: "1rem",
+                borderBottom: "0.05rem solid #d0d7de",
               }}
             >
               {column.header}
@@ -50,7 +32,7 @@ export default function DataTable<T extends Record<string, unknown>>({
             onClick={() => clickableRow?.(item)}
             style={{
               cursor: clickableRow ? "pointer" : "default",
-              borderBottom: "1px solid #eaeef2",
+              borderBottom: "0.05rem solid #eaeef2",
             }}
           >
             {columns.map((it) => {

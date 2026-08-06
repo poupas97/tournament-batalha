@@ -20,32 +20,12 @@ export default function Title({ label, back, edit }: TitleProps) {
         alignItems: "center",
       }}
     >
-      {back && (
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            router.back();
-          }}
-          style={{ minWidth: 100 }}
-        >
-          ← Voltar
-        </a>
-      )}
+      {back && <button onClick={() => router.back()}>Voltar</button>}
       <h1>{label}</h1>
       {edit ? (
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            router.push(edit);
-          }}
-          style={{ minWidth: 100 }}
-        >
-          Editar
-        </a>
+        <button onClick={() => router.push(edit)}>Editar</button>
       ) : (
-        <div style={{ minWidth: 100 }} />
+        <div style={{ minWidth: "6rem" }} />
       )}
     </div>
   );

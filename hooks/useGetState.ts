@@ -1,22 +1,30 @@
+import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function useGetState<T>(url: string | undefined) {
   const [state, setState] = useState<{
-    data: T | null;
+    data: T | undefined;
     loading: boolean;
-    error: string | null;
-  }>({ data: null, loading: true, error: null });
+    error: string | undefined;
+    notFound: boolean;
+  }>({ data: undefined, loading: true, error: undefined, notFound: false });
 
   useEffect(() => {
     if (!url) return;
 
     fetch(url)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 404) {
+          setState((current) => ({ ...current, notFound: true }));
+        }
+
+        return response.json();
+      })
       .then((data) => {
         if (data.error) {
-          alert(data.error);
-          return;
+          throw new Error(data.error ?? "Erro desconhecido.");
         }
+
         setState((current) => ({ ...current, data, loading: false }));
       })
       .catch((err) =>
@@ -29,7 +37,9 @@ export default function useGetState<T>(url: string | undefined) {
       .finally(() => setState((current) => ({ ...current, loading: false })));
   }, [url]);
 
-  const setData = (data: Partial<T> | ((current: T | null) => T | null)) => {
+  const setData = (
+    data: Partial<T> | ((current: T | undefined) => T | undefined),
+  ) => {
     setState((current) => ({
       ...current,
       data:
@@ -37,8 +47,13 @@ export default function useGetState<T>(url: string | undefined) {
           ? data(current.data)
           : current.data
             ? { ...current.data, ...data }
-            : null,
+            : undefined,
     }));
   };
+
+  if (state.notFound) {
+    return notFound();
+  }
+
   return { ...state, setData };
 }

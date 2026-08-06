@@ -23,7 +23,7 @@ export default function CreateMatchPage() {
       return;
     }
 
-    router.push("/backoffice/matches");
+    router.back();
   }
 
   return (

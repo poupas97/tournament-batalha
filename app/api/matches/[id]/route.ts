@@ -10,7 +10,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const match = await prisma.match.findUnique({
-    where: { id: matchId },
+    where: { id: matchId, competition: { active: true } },
     include: {
       competition: true,
       homeTeam: {

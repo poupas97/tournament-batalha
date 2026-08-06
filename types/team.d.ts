@@ -1,12 +1,12 @@
 import { Competition, Player, Staff } from "@/generated/prisma";
 import { CompetitionBEResponse } from "./competition";
 
-export type IStaffDraft = {
+export type IStaffFormValues = {
   id: number;
   name: string;
 };
 
-export type IPlayerDraft = {
+export type IPlayerFormValues = {
   id: number;
   name: string;
   number: string;
@@ -14,8 +14,8 @@ export type IPlayerDraft = {
 
 export type ITeamFormValues = {
   name: string;
-  players: IPlayerDraft[];
-  staffs: IStaffDraft[];
+  players: IPlayerFormValues[];
+  staffs: IStaffFormValues[];
   competitionId: Competition["id"];
 };
 

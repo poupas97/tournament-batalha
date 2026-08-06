@@ -1,7 +1,6 @@
 "use client";
 
 import get from "lodash/get";
-import set from "lodash/set";
 import { FormEvent, useState, type ReactNode } from "react";
 
 type FormField<T extends Record<string, unknown>> = {
@@ -24,6 +23,7 @@ type FormProps<T extends Record<string, unknown>> = {
   fields: FormField<T>[];
   onSubmit?: (values: T) => void;
   children?: ReactNode;
+  vertical?: boolean;
 };
 
 function formatDateTimeLocalValue(value: unknown) {
@@ -51,13 +51,9 @@ export default function Form<T extends Record<string, unknown>>({
   fields,
   onSubmit,
   children,
+  vertical,
 }: FormProps<T>) {
-  const [values, setValues] = useState<T | undefined>(
-    fields.reduce((acc, field) => {
-      set(acc, field.key, initialValues?.[field.key] ?? "");
-      return acc;
-    }, {} as T),
-  );
+  const [values, setValues] = useState<T | undefined>(initialValues);
 
   function handleChange(key: keyof T, value: string | boolean) {
     setValues((current) => ({
@@ -88,71 +84,84 @@ export default function Form<T extends Record<string, unknown>>({
       onSubmit={handleSubmit}
       style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
     >
-      {fields.map((field) => (
-        <label
-          key={String(field.key)}
-          style={{ display: "grid", gap: "0.4rem" }}
-        >
-          <span>{field.label}</span>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${vertical ? 1 : 5}, minmax(0, 1fr))`,
+          gap: "1rem",
+        }}
+      >
+        {fields.map((field) => (
+          <label
+            key={String(field.key)}
+            id={String(field.key)}
+            style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+          >
+            <span>{field.label}</span>
 
-          {field.options ? (
-            <select
-              value={String(get(values, field.key) ?? "")}
-              onChange={(event) => handleChange(field.key, event.target.value)}
-              style={{
-                padding: "0.7rem",
-                border: "1px solid #cbd5e1",
-                borderRadius: "6px",
-              }}
-            >
-              <option value="">Selecione...</option>
+            {field.options ? (
+              <select
+                name={String(field.key)}
+                value={String(get(values, field.key) ?? "")}
+                onChange={(event) =>
+                  handleChange(field.key, event.target.value)
+                }
+                style={{
+                  padding: "1rem",
+                  border: "0.05rem solid #cbd5e1",
+                  borderRadius: "0.5rem",
+                }}
+              >
+                <option value="">Selecione...</option>
 
-              {field.options.map((it) => (
-                <option key={it.value} value={it.value}>
-                  {it.label}
-                </option>
-              ))}
-            </select>
-          ) : field.type === "checkbox" ? (
-            <input
-              type="checkbox"
-              checked={Boolean(get(values, field.key))}
-              onChange={(event) =>
-                handleChange(field.key, event.target.checked)
-              }
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
-            />
-          ) : (
-            <input
-              type={field.type ?? "text"}
-              value={
-                field.type === "datetime-local"
-                  ? formatDateTimeLocalValue(get(values, field.key))
-                  : String(get(values, field.key) ?? "")
-              }
-              onChange={(event) => handleChange(field.key, event.target.value)}
-              placeholder={field.placeholder}
-              style={{
-                padding: "0.7rem",
-                border: "1px solid #cbd5e1",
-                borderRadius: "6px",
-              }}
-            />
-          )}
-        </label>
-      ))}
+                {field.options.map((it) => (
+                  <option key={it.value} value={it.value}>
+                    {it.label}
+                  </option>
+                ))}
+              </select>
+            ) : field.type === "checkbox" ? (
+              <input
+                name={String(field.key)}
+                type="checkbox"
+                checked={Boolean(get(values, field.key))}
+                onChange={(event) =>
+                  handleChange(field.key, event.target.checked)
+                }
+                style={{ width: "1.5rem", height: "1.5rem" }}
+              />
+            ) : (
+              <input
+                name={String(field.key)}
+                type={field.type ?? "text"}
+                value={
+                  field.type === "datetime-local"
+                    ? formatDateTimeLocalValue(get(values, field.key))
+                    : String(get(values, field.key) ?? "")
+                }
+                onChange={(event) =>
+                  handleChange(field.key, event.target.value)
+                }
+                placeholder={field.placeholder}
+                style={{
+                  padding: "1rem",
+                  border: "0.05rem solid #cbd5e1",
+                  borderRadius: "0.5rem",
+                }}
+              />
+            )}
+          </label>
+        ))}
+      </div>
 
       {children}
 
       <button
         type="submit"
         style={{
-          padding: "0.7rem 1rem",
+          padding: "1rem",
           border: "none",
-          borderRadius: "6px",
+          borderRadius: "0.5rem",
           background: "#2563eb",
           color: "white",
           cursor: "pointer",

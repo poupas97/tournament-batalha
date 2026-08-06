@@ -50,7 +50,6 @@ export default function ModalProvider({ children }: { children: ReactNode }) {
       <SideModal
         isOpen={Boolean(modal)}
         title={modal?.title ?? ""}
-        width={modal?.width}
         footer={modal?.footer}
         onClose={closeModal}
       >

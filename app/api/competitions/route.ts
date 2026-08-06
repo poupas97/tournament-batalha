@@ -6,9 +6,7 @@ export async function GET(request: Request) {
     where: { active: true },
     orderBy: { createdAt: "desc" },
     include: {
-      _count: {
-        select: { teams: true },
-      },
+      _count: { select: { teams: true } },
     },
   });
 

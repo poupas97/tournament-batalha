@@ -40,7 +40,7 @@ export default function EditTeamPage() {
       return;
     }
 
-    router.push("/backoffice/teams");
+    router.back();
   }
 
   return (

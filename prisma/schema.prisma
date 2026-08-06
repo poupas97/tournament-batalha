@@ -12,7 +12,7 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      Role     @default(MANAGER)
+  role      UserRole     @default(MANAGER)
   createdAt DateTime @default(now())
 }
 
@@ -51,7 +51,7 @@ model Staff {
   events MatchEvent[]
 }
 
-enum Role {
+enum UserRole {
   MANAGER
   ADMIN
 }

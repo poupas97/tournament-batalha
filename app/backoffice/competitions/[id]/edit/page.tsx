@@ -37,7 +37,7 @@ export default function EditCompetitionPage() {
       return;
     }
 
-    router.push("/backoffice/competitions");
+    router.back();
   }
 
   return (

@@ -29,7 +29,7 @@ export default function CreateTeamPage() {
       return;
     }
 
-    router.push("/backoffice/teams");
+    router.back();
   }
 
   return (

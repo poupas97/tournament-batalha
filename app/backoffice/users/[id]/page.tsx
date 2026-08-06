@@ -22,18 +22,16 @@ export default function ViewUserPage() {
         edit={`/backoffice/users/${userId}/edit`}
       />
 
-      {loading && <p>A carregar utilizador...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      {!loading && data && (
-        <Detail<UserBEResponse>
-          data={data}
-          fields={[
-            { key: "name", label: "Nome" },
-            { key: "email", label: "Email" },
-          ]}
-        />
-      )}
+      <Detail<UserBEResponse>
+        loading={loading}
+        error={error}
+        data={data}
+        fields={[
+          { key: "name", label: "Nome" },
+          { key: "email", label: "Email" },
+          { key: "role", label: "Função" },
+        ]}
+      />
     </>
   );
 }

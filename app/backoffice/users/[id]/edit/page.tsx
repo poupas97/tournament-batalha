@@ -2,6 +2,7 @@
 
 import Form from "@/components/Form";
 import Title from "@/components/Title";
+import { UserRole } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import {
   IUserFormValues,
@@ -34,7 +35,7 @@ export default function EditUserPage() {
       return;
     }
 
-    router.push("/backoffice/users");
+    router.back();
   }
 
   async function handleSubmitPassword(values: IUserPasswordFormValues) {
@@ -57,7 +58,7 @@ export default function EditUserPage() {
       return;
     }
 
-    router.push("/backoffice/users");
+    router.back();
   }
 
   return (
@@ -74,6 +75,15 @@ export default function EditUserPage() {
             fields={[
               { key: "name", label: "Nome" },
               { key: "email", label: "Email", type: "email" },
+              {
+                key: "role",
+                label: "Função",
+                type: "select",
+                options: Object.keys(UserRole).map((it) => ({
+                  value: it,
+                  label: it,
+                })),
+              },
             ]}
             onSubmit={handleSubmit}
           />

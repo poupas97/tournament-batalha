@@ -3,6 +3,7 @@ import { getResponse } from "@/lib/api";
 
 export async function GET(request: Request) {
   const teams = await prisma.team.findMany({
+    where: { competition: { active: true } },
     orderBy: [{ name: "asc" }, { competition: { name: "asc" } }],
     include: {
       competition: true,

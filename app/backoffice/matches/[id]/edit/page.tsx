@@ -30,7 +30,7 @@ export default function EditMatchPage() {
       return;
     }
 
-    router.push("/backoffice/matches");
+    router.back();
   }
 
   return (

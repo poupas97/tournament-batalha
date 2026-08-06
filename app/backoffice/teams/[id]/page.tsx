@@ -22,10 +22,7 @@ export default function ViewTeamPage() {
         edit={`/backoffice/teams/${teamId}/edit`}
       />
 
-      {loading && <p>A carregar equipa...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      {!loading && data && <DetailsTeam team={data} />}
+      <DetailsTeam team={data} loading={loading} error={error} />
     </>
   );
 }

@@ -24,7 +24,7 @@ export default function CreateCompetitionPage() {
       return;
     }
 
-    router.push("/backoffice/competitions");
+    router.back();
   }
 
   return (

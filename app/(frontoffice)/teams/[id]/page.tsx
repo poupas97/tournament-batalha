@@ -18,10 +18,7 @@ export default function ViewTeamPage() {
     <>
       <Title label="Ver equipa" back />
 
-      {loading && <p>A carregar equipa...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      {!loading && data && <DetailsTeam team={data} />}
+      <DetailsTeam loading={loading} error={error} team={data} />
     </>
   );
 }

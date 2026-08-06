@@ -5,12 +5,12 @@ import {
   createdResponse,
   getResponse,
   invalidParam,
-  requireToken,
+  requireAdminToken,
   unauthorized,
 } from "@/lib/api";
 
 export async function GET(request: Request) {
-  const token = await requireToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -30,8 +30,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const token = await requireToken(request);
-  if (!token || token.role !== "ADMIN") {
+  const token = await requireAdminToken(request);
+  if (!token) {
     return unauthorized();
   }
 

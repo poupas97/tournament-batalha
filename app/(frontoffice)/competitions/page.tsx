@@ -1,6 +1,6 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
+import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
@@ -16,21 +16,16 @@ export default function CompetitionsPage() {
     <>
       <Title label="Competições" />
 
-      {loading && <p>A carregar competições...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      {!loading && data && (
-        <div style={{ marginTop: "1.5rem" }}>
-          <DataTable
-            data={data}
-            clickableRow={(it) => router.push(`/competitions/${it.id}`)}
-            columns={[
-              { key: "name", header: "Nome" },
-              { key: "_count.teams", header: "Equipas" },
-            ]}
-          />
-        </div>
-      )}
+      <GridTable
+        loading={loading}
+        error={error}
+        data={data}
+        clickableRow={(it) => router.push(`/competitions/${it.id}`)}
+        columns={[
+          { key: "name", header: "Nome" },
+          { key: "_count.teams", header: "Equipas" },
+        ]}
+      />
     </>
   );
 }

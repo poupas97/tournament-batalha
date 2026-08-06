@@ -9,7 +9,14 @@ export default function FrontOfficeLayout({
   return (
     <>
       <Navbar />
-      <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+      <main
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: "2rem",
+          gap: "2rem",
+        }}
+      >
         {children}
       </main>
     </>

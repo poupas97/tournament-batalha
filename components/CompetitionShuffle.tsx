@@ -64,10 +64,10 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        border: "1px solid #ddd",
-        borderRadius: 6,
-        padding: 12,
-        gap: 6,
+        border: "0.05rem solid #ddd",
+        borderRadius: "0.5rem",
+        padding: "1rem",
+        gap: "0.5rem",
         cursor: "pointer",
       }}
     >
@@ -76,7 +76,7 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 6,
+          gap: "0.5rem",
           width: "100%",
         }}
       >
@@ -170,7 +170,7 @@ function GroupTables({
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: 24,
+        gap: "1.5rem",
       }}
     >
       {groups.map(({ group, standings }) => (
@@ -188,14 +188,14 @@ function GroupTables({
 
 function GroupSchedule({ groups }: { groups: CompetitionShuffleGroup[] }) {
   return groups.map(({ group, matches }) => (
-    <section key={group} style={{ marginBottom: 30 }}>
+    <section key={group}>
       <h3>Grupo {group}</h3>
 
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: 24,
+          gap: "1.5rem",
         }}
       >
         {matches.map((match) => (
@@ -212,7 +212,7 @@ function ScheduleMatches({ matches }: { matches: MatchBEResponse[] }) {
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-        gap: 24,
+        gap: "1.5rem",
       }}
     >
       {matches.map((match) => (
@@ -241,7 +241,7 @@ function KnockoutBracket({
           style={{
             display: "grid",
             gridTemplateColumns: `repeat(${rounds.length}, minmax(0, 1fr))`,
-            gap: 24,
+            gap: "1.5rem",
             alignItems: "flex-start",
           }}
         >
@@ -250,7 +250,11 @@ function KnockoutBracket({
               <h3>{stage}</h3>
 
               <div
-                style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.5rem",
+                }}
               >
                 {matches.map((match) => (
                   <MatchCard key={match.id} match={match} />

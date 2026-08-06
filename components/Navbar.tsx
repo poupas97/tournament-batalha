@@ -19,26 +19,25 @@ export default function Navbar() {
         position: "sticky",
         top: 0,
         zIndex: 20,
-        borderBottom: "1px solid #d0d7de",
+        borderBottom: "0.05rem solid #d0d7de",
         background: "#ffffff",
       }}
     >
       <nav
-        aria-label="Navegação do backoffice"
+        aria-label="Navegação do front office"
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
-          padding: "0.85rem 2rem",
-          fontFamily: "system-ui, sans-serif",
+          padding: "1rem 1.5rem",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.35rem",
+            gap: "0.25rem",
             flexWrap: "wrap",
           }}
         >
@@ -54,14 +53,11 @@ export default function Navbar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 style={{
-                  padding: "0.45rem 0.7rem",
-                  borderRadius: "6px",
+                  padding: "0.75rem",
+                  borderRadius: "0.5rem",
                   color: active ? "#ffffff" : "#57606a",
                   background: active ? "#0969da" : "transparent",
-                  fontSize: "0.95rem",
-                  fontWeight: active ? 600 : 500,
                   textDecoration: "none",
-                  whiteSpace: "nowrap",
                 }}
               >
                 {item.label}

@@ -5,14 +5,18 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 const navItems = [
-  { href: "/backoffice", label: "Dashboard" },
-  { href: "/backoffice/users", label: "Utilizadores" },
-  { href: "/backoffice/competitions", label: "Competições" },
-  { href: "/backoffice/teams", label: "Equipas" },
-  { href: "/backoffice/matches", label: "Jogos" },
+  { href: "/backoffice", label: "Dashboard", adminOnly: false },
+  { href: "/backoffice/users", label: "Utilizadores", adminOnly: true },
+  { href: "/backoffice/competitions", label: "Competições", adminOnly: false },
+  { href: "/backoffice/teams", label: "Equipas", adminOnly: false },
+  { href: "/backoffice/matches", label: "Jogos", adminOnly: false },
 ];
 
-export default function BackofficeNavbar() {
+type BackofficeNavbarProps = {
+  isAdmin: boolean;
+};
+
+export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
   const pathname = usePathname();
 
   if (pathname === "/backoffice/login") {
@@ -25,7 +29,7 @@ export default function BackofficeNavbar() {
         position: "sticky",
         top: 0,
         zIndex: 20,
-        borderBottom: "1px solid #d0d7de",
+        borderBottom: "0.05rem solid #d0d7de",
         background: "#ffffff",
       }}
     >
@@ -36,58 +40,54 @@ export default function BackofficeNavbar() {
           alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
-          padding: "0.85rem 2rem",
-          fontFamily: "system-ui, sans-serif",
+          padding: "1rem 1.5rem",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.35rem",
+            gap: "0.25rem",
             flexWrap: "wrap",
           }}
         >
-          {navItems.map((item) => {
-            const active =
-              item.href === "/backoffice"
-                ? pathname === item.href
-                : pathname.startsWith(item.href);
+          {navItems
+            .filter((item) => isAdmin || !item.adminOnly)
+            .map((item) => {
+              const active =
+                item.href === "/backoffice"
+                  ? pathname === item.href
+                  : pathname.startsWith(item.href);
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                style={{
-                  padding: "0.45rem 0.7rem",
-                  borderRadius: "6px",
-                  color: active ? "#ffffff" : "#57606a",
-                  background: active ? "#0969da" : "transparent",
-                  fontSize: "0.95rem",
-                  fontWeight: active ? 600 : 500,
-                  textDecoration: "none",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "0.5rem",
+                    color: active ? "#ffffff" : "#57606a",
+                    background: active ? "#0969da" : "transparent",
+                    textDecoration: "none",
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
         </div>
 
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/backoffice/login" })}
           style={{
-            padding: "0.5rem 0.75rem",
-            border: "1px solid #d0d7de",
-            borderRadius: "6px",
+            padding: "0.75rem",
+            border: "0.05rem solid #d0d7de",
+            borderRadius: "0.5rem",
             background: "#ffffff",
             color: "#cf222e",
             cursor: "pointer",
-            fontWeight: 600,
-            whiteSpace: "nowrap",
           }}
         >
           Sair

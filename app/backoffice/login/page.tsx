@@ -32,31 +32,33 @@ export default function LoginPage() {
     <>
       <Title label="Login Backoffice" />
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "grid", gap: "1rem", marginTop: "1.5rem" }}
-      >
-        <label>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+        <label id="email">
           Email
           <input
+            name="email"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            style={{ width: "100%", padding: "0.75rem" }}
+            autoComplete={undefined}
+            style={{ width: "100%", padding: "0.5rem" }}
           />
         </label>
-        <label>
+        <label id="password">
           Password
           <input
+            name="password"
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
-            style={{ width: "100%", padding: "0.75rem" }}
+            style={{ width: "100%", padding: "0.5rem" }}
           />
         </label>
+
         {error && <p style={{ color: "red" }}>{error}</p>}
+
         <button
           type="submit"
           style={{

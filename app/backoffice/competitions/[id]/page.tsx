@@ -1,7 +1,7 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
+import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
@@ -41,47 +41,47 @@ export default function ViewCompetitionPage() {
         edit={`/backoffice/competitions/${competitionId}/edit`}
       />
 
-      {loading && <p>A carregar competição...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      <Detail<CompetitionBEResponse>
+        loading={loading}
+        error={error}
+        data={data}
+        fields={[
+          { key: "name", label: "Nome" },
+          { key: "_count.teams", label: "Equipas" },
+          { key: "config", label: "Configuração" },
+          { key: "qualified", label: "Qualificados" },
+          { key: "opponents", label: "Oponentes" },
+          { key: "active", label: "Ativo", format: "boolean" },
+        ]}
+      />
 
-      {!loading && data && (
-        <>
-          <Detail<CompetitionBEResponse>
-            data={data}
-            fields={[
-              { key: "name", label: "Nome" },
-              { key: "config", label: "Configuração" },
-              { key: "qualified", label: "Qualificados" },
-              { key: "opponents", label: "Oponentes" },
-              { key: "active", label: "Ativo", format: "boolean" },
-            ]}
-          />
+      <h4>Equipas</h4>
+      <GridTable
+        loading={loading}
+        error={error}
+        data={data?.teams}
+        clickableRow={(it) => `/backoffice/teams/${it.id}`}
+        notChangeRoute
+        columns={[{ key: "name", header: "Nome" }]}
+      />
 
-          <h4>Equipas</h4>
-          <DataTable
-            data={data.teams}
-            columns={[{ key: "name", header: "Nome" }]}
-          />
+      <button
+        onClick={onShuffle}
+        style={{
+          padding: "1rem",
+          border: "none",
+          borderRadius: "0.5rem",
+          background: "#2563eb",
+          color: "white",
+          cursor: "pointer",
+        }}
+      >
+        Sorteio
+      </button>
 
-          <button
-            onClick={onShuffle}
-            style={{
-              padding: "0.7rem 1rem",
-              border: "none",
-              borderRadius: "6px",
-              background: "#2563eb",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            Sorteio
-          </button>
-
-          <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
-            Ver sorteio
-          </Link>
-        </>
-      )}
+      <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
+        Ver sorteio
+      </Link>
     </>
   );
 }

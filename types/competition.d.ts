@@ -17,6 +17,9 @@ export type CompetitionBEResponse = {
   qualified?: number;
   opponents?: number;
   active?: boolean;
+  _count?: {
+    teams: number;
+  };
 };
 
 export type LeagueStanding = {
