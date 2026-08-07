@@ -142,21 +142,18 @@ export default function FormTeam({
       ]}
       onSubmit={onSubmit}
     >
-      <h4>Jogadores</h4>
-      <button
-        type="button"
-        onClick={openPlayerModal()}
+      <div
         style={{
-          padding: "1rem",
-          border: "none",
-          borderRadius: "0.5rem",
-          background: "#2563eb",
-          color: "white",
-          cursor: "pointer",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        Adicionar
-      </button>
+        <h3>Jogadores</h3>
+        <button type="button" onClick={openPlayerModal()}>
+          Adicionar
+        </button>
+      </div>
 
       <DataTable
         data={players}
@@ -200,21 +197,18 @@ export default function FormTeam({
         ]}
       />
 
-      <h4>Staff</h4>
-      <button
-        type="button"
-        onClick={openStaffModal()}
+      <div
         style={{
-          padding: "1rem",
-          border: "none",
-          borderRadius: "0.5rem",
-          background: "#2563eb",
-          color: "white",
-          cursor: "pointer",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        Adicionar
-      </button>
+        <h3>Staff</h3>
+        <button type="button" onClick={openStaffModal()}>
+          Adicionar
+        </button>
+      </div>
 
       <DataTable
         data={staffs}
