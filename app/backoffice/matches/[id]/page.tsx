@@ -150,7 +150,11 @@ export default function ViewMatchPage() {
       <Title
         label="Ver jogo"
         back
-        edit={`/backoffice/matches/${matchId}/edit`}
+        edit={
+          data?.status === MatchStatus.SCHEDULED
+            ? `/backoffice/matches/${matchId}/edit`
+            : undefined
+        }
       />
 
       <Detail<MatchBEResponse>
@@ -183,7 +187,11 @@ export default function ViewMatchPage() {
           {Object.values(MatchStatus).map((status) => (
             <button
               key={status}
-              disabled={!canTransition(data.status, status)}
+              disabled={
+                !data.awayTeamId ||
+                !data.homeTeamId ||
+                !canTransition(data.status, status)
+              }
               onClick={() => handleChangeStatus(status)}
             >
               {status}

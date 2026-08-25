@@ -5,7 +5,7 @@ import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 type Stats = {
   rankingScores:
@@ -37,6 +37,7 @@ type Stats = {
 
 export default function ViewCompetitionPage() {
   const params = useParams();
+  const router = useRouter();
   const competitionId = params?.id;
 
   const {
@@ -97,7 +98,7 @@ export default function ViewCompetitionPage() {
         loading={competitionLoading}
         error={competitionError}
         data={competitionData?.teams}
-        clickableRow={(it) => `/teams/${it.id}`}
+        clickableRow={(it) => router.push(`/teams/${it.id}`)}
         notChangeRoute
         columns={[{ key: "name", header: "Nome" }]}
       />

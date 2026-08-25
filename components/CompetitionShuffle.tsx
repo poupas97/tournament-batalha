@@ -43,19 +43,20 @@ export default function CompetitionShuffle({
       {view.isGroupCompetition ? (
         <GroupSchedule groups={view.groups} />
       ) : (
-        <ScheduleMatches matches={view.leagueMatches} />
+        <LeagueSchedule matches={view.leagueMatches} />
       )}
     </>
   );
 }
 
 function MatchCard({ match }: { match: MatchBEResponse }) {
+  const router = useRouter();
+
   const { homeGoals, awayGoals } = getMatchScore(match);
   const showScore =
     match.status === MatchStatus.RT_END ||
     match.status === MatchStatus.ET_END ||
     match.status === MatchStatus.PENALTIES;
-  const router = useRouter();
 
   return (
     <div
@@ -71,6 +72,7 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
         cursor: "pointer",
       }}
     >
+      <div style={{ color: "#666" }}>{match.round}</div>
       <div style={{ fontWeight: 600 }}>{formatDateTime(match.date)}</div>
       <div
         style={{
@@ -99,6 +101,7 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
           {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
         </div>
       </div>
+      <div style={{ color: "#666" }}>{match.status}</div>
     </div>
   );
 }
@@ -206,7 +209,7 @@ function GroupSchedule({ groups }: { groups: CompetitionShuffleGroup[] }) {
   ));
 }
 
-function ScheduleMatches({ matches }: { matches: MatchBEResponse[] }) {
+function LeagueSchedule({ matches }: { matches: MatchBEResponse[] }) {
   return (
     <div
       style={{

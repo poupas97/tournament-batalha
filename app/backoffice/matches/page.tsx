@@ -37,6 +37,7 @@ export default function BackofficeMatchesPage() {
           { key: "round", header: "Ronda" },
           { key: "homeTeam.name", header: "Equipa da Casa" },
           { key: "awayTeam.name", header: "Equipa Visitante" },
+          { key: "status", header: "Estado" },
         ]}
       />
     </>

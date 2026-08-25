@@ -10,6 +10,7 @@ import {
   unauthorized,
   updatedResponse,
 } from "@/lib/api";
+import { MatchStatus } from "@/generated/prisma";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -88,11 +89,15 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const existing = await prisma.match.findUnique({
     where: { id: matchId },
-    select: { id: true },
+    select: { id: true, status: true },
   });
 
   if (!existing) {
     return noFound("Match");
+  }
+
+  if (existing.status !== MatchStatus.SCHEDULED) {
+    return invalidParam("MatchStatus");
   }
 
   const matchUpdated = await prisma.match.update({

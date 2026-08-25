@@ -22,14 +22,12 @@ export default function DetailsTeam({
         error={error}
         data={team}
         fields={[
-          { key: "name", label: "Nome da equipa" },
-          { key: "competition.name", label: "Nome da competição" },
-          { key: "_count.players", label: "Jogadores" },
-          { key: "_count.staffs", label: "Staff" },
+          { key: "name", label: "Nome" },
+          { key: "competition.name", label: "Competição" },
         ]}
       />
 
-      <h4>Jogadores</h4>
+      <h4>Jogadores ({team?.players.length})</h4>
       <GridTable
         loading={loading}
         error={error}
@@ -41,7 +39,7 @@ export default function DetailsTeam({
         ]}
       />
 
-      <h4>Staff</h4>
+      <h4>Staff ({team?.staffs.length})</h4>
       <GridTable
         loading={loading}
         error={error}

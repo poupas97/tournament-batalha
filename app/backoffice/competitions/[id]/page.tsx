@@ -6,10 +6,11 @@ import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export default function ViewCompetitionPage() {
   const params = useParams();
+  const router = useRouter();
   const competitionId = params?.id;
 
   const { data, loading, error } = useGetState<CompetitionBEResponse>(
@@ -60,9 +61,13 @@ export default function ViewCompetitionPage() {
         loading={loading}
         error={error}
         data={data?.teams}
-        clickableRow={(it) => `/backoffice/teams/${it.id}`}
+        clickableRow={(it) => router.push(`/backoffice/teams/${it.id}`)}
         notChangeRoute
-        columns={[{ key: "name", header: "Nome" }]}
+        columns={[
+          { key: "name", header: "Nome" },
+          { key: "_count.players", header: "Jogadores" },
+          { key: "_count.staffs", header: "Staffs" },
+        ]}
       />
 
       <button

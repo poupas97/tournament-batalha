@@ -15,7 +15,7 @@ export default function MatchEventGrid({
 }: MatchEventGridProps) {
   return (
     <div style={{ flex: 1 }}>
-      <h3>Equipa: {team?.name}</h3>
+      <h3>Elementos equipa: {team?.name}</h3>
       <div
         style={{
           flex: 2,
