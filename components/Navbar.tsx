@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { Button } from "@heroui/react";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -12,35 +12,15 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-        borderBottom: "0.05rem solid #d0d7de",
-        background: "#ffffff",
-      }}
-    >
+    <header className="sticky top-0 z-20 border-b border-border bg-white">
       <nav
         aria-label="Navegação do front office"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem",
-          padding: "1rem 1.5rem",
-        }}
+        className="flex items-center justify-between gap-4 px-6 py-4"
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="flex items-center gap-2 flex-wrap">
           {navItems.map((item) => {
             const active =
               item.href === "/"
@@ -48,20 +28,15 @@ export default function Navbar() {
                 : pathname.startsWith(item.href);
 
             return (
-              <Link
+              <Button
                 key={item.href}
-                href={item.href}
+                size="sm"
+                onPress={() => router.push(item.href)}
+                className={`px-3 py-2 ${active ? "bg-hero-primary text-white" : "text-muted bg-transparent"}`}
                 aria-current={active ? "page" : undefined}
-                style={{
-                  padding: "0.75rem",
-                  borderRadius: "0.5rem",
-                  color: active ? "#ffffff" : "#57606a",
-                  background: active ? "#0969da" : "transparent",
-                  textDecoration: "none",
-                }}
               >
                 {item.label}
-              </Link>
+              </Button>
             );
           })}
         </div>
