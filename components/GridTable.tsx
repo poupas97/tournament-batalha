@@ -4,9 +4,9 @@ import { GridTableProps } from "@/types/grid-table";
 import DataTable from "./DataTable";
 import DataGrid from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
-export default function GridTable<T>({
+function GridTableContent<T>({
   emptyMessage,
   create,
   data,
@@ -75,5 +75,13 @@ export default function GridTable<T>({
         <DataTable data={data} {...rest} />
       )}
     </>
+  );
+}
+
+export default function GridTable<T>(props: GridTableProps<T>) {
+  return (
+    <Suspense fallback={<p>A carregar...</p>}>
+      <GridTableContent {...props} />
+    </Suspense>
   );
 }

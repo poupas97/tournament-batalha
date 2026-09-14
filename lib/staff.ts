@@ -3,7 +3,7 @@ import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 
 type PlayerInput = {
   name: string;
-  number: string;
+  number: number;
 };
 
 type StaffInput = {
@@ -14,9 +14,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-export function sanitizePlayers(
-  value: PlayerInput[] | undefined,
-): Partial<Player>[] | undefined {
+export function sanitizePlayers(value: unknown): PlayerInput[] | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -26,15 +24,16 @@ export function sanitizePlayers(
   }
 
   const numbers = new Set<number>();
-  const players: Partial<Player>[] = [];
+  const players: PlayerInput[] = [];
 
   for (const item of value) {
     if (!isRecord(item)) {
       return undefined;
     }
 
-    const name = sanitizeText(item.name);
-    const number = sanitizeNumber(item.number);
+    const name = typeof item.name === "string" ? sanitizeText(item.name) : "";
+    const number =
+      typeof item.number === "string" ? sanitizeNumber(item.number) : undefined;
 
     if (
       !name ||
