@@ -9,7 +9,7 @@ export type IStaffFormValues = {
 export type IPlayerFormValues = {
   id: number;
   name: string;
-  number: string;
+  number: number;
 };
 
 export type ITeamFormValues = {

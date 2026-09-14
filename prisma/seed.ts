@@ -139,7 +139,7 @@ async function main() {
       await prisma.player.createMany({
         data: Array.from({ length: 12 }, (_, index) => ({
           name: randomName(),
-          number: `${index + 1}`,
+          number: index + 1,
           teamId: team.id,
         })),
       });

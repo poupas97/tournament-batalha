@@ -15,7 +15,7 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { CompetitionConfig } from "@/generated/prisma";
+import { CompetitionConfig, CompetitionStatus } from "@/generated/prisma";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -59,12 +59,28 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Competition");
   }
 
+  const existing = await prisma.competition.findUnique({
+    where: { id: competitionId },
+  });
+
+  if (!existing) {
+    return noFound("Competition");
+  }
+
+  if (existing.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
+  }
+
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
-  const config = sanitizeEnum(body?.config, CompetitionConfig);
-  const qualified = sanitizeNumber(body?.qualified);
-  const opponents = sanitizeNumber(body?.opponents);
-  const active = sanitizeBoolean(body?.active);
+  const name = sanitizeText(body?.name) || existing.name;
+  const config =
+    sanitizeEnum(body?.config, CompetitionConfig) || existing.config;
+  const qualified = sanitizeNumber(body?.qualified) || existing.qualified;
+  const opponents = sanitizeNumber(body?.opponents) || existing.opponents;
+  const active =
+    sanitizeBoolean(body?.active) !== undefined
+      ? sanitizeBoolean(body?.active)
+      : existing.active;
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
@@ -72,23 +88,6 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!config) {
     return invalidParam("CompetitionConfig");
-  }
-
-  if (!qualified) {
-    return invalidParam("Qualifed");
-  }
-
-  if (!opponents) {
-    return invalidParam("Opponents");
-  }
-
-  const existing = await prisma.competition.findUnique({
-    where: { id: competitionId },
-    select: { id: true },
-  });
-
-  if (!existing) {
-    return noFound("Competition");
   }
 
   const competitionUpdated = await prisma.competition.update({

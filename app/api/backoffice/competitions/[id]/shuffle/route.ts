@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { sanitizeEnum, sanitizeNumber } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
   createdResponse,
@@ -11,12 +12,18 @@ import {
 } from "@/lib/api";
 import {
   addKnockoutPlaceholders,
+  canCreateGroups,
+  canCreateKnockout,
   canCreateLeague,
   createGroupMatches,
   createKnockoutMatches,
   createLeagueMatches,
 } from "@/lib/shuffle";
-import { CompetitionConfig, Prisma } from "@/generated/prisma";
+import {
+  CompetitionConfig,
+  CompetitionStatus,
+  Prisma,
+} from "@/generated/prisma";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -31,11 +38,14 @@ export async function GET(request: Request, context: RouteContext) {
 
   const competition = await prisma.competition.findUnique({
     where: { id: competitionId },
-    select: { id: true, config: true, opponents: true, qualified: true },
   });
 
   if (!competition) {
     return noFound("Competition");
+  }
+
+  if (competition.config === null) {
+    return invalidParam("CompetitionConfig");
   }
 
   const matches = await prisma.match.findMany({
@@ -66,19 +76,40 @@ export async function POST(request: Request, context: RouteContext) {
 
   const competition = await prisma.competition.findUnique({
     where: { id: competitionId },
-    select: { id: true, config: true, opponents: true, qualified: true },
   });
 
   if (!competition) {
     return noFound("Competition");
   }
 
-  if (competition.opponents === null) {
+  if (competition.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
+  }
+
+  const body = await request.json().catch(() => null);
+  const config =
+    sanitizeEnum(body?.config, CompetitionConfig) || competition.config;
+  const qualified = sanitizeNumber(body?.qualified) || competition.qualified;
+  const opponents = sanitizeNumber(body?.opponents) || competition.opponents;
+
+  if (!config) {
+    return invalidParam("CompetitionConfig");
+  }
+
+  if (!opponents) {
     return invalidParam("Opponents");
   }
 
-  if (competition.qualified === null) {
+  if (!qualified) {
     return invalidParam("Qualified");
+  }
+
+  const existingMatches = await prisma.match.count({
+    where: { competitionId },
+  });
+
+  if (existingMatches > 0) {
+    return invalidParam("Matches");
   }
 
   const teams = await prisma.team.findMany({
@@ -89,34 +120,31 @@ export async function POST(request: Request, context: RouteContext) {
     return noFound("Team");
   }
 
-  if (competition.qualified > teams.length) {
+  if (qualified > teams.length) {
+    return invalidParam("Qualified");
+  }
+
+  if (!canCreateKnockout(qualified)) {
     return invalidParam("Qualified");
   }
 
   let initialMatches: Prisma.MatchCreateManyInput[];
 
-  if (competition.config === CompetitionConfig.LEAGUE) {
-    if (!canCreateLeague(teams.length, competition.opponents!)) {
+  if (config === CompetitionConfig.LEAGUE) {
+    if (!canCreateLeague(teams.length, opponents)) {
       return invalidParam("Opponents");
     }
 
-    initialMatches = createLeagueMatches(
-      competition.id,
-      teams,
-      competition.opponents!,
-    );
+    initialMatches = createLeagueMatches(competition.id, teams, opponents);
   } else {
-    initialMatches = createGroupMatches(
-      competition.id,
-      teams,
-      competition.opponents,
-    );
+    if (!canCreateGroups(teams.length, opponents)) {
+      return invalidParam("Opponents");
+    }
+
+    initialMatches = createGroupMatches(competition.id, teams, opponents);
   }
 
-  const knockoutMatches = createKnockoutMatches(
-    competition.id,
-    competition.qualified,
-  );
+  const knockoutMatches = createKnockoutMatches(competition.id, qualified);
 
   if (!knockoutMatches.length) {
     return invalidParam("Qualified");
@@ -125,6 +153,16 @@ export async function POST(request: Request, context: RouteContext) {
   const matches = [...initialMatches, ...knockoutMatches];
 
   const createdMatches = await prisma.$transaction(async (tx) => {
+    await tx.competition.update({
+      where: { id: competition.id },
+      data: {
+        status: CompetitionStatus.DRAWN,
+        config,
+        qualified,
+        opponents,
+      },
+    });
+
     await tx.matchEvent.deleteMany({
       where: { match: { competitionId: competition.id } },
     });
@@ -140,8 +178,8 @@ export async function POST(request: Request, context: RouteContext) {
 
   return createdResponse(
     addKnockoutPlaceholders({
-      config: competition.config,
-      qualified: competition.qualified,
+      config,
+      qualified,
       matches: createdMatches,
     }),
   );

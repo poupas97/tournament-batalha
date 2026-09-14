@@ -33,7 +33,7 @@ model Team {
 model Player {
   id        Int      @id @default(autoincrement())
   name      String
-  number    String
+  number    Int
   teamId    Int
   team      Team     @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())
@@ -56,6 +56,13 @@ enum UserRole {
   ADMIN
 }
 
+enum CompetitionStatus {
+  DRAFT
+  DRAWN
+  IN_PROGRESS
+  FINISHED
+}
+
 model Competition {
   id        Int      @id @default(autoincrement())
   name      String
@@ -63,6 +70,7 @@ model Competition {
   teams     Team[]
   matches     Match[]
   active    Boolean @default(true)
+  status    CompetitionStatus @default(DRAFT)
   // Competition format:
   // - LEAGUE: each team plays against `opponents` different opponents.
   // - GROUP: `opponents` defines the number of teams per group.

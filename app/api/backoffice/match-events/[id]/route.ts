@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
+import { CompetitionStatus, MatchStatus } from "@/generated/prisma";
 import {
   deletedResponse,
   getParamId,
@@ -51,11 +52,40 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const matchEvent = await prisma.matchEvent.findUnique({
     where: { id: matchEventId },
-    select: { id: true, matchId: true },
+    select: {
+      id: true,
+      matchId: true,
+      match: {
+        select: {
+          status: true,
+          competition: { select: { status: true } },
+        },
+      },
+    },
   });
 
   if (!matchEvent) {
     return noFound("Match event");
+  }
+
+  if (matchEvent.match.competition.status === CompetitionStatus.FINISHED) {
+    return invalidParam("CompetitionStatus");
+  }
+
+  const eventAllowedStatuses: MatchStatus[] = [
+    MatchStatus.RT_START,
+    MatchStatus.RT_HALF_TIME,
+    MatchStatus.RT_RESTART,
+    MatchStatus.RT_END,
+    MatchStatus.ET_START,
+    MatchStatus.ET_HALF_TIME,
+    MatchStatus.ET_RESTART,
+    MatchStatus.ET_END,
+    MatchStatus.PENALTIES,
+  ];
+
+  if (!eventAllowedStatuses.includes(matchEvent.match.status)) {
+    return invalidParam("MatchStatus");
   }
 
   await prisma.matchEvent.delete({

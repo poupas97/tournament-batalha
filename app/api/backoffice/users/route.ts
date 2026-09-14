@@ -5,12 +5,12 @@ import {
   createdResponse,
   getResponse,
   invalidParam,
-  requireAdminToken,
   unauthorized,
 } from "@/lib/api";
+import { requireCurrentAdminToken } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
-  const token = await requireAdminToken(request);
+  const token = await requireCurrentAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -30,15 +30,15 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const token = await requireAdminToken(request);
+  const token = await requireCurrentAdminToken(request);
   if (!token) {
     return unauthorized();
   }
 
   const body = await request.json().catch(() => null);
-  const name = sanitizeText(body.name);
-  const email = sanitizeText(body.email);
-  const password = await bcrypt.hash(body.password, 12);
+  const name = sanitizeText(body?.name);
+  const email = sanitizeText(body?.email);
+  const password = await bcrypt.hash(body?.password, 12);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");

@@ -7,7 +7,11 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { MatchEventType } from "@/generated/prisma";
+import {
+  CompetitionStatus,
+  MatchEventType,
+  MatchStatus,
+} from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
 
 export async function GET(request: Request) {
@@ -42,6 +46,10 @@ export async function POST(request: Request) {
   const staffId = sanitizeNumber(body?.staffId);
   const teamId = sanitizeNumber(body?.teamId);
 
+  if (body?.status !== undefined) {
+    return invalidParam("Status");
+  }
+
   if (!matchId) {
     return invalidParam("Match");
   }
@@ -54,13 +62,81 @@ export async function POST(request: Request) {
     return invalidParam("Team");
   }
 
+  if (!minute || minute > 130) {
+    return invalidParam("Minute");
+  }
+
+  if (Boolean(playerId) === Boolean(staffId)) {
+    return invalidParam("PlayerOrStaff");
+  }
+
+  if (
+    staffId &&
+    type !== MatchEventType.YELLOW_CARD &&
+    type !== MatchEventType.RED_CARD
+  ) {
+    return invalidParam("Type");
+  }
+
+  const match = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: {
+      status: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      competition: { select: { status: true } },
+    },
+  });
+
+  if (!match) {
+    return invalidParam("Match");
+  }
+
+  if (match.competition.status === CompetitionStatus.FINISHED) {
+    return invalidParam("CompetitionStatus");
+  }
+
+  const eventAllowedStatuses: MatchStatus[] = [
+    MatchStatus.RT_START,
+    MatchStatus.RT_HALF_TIME,
+    MatchStatus.RT_RESTART,
+    MatchStatus.RT_END,
+    MatchStatus.ET_START,
+    MatchStatus.ET_HALF_TIME,
+    MatchStatus.ET_RESTART,
+    MatchStatus.ET_END,
+    MatchStatus.PENALTIES,
+  ];
+
+  if (!eventAllowedStatuses.includes(match.status)) {
+    return invalidParam("MatchStatus");
+  }
+
+  if (teamId !== match.homeTeamId && teamId !== match.awayTeamId) {
+    return invalidParam("Team");
+  }
+
+  const author = playerId
+    ? await prisma.player.findUnique({
+        where: { id: playerId },
+        select: { id: true, teamId: true },
+      })
+    : await prisma.staff.findUnique({
+        where: { id: staffId },
+        select: { id: true, teamId: true },
+      });
+
+  if (!author || author.teamId !== teamId) {
+    return invalidParam("PlayerOrStaff");
+  }
+
   const matchEvent = await prisma.matchEvent.create({
     data: {
       matchId,
       type,
-      minute: minute ?? 0,
-      playerId: playerId ?? undefined,
-      staffId: staffId ?? undefined,
+      minute,
+      playerId,
+      staffId,
       teamId,
     },
     include: {

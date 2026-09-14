@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
+import { CompetitionStatus } from "@/generated/prisma";
 import {
   createdResponse,
   getResponse,
@@ -30,15 +31,15 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = sanitizeText(body.name);
-  const number = sanitizeText(body.number);
+  const name = sanitizeText(body?.name);
+  const number = sanitizeNumber(body?.number);
   const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
   }
 
-  if (!number || Number(number) < 0 || Number(number) > 99) {
+  if (!number || number > 99) {
     return invalidParam("Number");
   }
 
@@ -48,11 +49,15 @@ export async function POST(request: Request) {
 
   const team = await prisma.team.findUnique({
     where: { id: teamId },
-    select: { id: true },
+    select: { id: true, competition: { select: { status: true } } },
   });
 
   if (!team) {
     return noFound("Team");
+  }
+
+  if (team.competition.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
   }
 
   const player = await prisma.player.create({

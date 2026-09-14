@@ -47,6 +47,16 @@ export function canCreateLeague(numberOfTeams: number, opponents: number) {
   );
 }
 
+export function canCreateGroups(numberOfTeams: number, teamsPerGroup: number) {
+  return (
+    numberOfTeams >= 2 && teamsPerGroup >= 2 && teamsPerGroup <= numberOfTeams
+  );
+}
+
+export function canCreateKnockout(qualified: number) {
+  return Object.prototype.hasOwnProperty.call(stagesByQualified, qualified);
+}
+
 export function createGroupMatches(
   competitionId: number,
   teams: Team[],
@@ -144,7 +154,13 @@ function calculateLeagueStandings(
 
   for (const match of matches) {
     if (!match.homeTeamId || !match.awayTeamId) continue;
-    if (match.status !== MatchStatus.RT_END) continue;
+    if (
+      match.status !== MatchStatus.RT_END &&
+      match.status !== MatchStatus.ET_END &&
+      match.status !== MatchStatus.PENALTIES
+    ) {
+      continue;
+    }
 
     const home = standings.get(match.homeTeamId);
     const away = standings.get(match.awayTeamId);

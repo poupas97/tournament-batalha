@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
+  const name = sanitizeText(body?.name);
   const config = sanitizeEnum(body?.config, CompetitionConfig);
   const qualified = sanitizeNumber(body?.qualified);
   const opponents = sanitizeNumber(body?.opponents);
@@ -45,14 +45,6 @@ export async function POST(request: Request) {
 
   if (!config) {
     return invalidParam("CompetitionConfig");
-  }
-
-  if (!qualified) {
-    return invalidParam("Qualifed");
-  }
-
-  if (!opponents) {
-    return invalidParam("Opponents");
   }
 
   const competition = await prisma.competition.create({

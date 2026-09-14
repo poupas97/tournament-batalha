@@ -29,7 +29,11 @@ export const MATCH_STATE_MACHINE: Record<MatchStatus, MatchStatus[]> = {
     MatchStatus.CANCELED,
   ],
 
-  [MatchStatus.RT_END]: [MatchStatus.ET_START, MatchStatus.PENALTIES],
+  [MatchStatus.RT_END]: [
+    MatchStatus.ET_START,
+    MatchStatus.PENALTIES,
+    MatchStatus.CANCELED,
+  ],
 
   [MatchStatus.ET_START]: [
     MatchStatus.ET_HALF_TIME,
@@ -52,7 +56,7 @@ export const MATCH_STATE_MACHINE: Record<MatchStatus, MatchStatus[]> = {
     MatchStatus.CANCELED,
   ],
 
-  [MatchStatus.ET_END]: [MatchStatus.PENALTIES],
+  [MatchStatus.ET_END]: [MatchStatus.PENALTIES, MatchStatus.CANCELED],
 
   [MatchStatus.PENALTIES]: [
     MatchStatus.INTERRUPTED,

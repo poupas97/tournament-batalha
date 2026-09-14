@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeEnum, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
   deletedResponse,
@@ -7,13 +7,14 @@ import {
   getResponse,
   invalidParam,
   noFound,
-  requireAdminToken,
   unauthorized,
   updatedResponse,
 } from "@/lib/api";
+import { UserRole } from "@/generated/prisma";
+import { requireCurrentAdminToken } from "@/lib/adminAuth";
 
 export async function GET(request: Request, context: RouteContext) {
-  const token = await requireAdminToken(request);
+  const token = await requireCurrentAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -42,7 +43,7 @@ export async function GET(request: Request, context: RouteContext) {
 }
 
 export async function PUT(request: Request, context: RouteContext) {
-  const token = await requireAdminToken(request);
+  const token = await requireCurrentAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -53,8 +54,9 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = sanitizeText(body.name);
-  const email = sanitizeText(body.email);
+  const name = sanitizeText(body?.name);
+  const email = sanitizeText(body?.email);
+  const role = sanitizeEnum(body?.role, UserRole);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
@@ -64,32 +66,60 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Email");
   }
 
-  const existing = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
-
-  if (!existing) {
-    return noFound("User");
+  if (!role) {
+    return invalidParam("Role");
   }
 
-  const updatedUser = await prisma.user.update({
-    where: { id: userId },
-    data: { name, email },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      createdAt: true,
-    },
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    const existing = await tx.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true },
+    });
+
+    if (!existing) {
+      return null;
+    }
+
+    if (existing.role === UserRole.ADMIN && role !== UserRole.ADMIN) {
+      const adminCount = await tx.user.count({
+        where: { role: UserRole.ADMIN },
+      });
+
+      if (adminCount <= 1) {
+        return null;
+      }
+    }
+
+    return tx.user.update({
+      where: { id: userId },
+      data: { name, email, role },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
   });
+
+  if (!updatedUser) {
+    if (
+      await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      })
+    ) {
+      return invalidParam("LastAdmin");
+    }
+    return noFound("User");
+  }
 
   return updatedResponse(updatedUser);
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const token = await requireAdminToken(request);
+  const token = await requireCurrentAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -99,25 +129,49 @@ export async function DELETE(request: Request, context: RouteContext) {
     return invalidParam("User");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
+  try {
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { id: true, role: true },
+      });
 
-  if (!user) {
-    return noFound("User");
+      if (!user) {
+        throw new Error("NOT_FOUND");
+      }
+
+      if (user.role === UserRole.ADMIN) {
+        const adminCount = await tx.user.count({
+          where: { role: UserRole.ADMIN },
+        });
+
+        if (adminCount <= 1) {
+          throw new Error("LAST_ADMIN");
+        }
+      }
+
+      await tx.user.delete({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return noFound("User");
+    }
+
+    if (error instanceof Error && error.message === "LAST_ADMIN") {
+      return invalidParam("LastAdmin");
+    }
+
+    throw error;
   }
-
-  await prisma.user.delete({
-    where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      createdAt: true,
-    },
-  });
 
   return deletedResponse();
 }

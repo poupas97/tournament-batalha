@@ -1,4 +1,4 @@
-import { CompetitionConfig } from "@/generated/prisma";
+import { CompetitionConfig, CompetitionStatus } from "@/generated/prisma";
 import { TeamBEResponse } from "./team";
 
 export type ICompetitionFormValues = {
@@ -12,6 +12,7 @@ export type ICompetitionFormValues = {
 export type CompetitionBEResponse = {
   id: number;
   name: string;
+  status: CompetitionStatus;
   teams: TeamBEResponse[];
   config: CompetitionConfig;
   qualified?: number;

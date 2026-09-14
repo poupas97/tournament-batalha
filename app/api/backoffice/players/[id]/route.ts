@@ -10,6 +10,7 @@ import {
   updatedResponse,
 } from "@/lib/api";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
+import { CompetitionStatus } from "@/generated/prisma";
 import { RouteContext } from "@/types/api";
 
 export async function GET(request: Request, context: RouteContext) {
@@ -49,11 +50,16 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
+  const name = sanitizeText(body?.name);
+  const number = sanitizeNumber(body?.number);
   const teamId = sanitizeNumber(body?.teamId);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
+  }
+
+  if (!number || number > 99) {
+    return invalidParam("Number");
   }
 
   if (!teamId) {
@@ -61,8 +67,17 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const [player, team] = await Promise.all([
-    prisma.player.findUnique({ where: { id: playerId }, select: { id: true } }),
-    prisma.team.findUnique({ where: { id: teamId }, select: { id: true } }),
+    prisma.player.findUnique({
+      where: { id: playerId },
+      select: {
+        id: true,
+        team: { select: { competition: { select: { status: true } } } },
+      },
+    }),
+    prisma.team.findUnique({
+      where: { id: teamId },
+      select: { id: true, competition: { select: { status: true } } },
+    }),
   ]);
 
   if (!player) {
@@ -71,6 +86,13 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!team) {
     return noFound("Team");
+  }
+
+  if (
+    player.team.competition.status !== CompetitionStatus.DRAFT ||
+    team.competition.status !== CompetitionStatus.DRAFT
+  ) {
+    return invalidParam("CompetitionStatus");
   }
 
   const existing = await prisma.player.findUnique({
@@ -84,13 +106,8 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const updatedPlayer = await prisma.player.update({
     where: { id: playerId },
-    data: {
-      name,
-      teamId,
-    },
-    include: {
-      team: true,
-    },
+    data: { name, number, teamId },
+    include: { team: true },
   });
 
   return updatedResponse(updatedPlayer);
@@ -109,11 +126,18 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const player = await prisma.player.findUnique({
     where: { id: playerId },
-    select: { id: true },
+    select: {
+      id: true,
+      team: { select: { competition: { select: { status: true } } } },
+    },
   });
 
   if (!player) {
     return noFound("Player");
+  }
+
+  if (player.team.competition.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
   }
 
   await prisma.player.delete({

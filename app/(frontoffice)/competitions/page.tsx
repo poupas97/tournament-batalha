@@ -23,7 +23,12 @@ export default function CompetitionsPage() {
         clickableRow={(it) => router.push(`/competitions/${it.id}`)}
         columns={[
           { key: "name", header: "Nome" },
+          { key: "config", header: "Configuração" },
+          { key: "qualified", header: "Qualificados" },
+          { key: "opponents", header: "Oponentes" },
+          { key: "active", header: "Ativo", format: "boolean" },
           { key: "_count.teams", header: "Equipas" },
+          { key: "status", header: "Estado" },
         ]}
       />
     </>

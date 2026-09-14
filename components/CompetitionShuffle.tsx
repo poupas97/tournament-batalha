@@ -6,6 +6,7 @@ import {
   CompetitionShuffleGroup,
   LeagueStanding,
 } from "@/types/competition";
+import { CompetitionForShuffle } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import { useRouter } from "next/navigation";
 
@@ -16,12 +17,18 @@ export default function CompetitionShuffle({
   competition: CompetitionBEResponse;
   matches: MatchBEResponse[];
 }) {
-  const view = getCompetitionShuffleView(competition, matches);
+  if (!competition.config) {
+    return <p>Esta competição ainda não tem configuração.</p>;
+  }
+
+  const configuredCompetition: CompetitionForShuffle = {
+    ...competition,
+    config: competition.config,
+  };
+  const view = getCompetitionShuffleView(configuredCompetition, matches);
 
   return (
     <>
-      <h1>{competition.name}</h1>
-
       <h2>Classificação</h2>
 
       {view.isGroupCompetition ? (

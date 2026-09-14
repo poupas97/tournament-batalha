@@ -38,3 +38,8 @@ export function sanitizeBoolean(value: string | boolean | undefined | null) {
 
   return undefined;
 }
+
+export function sanitizeDate(value: string) {
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) ? date : undefined;
+}

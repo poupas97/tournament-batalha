@@ -5,6 +5,7 @@ import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
 type Stats = {
@@ -70,8 +71,14 @@ export default function ViewCompetitionPage() {
           { key: "config", label: "Configuração" },
           { key: "qualified", label: "Qualificados" },
           { key: "opponents", label: "Oponentes" },
+          { key: "active", label: "Ativo", format: "boolean" },
+          { key: "status", label: "Estado" },
         ]}
       />
+
+      <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
+        Ver sorteio
+      </Link>
 
       {/* <h4>Classificações</h4>
       <GridTable

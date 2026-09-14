@@ -45,7 +45,7 @@ CREATE TABLE "Team" (
 CREATE TABLE "Player" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "number" TEXT NOT NULL,
+    "number" INTEGER NOT NULL,
     "teamId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

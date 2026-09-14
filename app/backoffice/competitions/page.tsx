@@ -42,6 +42,7 @@ export default function BackofficeCompetitionsPage() {
           { key: "opponents", header: "Oponentes" },
           { key: "active", header: "Ativo", format: "boolean" },
           { key: "_count.teams", header: "Equipas" },
+          { key: "status", header: "Estado" },
         ]}
       />
     </>

@@ -36,9 +36,9 @@ export default function FormTeam({
 
   function handleAddPlayer(values: IPlayerFormValues) {
     const name = values.name.trim();
-    const number = values.number.trim();
+    const number = Number(values.number);
 
-    if (!name || !number) {
+    if (!name || !Number.isInteger(number) || number < 1 || number > 99) {
       alert("Por favor, preencha todos os campos do jogador.");
       return;
     }
@@ -74,7 +74,7 @@ export default function FormTeam({
           initialValues={player}
           fields={[
             { key: "name", label: "Nome" },
-            { key: "number", label: "Nº" },
+            { key: "number", label: "Nº", type: "number" },
           ]}
           onSubmit={player ? handleEditPlayer : handleAddPlayer}
           vertical

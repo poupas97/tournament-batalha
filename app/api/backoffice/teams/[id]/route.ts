@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
-import { Player, Staff } from "@/generated/prisma";
+import { CompetitionStatus } from "@/generated/prisma";
 import { sanitizeText } from "@/lib/sanitize";
+import { sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
 import { RouteContext } from "@/types/api";
 import {
   getParamId,
@@ -55,19 +56,33 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
+  const name = sanitizeText(body?.name);
+  const players = sanitizePlayers(body?.players);
+  const staffs = sanitizeStaffs(body?.staffs);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
   }
 
+  if (players === null) {
+    return invalidParam("Players");
+  }
+
+  if (staffs === null) {
+    return invalidParam("Staffs");
+  }
+
   const existing = await prisma.team.findUnique({
     where: { id: teamId },
-    select: { id: true },
+    select: { id: true, competition: { select: { status: true } } },
   });
 
   if (!existing) {
     return noFound("Team");
+  }
+
+  if (existing.competition.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
   }
 
   const teamUpdated = await prisma.$transaction(async (tx) => {
@@ -78,23 +93,8 @@ export async function PUT(request: Request, context: RouteContext) {
       where: { id: teamId },
       data: {
         name,
-        players:
-          body.players?.length > 0
-            ? {
-                create: (body.players as Player[]).map((it) => ({
-                  name: it.name,
-                  number: it.number,
-                })),
-              }
-            : undefined,
-        staffs:
-          body.staffs?.length > 0
-            ? {
-                create: (body.staffs as Staff[]).map((it) => ({
-                  name: it.name,
-                })),
-              }
-            : undefined,
+        players: players?.length ? { create: players } : undefined,
+        staffs: staffs?.length ? { create: staffs } : undefined,
       },
       include: {
         players: {

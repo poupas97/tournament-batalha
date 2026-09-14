@@ -38,6 +38,7 @@ export async function GET(request: Request, context: RouteContext) {
     WHERE
         me.type IN ('GOAL', 'PENALTY_GOAL')
         AND m."competitionId" = ${competitionId}
+        AND m.status IN ('RT_END', 'ET_END', 'PENALTIES')
     GROUP BY
         p.id,
         p.name,
@@ -82,7 +83,7 @@ export async function GET(request: Request, context: RouteContext) {
 
         WHERE
             m."competitionId" = ${competitionId}
-            AND m.status = 'RT_END'
+            AND m.status IN ('RT_END', 'ET_END', 'PENALTIES')
 
         GROUP BY
             m.id,

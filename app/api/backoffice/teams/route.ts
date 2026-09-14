@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
-import { Player, Staff } from "@/generated/prisma";
+import { CompetitionStatus } from "@/generated/prisma";
+import { sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
 import {
   createdResponse,
   getResponse,
@@ -35,8 +36,10 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === "string" ? sanitizeText(body.name) : "";
-  const competitionId = sanitizeNumber(body.competitionId);
+  const name = sanitizeText(body?.name);
+  const competitionId = sanitizeNumber(body?.competitionId);
+  const players = sanitizePlayers(body?.players);
+  const staffs = sanitizeStaffs(body?.staffs);
 
   if (!name || name.length > 100) {
     return invalidParam("Name");
@@ -46,27 +49,33 @@ export async function POST(request: Request) {
     return invalidParam("Competition");
   }
 
+  if (players === null) {
+    return invalidParam("Players");
+  }
+
+  if (staffs === null) {
+    return invalidParam("Staffs");
+  }
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { id: true, status: true },
+  });
+
+  if (!competition) {
+    return invalidParam("Competition");
+  }
+
+  if (competition.status !== CompetitionStatus.DRAFT) {
+    return invalidParam("CompetitionStatus");
+  }
+
   const team = await prisma.team.create({
     data: {
       name,
       competitionId,
-      players:
-        body.players?.length > 0
-          ? {
-              create: (body.players as Player[]).map((it) => ({
-                name: it.name,
-                number: it.number,
-              })),
-            }
-          : undefined,
-      staffs:
-        body.staffs?.length > 0
-          ? {
-              create: (body.staffs as Staff[]).map((it) => ({
-                name: it.name,
-              })),
-            }
-          : undefined,
+      players: players?.length ? { create: players } : undefined,
+      staffs: staffs?.length ? { create: staffs } : undefined,
     },
     include: {
       players: true,

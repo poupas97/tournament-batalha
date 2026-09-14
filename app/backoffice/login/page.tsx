@@ -41,7 +41,7 @@ export default function LoginPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            autoComplete={undefined}
+            autoComplete="email"
             style={{ width: "100%", padding: "0.5rem" }}
           />
         </label>
@@ -53,6 +53,7 @@ export default function LoginPage() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
+            autoComplete="current-password"
             style={{ width: "100%", padding: "0.5rem" }}
           />
         </label>
