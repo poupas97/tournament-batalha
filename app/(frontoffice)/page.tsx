@@ -6,7 +6,7 @@ export default function Home() {
       <Title label="Frontoffice" />
 
       <p>Bem-vindo ao frontoffice. Esta é a página principal pública.</p>
-      <p>2</p>
+      <p>3</p>
     </>
   );
 }
