@@ -12,6 +12,7 @@ import { canTransition } from "@/lib/match";
 import { MatchBEResponse } from "@/types/match";
 import { IMatchEventFormValues } from "@/types/match-event";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -20,26 +21,38 @@ export default function ViewMatchPage() {
   const { data, loading, error, setData } = useGetState<MatchBEResponse>(
     `/api/backoffice/matches/${matchId}`,
   );
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const { openModal, closeModal } = useModal();
 
   const handleChangeStatus = async (status: MatchStatus) => {
-    const response = await fetch(`/api/backoffice/matches/${matchId}/status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+    if (updatingStatus) return;
 
-    const responseData = (await response
-      .json()
-      .catch(() => null)) as MatchBEResponse | null;
+    setUpdatingStatus(true);
 
-    if (!responseData) {
-      alert("Erro ao guardar o status.");
-      return;
+    try {
+      const response = await fetch(
+        `/api/backoffice/matches/${matchId}/status`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        },
+      );
+
+      const responseData = (await response
+        .json()
+        .catch(() => null)) as MatchBEResponse | null;
+
+      if (!response.ok || !responseData) {
+        alert("Erro ao guardar o status.");
+        return;
+      }
+
+      setData((prev) => (prev ? { ...prev, ...responseData } : prev));
+    } finally {
+      setUpdatingStatus(false);
     }
-
-    setData((prev) => (prev ? { ...prev, ...responseData } : prev));
   };
 
   const handleAddEvent =
@@ -62,10 +75,7 @@ export default function ViewMatchPage() {
 
       setData((prev) =>
         prev
-          ? {
-              ...prev,
-              events: [responseData, ...(prev.events || []), responseData],
-            }
+          ? { ...prev, events: [responseData, ...(prev.events || [])] }
           : prev,
       );
 
@@ -188,6 +198,7 @@ export default function ViewMatchPage() {
             <button
               key={status}
               disabled={
+                updatingStatus ||
                 !data.awayTeamId ||
                 !data.homeTeamId ||
                 !canTransition(data.status, status)
