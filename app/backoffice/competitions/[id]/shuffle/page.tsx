@@ -48,6 +48,7 @@ export default function ViewCompetitionMatchesPage() {
           <CompetitionShuffle
             competition={competitionData}
             matches={matchesData}
+            isBackoffice
           />
         )}
     </>

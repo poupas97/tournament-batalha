@@ -8,14 +8,17 @@ import {
 } from "@/types/competition";
 import { CompetitionForShuffle } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CompetitionShuffle({
   competition,
   matches,
+  isBackoffice = false,
 }: {
   competition: CompetitionBEResponse;
   matches: MatchBEResponse[];
+  isBackoffice?: boolean;
 }) {
   if (!competition.config) {
     return <p>Esta competição ainda não tem configuração.</p>;
@@ -35,28 +38,42 @@ export default function CompetitionShuffle({
         <GroupTables
           groups={view.groups}
           qualifiedTeamIds={view.qualifiedTeamIds}
+          isBackoffice={isBackoffice}
         />
       ) : (
         <LeagueTable
           standings={view.standings}
           qualifiedTeamIds={view.qualifiedTeamIds}
+          isBackoffice={isBackoffice}
         />
       )}
 
-      <KnockoutBracket rounds={view.knockoutRounds} />
+      <KnockoutBracket
+        rounds={view.knockoutRounds}
+        isBackoffice={isBackoffice}
+      />
 
       <h2>Todo o calendário</h2>
 
       {view.isGroupCompetition ? (
-        <GroupSchedule groups={view.groups} />
+        <GroupSchedule groups={view.groups} isBackoffice={isBackoffice} />
       ) : (
-        <LeagueSchedule matches={view.leagueMatches} />
+        <LeagueSchedule
+          matches={view.leagueMatches}
+          isBackoffice={isBackoffice}
+        />
       )}
     </>
   );
 }
 
-function MatchCard({ match }: { match: MatchBEResponse }) {
+function MatchCard({
+  match,
+  isBackoffice,
+}: {
+  match: MatchBEResponse;
+  isBackoffice: boolean;
+}) {
   const router = useRouter();
 
   const { homeGoals, awayGoals } = getMatchScore(match);
@@ -67,7 +84,9 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
 
   return (
     <div
-      onClick={() => router.push(`/backoffice/matches/${match.id}`)}
+      onClick={() =>
+        router.push(`${isBackoffice ? "/backoffice" : ""}/matches/${match.id}`)
+      }
       className="cursor-pointer transition-colors hover:border-slate-400 hover:bg-slate-50"
       style={{
         display: "flex",
@@ -120,9 +139,11 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
 function LeagueTable({
   standings,
   qualifiedTeamIds,
+  isBackoffice,
 }: {
   standings: LeagueStanding[];
   qualifiedTeamIds?: Set<number>;
+  isBackoffice: boolean;
 }) {
   return (
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -155,7 +176,18 @@ function LeagueTable({
               }}
             >
               <td>{team.position}</td>
-              <td>{team.team.name}</td>
+              <td>
+                <Link
+                  href={
+                    isBackoffice
+                      ? `/backoffice/teams/${team.team.id}`
+                      : `/teams/${team.team.id}`
+                  }
+                  className="font-medium hover:underline"
+                >
+                  {team.team.name}
+                </Link>
+              </td>
               <td>{team.points}</td>
               <td>{team.played}</td>
               <td>{team.won}</td>
@@ -175,9 +207,11 @@ function LeagueTable({
 function GroupTables({
   groups,
   qualifiedTeamIds,
+  isBackoffice,
 }: {
   groups: CompetitionShuffleGroup[];
   qualifiedTeamIds: Set<number>;
+  isBackoffice: boolean;
 }) {
   return (
     <div
@@ -193,6 +227,7 @@ function GroupTables({
           <LeagueTable
             standings={standings}
             qualifiedTeamIds={qualifiedTeamIds}
+            isBackoffice={isBackoffice}
           />
         </section>
       ))}
@@ -200,7 +235,13 @@ function GroupTables({
   );
 }
 
-function GroupSchedule({ groups }: { groups: CompetitionShuffleGroup[] }) {
+function GroupSchedule({
+  groups,
+  isBackoffice,
+}: {
+  groups: CompetitionShuffleGroup[];
+  isBackoffice: boolean;
+}) {
   return groups.map(({ group, matches }) => (
     <section key={group}>
       <h3>Grupo {group}</h3>
@@ -213,14 +254,20 @@ function GroupSchedule({ groups }: { groups: CompetitionShuffleGroup[] }) {
         }}
       >
         {matches.map((match) => (
-          <MatchCard key={match.id} match={match} />
+          <MatchCard key={match.id} match={match} isBackoffice={isBackoffice} />
         ))}
       </div>
     </section>
   ));
 }
 
-function LeagueSchedule({ matches }: { matches: MatchBEResponse[] }) {
+function LeagueSchedule({
+  matches,
+  isBackoffice,
+}: {
+  matches: MatchBEResponse[];
+  isBackoffice: boolean;
+}) {
   return (
     <div
       style={{
@@ -230,7 +277,7 @@ function LeagueSchedule({ matches }: { matches: MatchBEResponse[] }) {
       }}
     >
       {matches.map((match) => (
-        <MatchCard key={match.id} match={match} />
+        <MatchCard key={match.id} match={match} isBackoffice={isBackoffice} />
       ))}
     </div>
   );
@@ -238,11 +285,13 @@ function LeagueSchedule({ matches }: { matches: MatchBEResponse[] }) {
 
 function KnockoutBracket({
   rounds,
+  isBackoffice,
 }: {
   rounds: {
     stage: string;
     matches: MatchBEResponse[];
   }[];
+  isBackoffice: boolean;
 }) {
   return (
     <>
@@ -271,7 +320,11 @@ function KnockoutBracket({
                 }}
               >
                 {matches.map((match) => (
-                  <MatchCard key={match.id} match={match} />
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    isBackoffice={isBackoffice}
+                  />
                 ))}
               </div>
             </div>
