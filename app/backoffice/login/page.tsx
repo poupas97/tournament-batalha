@@ -1,78 +1,40 @@
 "use client";
 
-import { SubmitEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Title from "@/components/Title";
+import Form from "@/components/Form";
+import { ILoginFormValues } from "@/types/user";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-
-    const res = await signIn("credentials", {
+  async function handleSubmit(values: ILoginFormValues) {
+    const response = await signIn("credentials", {
       redirect: false,
-      email,
-      password,
+      ...values,
     });
-    if (res && (res as any).ok) {
+    if (response && (response as any).ok) {
       router.push("/backoffice");
+      router.refresh();
       return;
     }
 
-    setError("Credenciais inválidas.");
+    alert("Credenciais inválidas.");
   }
 
   return (
     <>
       <Title label="Login Backoffice" />
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <label id="email">
-          Email
-          <input
-            name="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            autoComplete="email"
-            style={{ width: "100%", padding: "0.5rem" }}
-          />
-        </label>
-        <label id="password">
-          Password
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            autoComplete="current-password"
-            style={{ width: "100%", padding: "0.5rem" }}
-          />
-        </label>
-
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <button
-          type="submit"
-          style={{
-            padding: "0.75rem",
-            background: "#0366d6",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Entrar
-        </button>
-      </form>
+      <Form<ILoginFormValues>
+        fields={[
+          { key: "email", label: "Email", type: "email" },
+          { key: "password", label: "Password", type: "password" },
+        ]}
+        vertical
+        onSubmit={handleSubmit}
+      />
     </>
   );
 }

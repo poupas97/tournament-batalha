@@ -45,7 +45,7 @@ export default function CompetitionShuffle({
 
       <KnockoutBracket rounds={view.knockoutRounds} />
 
-      <h2>Calendário</h2>
+      <h2>Todo o calendário</h2>
 
       {view.isGroupCompetition ? (
         <GroupSchedule groups={view.groups} />
@@ -68,6 +68,7 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
   return (
     <div
       onClick={() => router.push(`/backoffice/matches/${match.id}`)}
+      className="cursor-pointer transition-colors hover:border-slate-400 hover:bg-slate-50"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -76,11 +77,21 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
         borderRadius: "0.5rem",
         padding: "1rem",
         gap: "0.5rem",
-        cursor: "pointer",
       }}
     >
-      <div style={{ color: "#666" }}>{match.round}</div>
-      <div style={{ fontWeight: 600 }}>{formatDateTime(match.date)}</div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div style={{ flex: 1, color: "#666" }}>{match.round}</div>
+        <div style={{ flex: 1, color: "#666", textAlign: "end" }}>
+          {formatDateTime(match.date)}
+        </div>
+      </div>
       <div
         style={{
           display: "flex",
@@ -93,18 +104,11 @@ function MatchCard({ match }: { match: MatchBEResponse }) {
           {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
         </div>
 
-        <div style={{ color: "#666" }}>
+        <div style={{ fontWeight: 600 }}>
           {showScore ? `${homeGoals} vs ${awayGoals}` : "vs"}
         </div>
 
-        <div
-          style={{
-            fontWeight: 600,
-            flex: 1,
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
+        <div style={{ fontWeight: 600, flex: 1, textAlign: "end" }}>
           {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
         </div>
       </div>

@@ -28,8 +28,8 @@ export default function MatchEventGrid({
           <div
             key={it.id}
             onClick={addPlayerMatchEvent(it.id, team.id)}
+            className="cursor-pointer transition-colors hover:brightness-95"
             style={{
-              cursor: "pointer",
               border: "0.05rem solid black",
               backgroundColor: "aqua",
             }}
@@ -41,8 +41,8 @@ export default function MatchEventGrid({
           <div
             key={it.id}
             onClick={addStaffMatchEvent(it.id, team.id)}
+            className="cursor-pointer transition-colors hover:brightness-95"
             style={{
-              cursor: "pointer",
               border: "0.05rem solid black",
               backgroundColor: "greenyellow",
             }}

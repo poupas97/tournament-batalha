@@ -30,10 +30,11 @@ export default function DataTable<T>({
           <tr
             key={index}
             onClick={() => clickableRow?.(item)}
-            style={{
-              cursor: clickableRow ? "pointer" : "default",
-              borderBottom: "0.05rem solid #eaeef2",
-            }}
+            className={
+              clickableRow
+                ? "cursor-pointer border-b border-slate-200 transition-colors hover:bg-slate-50 focus-within:bg-slate-50"
+                : "border-b border-slate-200"
+            }
           >
             {columns.map((it) => {
               const value = get(item, it.key, "");

@@ -5,12 +5,13 @@ import Form from "@/components/Form";
 import GridTable from "@/components/GridTable";
 import { useModal } from "@/components/ModalProvider";
 import Title from "@/components/Title";
-import { CompetitionConfig, CompetitionStatus } from "@/generated/prisma";
+import { CompetitionStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
+import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
@@ -80,6 +81,7 @@ export default function ViewCompetitionPage() {
             { key: "qualified", label: "Qualificados" },
             { key: "opponents", label: "Oponentes" },
           ]}
+          vertical
           onSubmit={onShuffle}
         />
       ),
@@ -111,6 +113,35 @@ export default function ViewCompetitionPage() {
           { key: "status", label: "Estado" },
         ]}
       />
+
+      {data?.status === CompetitionStatus.DRAFT && (
+        <Button size="sm" onPress={openShuffleModal}>
+          Fazer sorteio
+        </Button>
+      )}
+      {data?.status === CompetitionStatus.DRAWN && (
+        <Button
+          size="sm"
+          onPress={() => changeCompetitionStatus(CompetitionStatus.IN_PROGRESS)}
+        >
+          Iniciar competição
+        </Button>
+      )}
+      {data?.status === CompetitionStatus.IN_PROGRESS && (
+        <Button
+          size="sm"
+          onPress={() => changeCompetitionStatus(CompetitionStatus.FINISHED)}
+        >
+          Finalizar competição
+        </Button>
+      )}
+      {(data?.status === CompetitionStatus.DRAWN ||
+        data?.status === CompetitionStatus.IN_PROGRESS) && (
+        <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
+          Ver sorteio
+        </Link>
+      )}
+
       <h4>Equipas</h4>
       <GridTable
         loading={loading}
@@ -124,31 +155,6 @@ export default function ViewCompetitionPage() {
           { key: "_count.staffs", header: "Staffs" },
         ]}
       />
-      {data?.status === CompetitionStatus.DRAFT && (
-        <button type="button" onClick={openShuffleModal}>
-          Sorteio
-        </button>
-      )}
-      {data?.status === CompetitionStatus.DRAWN && (
-        <button
-          type="button"
-          onClick={() => changeCompetitionStatus(CompetitionStatus.IN_PROGRESS)}
-        >
-          Iniciar competição
-        </button>
-      )}
-      {data?.status === CompetitionStatus.IN_PROGRESS && (
-        <button
-          type="button"
-          onClick={() => changeCompetitionStatus(CompetitionStatus.FINISHED)}
-        >
-          Finalizar competição
-        </button>
-      )}
-
-      <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
-        Ver sorteio
-      </Link>
     </>
   );
 }

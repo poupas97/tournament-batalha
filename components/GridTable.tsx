@@ -5,6 +5,7 @@ import DataTable from "./DataTable";
 import DataGrid from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { Button } from "@heroui/react";
 
 function GridTableContent<T>({
   emptyMessage,
@@ -49,7 +50,9 @@ function GridTableContent<T>({
       >
         <div style={{ flex: 1 }}>
           {create && (
-            <button onClick={() => router.push(create)}>+ Adicionar</button>
+            <Button size="sm" onPress={() => router.push(create)}>
+              + Adicionar
+            </Button>
           )}
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>

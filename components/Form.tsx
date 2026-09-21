@@ -80,22 +80,17 @@ export default function Form<T extends Record<string, unknown>>({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${vertical ? 1 : 5}, minmax(0, 1fr))`,
-          gap: "1rem",
-        }}
+        className={`grid gap-4 ${
+          vertical ? "grid-cols-1" : "grid-cols-1 md:grid-cols-5"
+        }`}
       >
         {fields.map((field) => (
           <label
             key={String(field.key)}
             id={String(field.key)}
-            style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+            className="flex flex-col gap-1 text-sm font-medium text-slate-700"
           >
             <span>{field.label}</span>
 
@@ -106,11 +101,7 @@ export default function Form<T extends Record<string, unknown>>({
                 onChange={(event) =>
                   handleChange(field.key, event.target.value)
                 }
-                style={{
-                  padding: "1rem",
-                  border: "0.05rem solid #cbd5e1",
-                  borderRadius: "0.5rem",
-                }}
+                className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               >
                 <option value="">Selecione...</option>
 
@@ -128,7 +119,7 @@ export default function Form<T extends Record<string, unknown>>({
                 onChange={(event) =>
                   handleChange(field.key, event.target.checked)
                 }
-                style={{ width: "1.5rem", height: "1.5rem" }}
+                className="mt-2 size-6 accent-blue-600"
               />
             ) : (
               <input
@@ -143,11 +134,7 @@ export default function Form<T extends Record<string, unknown>>({
                   handleChange(field.key, event.target.value)
                 }
                 placeholder={field.placeholder}
-                style={{
-                  padding: "1rem",
-                  border: "0.05rem solid #cbd5e1",
-                  borderRadius: "0.5rem",
-                }}
+                className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
             )}
           </label>
@@ -158,14 +145,7 @@ export default function Form<T extends Record<string, unknown>>({
 
       <button
         type="submit"
-        style={{
-          padding: "1rem",
-          border: "none",
-          borderRadius: "0.5rem",
-          background: "#2563eb",
-          color: "white",
-          cursor: "pointer",
-        }}
+        className="min-h-12 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         Guardar
       </button>

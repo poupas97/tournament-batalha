@@ -21,6 +21,30 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+button:not(:disabled),
+a,
+[role="button"] {
+  cursor: pointer;
+}
+
+button:not(:disabled):hover,
+a:hover,
+[role="button"]:hover {
+  filter: brightness(0.97);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+select,
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
 }

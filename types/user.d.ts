@@ -7,6 +7,11 @@ export type IUserFormValues = {
   password?: string;
 };
 
+export type ILoginFormValues = {
+  email: string;
+  password: string;
+};
+
 export type UserBEResponse = {
   id: number;
   name: string;

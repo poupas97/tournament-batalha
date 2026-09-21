@@ -3,6 +3,7 @@
 import Detail from "@/components/Detail";
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
+import { CompetitionStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
@@ -76,9 +77,12 @@ export default function ViewCompetitionPage() {
         ]}
       />
 
-      <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
-        Ver sorteio
-      </Link>
+      {(competitionData?.status === CompetitionStatus.DRAWN ||
+        competitionData?.status === CompetitionStatus.IN_PROGRESS) && (
+        <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
+          Ver sorteio
+        </Link>
+      )}
 
       {/* <h4>Classificações</h4>
       <GridTable

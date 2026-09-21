@@ -6,7 +6,6 @@ import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { ITeamFormValues, TeamBEResponse } from "@/types/team";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function EditTeamPage() {
   const params = useParams();

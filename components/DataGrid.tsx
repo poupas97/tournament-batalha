@@ -19,15 +19,11 @@ export default function GridView<T>({
         <div
           key={index}
           onClick={() => clickableRow?.(item)}
-          style={{
-            border: "0.05rem solid #d0d7de",
-            borderRadius: "0.5rem",
-            background: "#fff",
-            padding: "1rem",
-            cursor: clickableRow ? "pointer" : "default",
-            display: "flex",
-            flexDirection: "column",
-          }}
+          className={`flex flex-col rounded-lg border border-slate-300 bg-white p-4 transition-colors ${
+            clickableRow
+              ? "cursor-pointer hover:bg-slate-50 hover:border-slate-400"
+              : ""
+          }`}
         >
           <div
             style={{

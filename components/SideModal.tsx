@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, type ReactNode } from "react";
 
 type SideModalProps = {
   isOpen: boolean;

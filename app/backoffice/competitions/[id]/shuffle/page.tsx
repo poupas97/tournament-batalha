@@ -6,7 +6,6 @@ import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function ViewCompetitionMatchesPage() {
   const params = useParams();

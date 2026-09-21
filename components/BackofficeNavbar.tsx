@@ -1,15 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { Button } from "@heroui/react";
 
 const navItems = [
-  { href: "/backoffice", label: "Dashboard", adminOnly: false },
+  { href: "/backoffice", label: "Dashboard" },
   { href: "/backoffice/users", label: "Utilizadores", adminOnly: true },
-  { href: "/backoffice/competitions", label: "Competições", adminOnly: false },
-  { href: "/backoffice/teams", label: "Equipas", adminOnly: false },
-  { href: "/backoffice/matches", label: "Jogos", adminOnly: false },
+  { href: "/backoffice/competitions", label: "Competições" },
+  { href: "/backoffice/teams", label: "Equipas" },
+  { href: "/backoffice/matches", label: "Jogos" },
 ];
 
 type BackofficeNavbarProps = {
@@ -17,6 +17,7 @@ type BackofficeNavbarProps = {
 };
 
 export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
+  const router = useRouter();
   const pathname = usePathname();
 
   if (pathname === "/backoffice/login") {
@@ -24,33 +25,12 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
   }
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-        borderBottom: "0.05rem solid #d0d7de",
-        background: "#ffffff",
-      }}
-    >
+    <header className="sticky top-0 z-20 border-b border-border bg-white">
       <nav
         aria-label="Navegação do backoffice"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem",
-          padding: "1rem 1.5rem",
-        }}
+        className="flex items-center justify-between gap-4 px-6 py-4"
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="flex items-center gap-2 flex-wrap">
           {navItems
             .filter((item) => isAdmin || !item.adminOnly)
             .map((item) => {
@@ -60,20 +40,15 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
                   : pathname.startsWith(item.href);
 
               return (
-                <Link
+                <Button
                   key={item.href}
-                  href={item.href}
+                  size="sm"
+                  onPress={() => router.push(item.href)}
+                  className={`px-3 py-2 ${active ? "bg-hero-primary text-white" : "text-muted bg-transparent"}`}
                   aria-current={active ? "page" : undefined}
-                  style={{
-                    padding: "0.75rem",
-                    borderRadius: "0.5rem",
-                    color: active ? "#ffffff" : "#57606a",
-                    background: active ? "#0969da" : "transparent",
-                    textDecoration: "none",
-                  }}
                 >
                   {item.label}
-                </Link>
+                </Button>
               );
             })}
         </div>
