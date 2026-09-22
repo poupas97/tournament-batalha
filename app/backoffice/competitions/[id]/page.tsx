@@ -142,13 +142,13 @@ export default function ViewCompetitionPage() {
         </Link>
       )}
 
-      <h4>Equipas</h4>
       <GridTable
         loading={loading}
         error={error}
         data={data?.teams}
         clickableRow={(it) => router.push(`/backoffice/teams/${it.id}`)}
         notChangeRoute
+        title={`Equipas (${data?.teams.length})`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "_count.players", header: "Jogadores" },

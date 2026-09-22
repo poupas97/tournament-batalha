@@ -84,7 +84,7 @@ export default function ViewCompetitionPage() {
         </Link>
       )}
 
-      {/* <h4>Classificações</h4>
+      {/* <h3>Classificações</h3>
       <GridTable
         loading={statsLoading}
         error={statsError}
@@ -104,22 +104,23 @@ export default function ViewCompetitionPage() {
         ]}
       /> */}
 
-      <h4>Equipas</h4>
       <GridTable
         loading={competitionLoading}
         error={competitionError}
         data={competitionData?.teams}
         clickableRow={(it) => router.push(`/teams/${it.id}`)}
         notChangeRoute
+        title={`Equipas (${competitionData?.teams.length})`}
         columns={[{ key: "name", header: "Nome" }]}
       />
 
-      <h4>Marcadores</h4>
       <GridTable
         loading={statsLoading}
         error={statsError}
         data={statsData?.rankingScores || []}
+        clickableRow={(it) => router.push(`/players/${it.playerId}`)}
         notChangeRoute
+        title="Marcadores"
         columns={[
           { key: "position", header: "º" },
           { key: "playerName", header: "Nome" },

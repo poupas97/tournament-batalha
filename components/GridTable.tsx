@@ -6,6 +6,7 @@ import DataGrid from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Button } from "@heroui/react";
+import get from "lodash/get";
 
 function GridTableContent<T>({
   emptyMessage,
@@ -14,6 +15,7 @@ function GridTableContent<T>({
   error,
   loading,
   notChangeRoute,
+  title,
   ...rest
 }: GridTableProps<T>) {
   const router = useRouter();
@@ -21,6 +23,16 @@ function GridTableContent<T>({
   const searchParams = useSearchParams();
 
   const [localView, setLocalView] = useState<"table" | "grid">("table");
+  const [search, setSearch] = useState("");
+
+  const normalizedSearch = search.trim().toLocaleLowerCase();
+  const filteredData = data?.filter((item) =>
+    rest.columns.some((column) =>
+      String(get(item, column.key, ""))
+        .toLocaleLowerCase()
+        .includes(normalizedSearch),
+    ),
+  );
 
   const view = notChangeRoute
     ? localView
@@ -48,14 +60,28 @@ function GridTableContent<T>({
           gap: "0.5rem",
         }}
       >
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, alignContent: "center" }}>
           {create && (
             <Button size="sm" onPress={() => router.push(create)}>
               + Adicionar
             </Button>
           )}
+          {title && <h3>{title}</h3>}
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Pesquisar..."
+            aria-label="Pesquisar"
+            style={{
+              padding: "0.5rem",
+              border: "0.05rem solid #d0d7de",
+              borderRadius: "0.375rem",
+            }}
+          />
+
           <button onClick={() => onSetView("grid")} disabled={view === "grid"}>
             ⬜ Grid
           </button>
@@ -70,12 +96,12 @@ function GridTableContent<T>({
 
       {loading && <p>A carregar dados...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
-      {!data?.length ? (
+      {!filteredData?.length ? (
         <p>{emptyMessage || "Sem dados para mostrar."}</p>
       ) : view === "grid" ? (
-        <DataGrid data={data} {...rest} />
+        <DataGrid data={filteredData} {...rest} />
       ) : (
-        <DataTable data={data} {...rest} />
+        <DataTable data={filteredData} {...rest} />
       )}
     </>
   );

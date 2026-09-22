@@ -149,7 +149,7 @@ export default function FormTeam({
           justifyContent: "space-between",
         }}
       >
-        <h3>Jogadores</h3>
+        <h3>Jogadores ({players.length})</h3>
         <button type="button" onClick={openPlayerModal()}>
           Adicionar
         </button>
@@ -204,7 +204,7 @@ export default function FormTeam({
           justifyContent: "space-between",
         }}
       >
-        <h3>Staff</h3>
+        <h3>Staff ({staffs.length})</h3>
         <button type="button" onClick={openStaffModal()}>
           Adicionar
         </button>

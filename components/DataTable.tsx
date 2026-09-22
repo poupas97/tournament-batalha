@@ -41,16 +41,14 @@ export default function DataTable<T>({
 
               return (
                 <td key={it.key} style={{ padding: "0.75rem" }}>
-                  <>
-                    {it.render?.(item) ||
-                      (it.format === "date"
-                        ? formatDateTime(value as string)
-                        : it.format === "boolean"
-                          ? value
-                            ? "Sim"
-                            : "Não"
-                          : value)}
-                  </>
+                  {it.render?.(item) ||
+                    (it.format === "date"
+                      ? formatDateTime(value as string)
+                      : it.format === "boolean"
+                        ? value
+                          ? "Sim"
+                          : "Não"
+                        : String(value))}
                 </td>
               );
             })}

@@ -27,24 +27,24 @@ export default function DetailsTeam({
         ]}
       />
 
-      <h4>Jogadores ({team?.players.length})</h4>
       <GridTable
         loading={loading}
         error={error}
         data={team?.players || []}
         notChangeRoute
+        title={`Jogadores (${team?.players.length})`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "number", header: "Nº" },
         ]}
       />
 
-      <h4>Staff ({team?.staffs.length})</h4>
       <GridTable
         loading={loading}
         error={error}
         data={team?.staffs || []}
         notChangeRoute
+        title={`Staff (${team?.staffs.length})`}
         columns={[{ key: "name", header: "Nome" }]}
       />
     </>

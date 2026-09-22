@@ -14,14 +14,27 @@ type Props<T extends Record<string, unknown>> = {
   clickableRow?: (item: T) => void;
   create?: string;
   notChangeRoute?: boolean;
+  title?: string;
 };
 
 export type GridTableProps<T> = Props<T>;
 export type DataGridProps<T> = Omit<
   Props<T>,
-  "emptyMessage" | "create" | "error" | "loading" | "data" | "notChangeRoute"
+  | "emptyMessage"
+  | "create"
+  | "error"
+  | "loading"
+  | "data"
+  | "notChangeRoute"
+  | "title"
 > & { data: T[] };
 export type DataTableProps<T> = Omit<
   Props<T>,
-  "emptyMessage" | "create" | "error" | "loading" | "data" | "notChangeRoute"
+  | "emptyMessage"
+  | "create"
+  | "error"
+  | "loading"
+  | "data"
+  | "notChangeRoute"
+  | "title"
 > & { data: T[] };
