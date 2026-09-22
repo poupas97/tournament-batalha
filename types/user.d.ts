@@ -5,6 +5,7 @@ export type IUserFormValues = {
   email: string;
   role: UserRole;
   password?: string;
+  confirm?: string;
 };
 
 export type ILoginFormValues = {

@@ -9,10 +9,17 @@ export default function CreateUserPage() {
   const router = useRouter();
 
   async function handleSubmit(values: IUserFormValues) {
+    const { password, confirm, ...rest } = values;
+
+    if (password !== confirm) {
+      alert("A password e a confirmação não coincidem.");
+      return;
+    }
+
     const response = await fetch("/api/backoffice/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
+      body: JSON.stringify({ password, ...rest }),
     });
 
     if (!response.ok) {
@@ -35,6 +42,7 @@ export default function CreateUserPage() {
           { key: "name", label: "Nome" },
           { key: "email", label: "Email", type: "email" },
           { key: "password", label: "Password", type: "password" },
+          { key: "confirm", label: "Confirmar Password", type: "password" },
         ]}
         onSubmit={handleSubmit}
       />
