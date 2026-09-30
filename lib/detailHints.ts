@@ -52,11 +52,11 @@ export function getCompetitionOpponentsHint(
   const { config } = competition || {};
 
   if (config === CompetitionConfig.LEAGUE) {
-    return "Cada equipa joga contra X adversários diferentes";
+    return "Define quantos adversários diferentes cada equipa irá defrontar.";
   }
 
   if (config === CompetitionConfig.GROUP) {
-    return "Cada grupo é composto no máximo por X equipas";
+    return "Define o número máximo de equipas por grupo.";
   }
 
   return unavailableValueHint(config);
