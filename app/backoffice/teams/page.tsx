@@ -24,7 +24,10 @@ export default function BackofficeTeamsPage() {
 
   return (
     <>
-      <Title label="Equipas" />
+      <Title
+        label="Equipas"
+        description="Consulte e gere as equipas inscritas nas competições"
+      />
 
       <GridTable
         loading={loading}

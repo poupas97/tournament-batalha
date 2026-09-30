@@ -18,6 +18,7 @@ export default function ViewTeamPage() {
     <>
       <Title
         label="Ver equipa"
+        description="Consulte os dados, jogadores e staffs desta equipa"
         back
         edit={`/backoffice/teams/${teamId}/edit`}
       />

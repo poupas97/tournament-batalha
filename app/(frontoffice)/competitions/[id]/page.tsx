@@ -5,6 +5,12 @@ import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import { CompetitionStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
+import {
+  getCompetitionConfigHint,
+  getCompetitionOpponentsHint,
+  getCompetitionQualifiedHint,
+  getCompetitionStatusHint,
+} from "@/lib/detailHints";
 import { CompetitionBEResponse } from "@/types/competition";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -69,11 +75,27 @@ export default function ViewCompetitionPage() {
         fields={[
           { key: "name", label: "Nome" },
           { key: "_count.teams", label: "Equipas" },
-          { key: "config", label: "Configuração" },
-          { key: "qualified", label: "Qualificados" },
-          { key: "opponents", label: "Oponentes" },
+          {
+            key: "config",
+            label: "Configuração",
+            hint: getCompetitionConfigHint,
+          },
+          {
+            key: "qualified",
+            label: "Qualificados",
+            hint: getCompetitionQualifiedHint,
+          },
+          {
+            key: "opponents",
+            label: "Oponentes",
+            hint: getCompetitionOpponentsHint,
+          },
           { key: "active", label: "Ativo", format: "boolean" },
-          { key: "status", label: "Estado" },
+          {
+            key: "status",
+            label: "Estado",
+            hint: getCompetitionStatusHint,
+          },
         ]}
       />
 

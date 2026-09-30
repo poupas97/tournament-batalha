@@ -146,7 +146,7 @@ async function main() {
     }
   }
 
-  console.log("✅ Seed completed.");
+  console.log("✅ Seed completed");
 }
 
 function randomItem<T>(array: T[]): T {

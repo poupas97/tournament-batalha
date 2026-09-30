@@ -3,9 +3,10 @@ import Title from "@/components/Title";
 export default function BackofficePage() {
   return (
     <>
-      <Title label="Backoffice" />
-
-      <p>Bem-vindo ao backoffice. Esta é a página principal privada.</p>
+      <Title
+        label="Backoffice"
+        description="Aceda às áreas de gestão de competições, equipas, jogos e utilizadores"
+      />
     </>
   );
 }

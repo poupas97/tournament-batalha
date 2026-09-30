@@ -97,7 +97,7 @@ function GridTableContent<T>({
       {loading && <p>A carregar dados...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
       {!filteredData?.length ? (
-        <p>{emptyMessage || "Sem dados para mostrar."}</p>
+        <p>{emptyMessage || "Sem dados para mostrar"}</p>
       ) : view === "grid" ? (
         <DataGrid data={filteredData} {...rest} />
       ) : (

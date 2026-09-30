@@ -31,7 +31,11 @@ export default function ViewCompetitionMatchesPage() {
 
   return (
     <>
-      <Title label="Ver sorteio" back />
+      <Title
+        label="Ver sorteio"
+        description="Consulte os grupos, eliminatórias e jogos gerados para a competição"
+        back
+      />
 
       {matchesLoading && <p>A carregar sorteio...</p>}
       {matchesError && <p style={{ color: "crimson" }}>{matchesError}</p>}

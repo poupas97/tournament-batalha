@@ -13,7 +13,10 @@ export default function BackofficeUsersPage() {
 
   return (
     <>
-      <Title label="Utilizadores" />
+      <Title
+        label="Utilizadores"
+        description="Consulte e gira os acessos ao backoffice"
+      />
 
       <GridTable
         loading={loading}

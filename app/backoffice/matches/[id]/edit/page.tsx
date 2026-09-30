@@ -25,8 +25,8 @@ export default function EditMatchPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao guardar jogos." }));
-      alert(error.error ?? "Erro ao guardar jogos.");
+        .catch(() => ({ error: "Erro ao guardar jogos" }));
+      alert(error.error ?? "Erro ao guardar jogos");
       return;
     }
 
@@ -35,7 +35,11 @@ export default function EditMatchPage() {
 
   return (
     <>
-      <Title label="Editar jogo" back />
+      <Title
+        label="Editar jogo"
+        description="Atualize a data, ronda e equipas deste jogo"
+        back
+      />
 
       {loading && <p>A carregar jogo...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

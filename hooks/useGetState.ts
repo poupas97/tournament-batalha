@@ -22,7 +22,7 @@ export default function useGetState<T>(url: string | undefined) {
       })
       .then((data) => {
         if (data.error) {
-          throw new Error(data.error ?? "Erro desconhecido.");
+          throw new Error(data.error ?? "Erro desconhecido");
         }
 
         setState((current) => ({ ...current, data, loading: false }));
@@ -30,7 +30,7 @@ export default function useGetState<T>(url: string | undefined) {
       .catch((err) =>
         setState((current) => ({
           ...current,
-          error: err instanceof Error ? err.message : "Erro desconhecido.",
+          error: err instanceof Error ? err.message : "Erro desconhecido",
           loading: false,
         })),
       )

@@ -24,8 +24,8 @@ export default function CreateTeamPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao criar equipa." }));
-      alert(error.error ?? "Erro ao criar equipa.");
+        .catch(() => ({ error: "Erro ao criar equipa" }));
+      alert(error.error ?? "Erro ao criar equipa");
       return;
     }
 
@@ -34,7 +34,11 @@ export default function CreateTeamPage() {
 
   return (
     <>
-      <Title label="Criar equipa" back />
+      <Title
+        label="Criar equipa"
+        description="Crie uma equipa e associe-a a uma competição"
+        back
+      />
 
       {data && !loading && (
         <FormTeam handleSubmit={handleSubmit} competitions={data} />

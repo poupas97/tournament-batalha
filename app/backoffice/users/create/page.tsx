@@ -12,7 +12,7 @@ export default function CreateUserPage() {
     const { password, confirm, ...rest } = values;
 
     if (password !== confirm) {
-      alert("A password e a confirmação não coincidem.");
+      alert("A password e a confirmação não coincidem");
       return;
     }
 
@@ -25,8 +25,8 @@ export default function CreateUserPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao criar utilizador." }));
-      alert(error.error ?? "Erro ao criar utilizador.");
+        .catch(() => ({ error: "Erro ao criar utilizador" }));
+      alert(error.error ?? "Erro ao criar utilizador");
       return;
     }
 
@@ -35,7 +35,11 @@ export default function CreateUserPage() {
 
   return (
     <>
-      <Title label="Criar utilizador" back />
+      <Title
+        label="Criar utilizador"
+        description="Crie uma conta e defina as permissões de acesso"
+        back
+      />
 
       <Form<IUserFormValues>
         fields={[

@@ -23,7 +23,10 @@ export default function BackofficeMatchesPage() {
 
   return (
     <>
-      <Title label="Jogos" />
+      <Title
+        label="Jogos"
+        description="Consulte e gira o calendário e o estado dos jogos"
+      />
 
       <GridTable
         loading={loading}

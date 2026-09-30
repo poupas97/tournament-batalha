@@ -1,19 +1,26 @@
 "use client";
 
+import FormCheckbox from "@/components/FormCheckbox";
+import HintTooltip from "@/components/HintTooltip";
+import FormInput from "@/components/FormInput";
+import FormSelect from "@/components/FormSelect";
 import get from "lodash/get";
 import { FormEvent, useState, type ReactNode } from "react";
+
+type FormInputType =
+  | "text"
+  | "number"
+  | "email"
+  | "password"
+  | "datetime-local";
+
+type FormFieldType = FormInputType | "select" | "checkbox";
 
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
   label: string;
-  type?:
-    | "text"
-    | "number"
-    | "email"
-    | "password"
-    | "select"
-    | "datetime-local"
-    | "checkbox";
+  hint?: string | ((data: T | undefined) => string);
+  type?: FormFieldType;
   placeholder?: string;
   options?: { value: number | string; label: string }[];
 };
@@ -44,6 +51,10 @@ function formatDateTimeLocalValue(value: unknown) {
       "-",
     ) + `T${pad(date.getHours())}:${pad(date.getMinutes())}`
   );
+}
+
+function getInputType(type: FormFieldType | undefined): FormInputType {
+  return type === "select" || type === "checkbox" ? "text" : (type ?? "text");
 }
 
 export default function Form<T extends Record<string, unknown>>({
@@ -92,49 +103,44 @@ export default function Form<T extends Record<string, unknown>>({
             id={String(field.key)}
             className="flex flex-col gap-1 text-sm font-medium text-slate-700"
           >
-            <span>{field.label}</span>
+            <span className="flex items-center gap-1">
+              {field.label}
+              {field.hint && (
+                <HintTooltip
+                  label={field.label}
+                  hint={
+                    typeof field.hint === "function"
+                      ? field.hint(values)
+                      : field.hint
+                  }
+                />
+              )}
+            </span>
 
             {field.options ? (
-              <select
+              <FormSelect
                 name={String(field.key)}
                 value={String(get(values, field.key) ?? "")}
-                onChange={(event) =>
-                  handleChange(field.key, event.target.value)
-                }
-                className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">Selecione...</option>
-
-                {field.options.map((it) => (
-                  <option key={it.value} value={it.value}>
-                    {it.label}
-                  </option>
-                ))}
-              </select>
+                options={field.options}
+                onChange={(value) => handleChange(field.key, value)}
+              />
             ) : field.type === "checkbox" ? (
-              <input
+              <FormCheckbox
                 name={String(field.key)}
-                type="checkbox"
                 checked={Boolean(get(values, field.key))}
-                onChange={(event) =>
-                  handleChange(field.key, event.target.checked)
-                }
-                className="mt-2 size-6 accent-blue-600"
+                onChange={(checked) => handleChange(field.key, checked)}
               />
             ) : (
-              <input
+              <FormInput
                 name={String(field.key)}
-                type={field.type ?? "text"}
+                type={getInputType(field.type)}
                 value={
                   field.type === "datetime-local"
                     ? formatDateTimeLocalValue(get(values, field.key))
                     : String(get(values, field.key) ?? "")
                 }
-                onChange={(event) =>
-                  handleChange(field.key, event.target.value)
-                }
                 placeholder={field.placeholder}
-                className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                onChange={(value) => handleChange(field.key, value)}
               />
             )}
           </label>

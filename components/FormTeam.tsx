@@ -39,7 +39,7 @@ export default function FormTeam({
     const number = Number(values.number);
 
     if (!name || !Number.isInteger(number) || number < 1 || number > 99) {
-      alert("Por favor, preencha todos os campos do jogador.");
+      alert("Por favor, preencha todos os campos do jogador");
       return;
     }
 
@@ -51,7 +51,7 @@ export default function FormTeam({
     const index = players.findIndex((it) => it.id === player.id);
 
     if (index === -1) {
-      alert("Jogador não encontrado.");
+      alert("Jogador não encontrado");
       return;
     }
 
@@ -87,7 +87,7 @@ export default function FormTeam({
     const name = values.name.trim();
 
     if (!name) {
-      alert("Por favor, preencha todos os campos do staff.");
+      alert("Por favor, preencha todos os campos do staff");
       return;
     }
 
@@ -99,7 +99,7 @@ export default function FormTeam({
     const index = staffs.findIndex((it) => it.id === staff.id);
 
     if (index === -1) {
-      alert("Staff não encontrado.");
+      alert("Staff não encontrado");
       return;
     }
 

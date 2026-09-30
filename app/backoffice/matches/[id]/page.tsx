@@ -9,6 +9,12 @@ import Title from "@/components/Title";
 import { MatchEvent, MatchEventType, MatchStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import { canTransition } from "@/lib/match";
+import {
+  getMatchStatusHint,
+  getMatchOpponentsHint,
+  getMatchQualifiedHint,
+  getMatchCompetitionConfigHint,
+} from "@/lib/detailHints";
 import { MatchBEResponse } from "@/types/match";
 import { IMatchEventFormValues } from "@/types/match-event";
 import { useParams } from "next/navigation";
@@ -45,7 +51,7 @@ export default function ViewMatchPage() {
         .catch(() => null)) as MatchBEResponse | null;
 
       if (!response.ok || !responseData) {
-        alert("Erro ao guardar o status.");
+        alert("Erro ao guardar o status");
         return;
       }
 
@@ -67,7 +73,7 @@ export default function ViewMatchPage() {
       const responseData = await response.json().catch(() => null);
 
       if (!response?.ok || responseData?.error) {
-        alert(responseData?.error ?? "Erro ao guardar evento.");
+        alert(responseData?.error ?? "Erro ao guardar evento");
         return;
       }
 
@@ -116,8 +122,8 @@ export default function ViewMatchPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao remover evento." }));
-      alert(error.error ?? "Erro ao remover evento.");
+        .catch(() => ({ error: "Erro ao remover evento" }));
+      alert(error.error ?? "Erro ao remover evento");
       return;
     }
 
@@ -159,6 +165,7 @@ export default function ViewMatchPage() {
     <>
       <Title
         label="Ver jogo"
+        description="Consulte os detalhes, estado e eventos registados neste jogo"
         back
         edit={
           data?.status === MatchStatus.SCHEDULED ||
@@ -174,14 +181,30 @@ export default function ViewMatchPage() {
         data={data}
         fields={[
           { key: "competition.name", label: "Competição" },
-          { key: "competition.config", label: "Configuração" },
-          { key: "competition.opponents", label: "Oponentes" },
-          { key: "competition.qualified", label: "Qualificados" },
+          {
+            key: "competition.config",
+            label: "Configuração",
+            hint: getMatchCompetitionConfigHint,
+          },
+          {
+            key: "competition.opponents",
+            label: "Oponentes",
+            hint: getMatchOpponentsHint,
+          },
+          {
+            key: "competition.qualified",
+            label: "Qualificados",
+            hint: getMatchQualifiedHint,
+          },
           { key: "date", label: "Data", format: "date" },
           { key: "round", label: "Ronda" },
           { key: "homeTeam.name", label: "Equipa da Casa" },
           { key: "awayTeam.name", label: "Equipa Visitante" },
-          { key: "status", label: "Estado" },
+          {
+            key: "status",
+            label: "Estado",
+            hint: getMatchStatusHint,
+          },
         ]}
       />
 

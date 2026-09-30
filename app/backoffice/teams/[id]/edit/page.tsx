@@ -34,8 +34,8 @@ export default function EditTeamPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao guardar equipa." }));
-      alert(error.error ?? "Erro ao guardar equipa.");
+        .catch(() => ({ error: "Erro ao guardar equipa" }));
+      alert(error.error ?? "Erro ao guardar equipa");
       return;
     }
 
@@ -44,7 +44,11 @@ export default function EditTeamPage() {
 
   return (
     <>
-      <Title label="Editar equipa" back />
+      <Title
+        label="Editar equipa"
+        description="Atualize os dados e a competição associada a esta equipa"
+        back
+      />
 
       {teamLoading && <p>A carregar equipa...</p>}
       {teamError && <p style={{ color: "crimson" }}>{teamError}</p>}

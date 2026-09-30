@@ -8,6 +8,12 @@ import Title from "@/components/Title";
 import { CompetitionStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import {
+  getCompetitionConfigHint,
+  getCompetitionStatusHint,
+  getCompetitionOpponentsHint,
+  getCompetitionQualifiedHint,
+} from "@/lib/detailHints";
+import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
@@ -38,7 +44,7 @@ export default function ViewCompetitionPage() {
     const responseData = await response?.json().catch(() => null);
 
     if (!response?.ok || responseData?.error) {
-      alert(responseData?.error ?? "Erro ao fazer sorteio.");
+      alert(responseData?.error ?? "Erro ao fazer sorteio");
       return;
     }
 
@@ -60,7 +66,7 @@ export default function ViewCompetitionPage() {
     const responseData = await response.json().catch(() => null);
 
     if (!response.ok || responseData?.error) {
-      alert(responseData?.error ?? "Erro ao alterar estado.");
+      alert(responseData?.error ?? "Erro ao alterar estado");
       return;
     }
 
@@ -78,8 +84,16 @@ export default function ViewCompetitionPage() {
         <Form<ICompetitionFormValues>
           initialValues={data}
           fields={[
-            { key: "qualified", label: "Qualificados" },
-            { key: "opponents", label: "Oponentes" },
+            {
+              key: "qualified",
+              label: "Qualificados",
+              hint: getCompetitionConfigHint,
+            },
+            {
+              key: "opponents",
+              label: "Oponentes",
+              hint: getCompetitionOpponentsHint,
+            },
           ]}
           vertical
           onSubmit={onShuffle}
@@ -92,6 +106,7 @@ export default function ViewCompetitionPage() {
     <>
       <Title
         label="Ver competição"
+        description="Consulte os dados, equipas e estado desta competição"
         back
         edit={
           data?.status === CompetitionStatus.DRAFT
@@ -106,11 +121,27 @@ export default function ViewCompetitionPage() {
         fields={[
           { key: "name", label: "Nome" },
           { key: "_count.teams", label: "Equipas" },
-          { key: "config", label: "Configuração" },
-          { key: "qualified", label: "Qualificados" },
-          { key: "opponents", label: "Oponentes" },
+          {
+            key: "config",
+            label: "Configuração",
+            hint: getCompetitionConfigHint,
+          },
+          {
+            key: "qualified",
+            label: "Qualificados",
+            hint: getCompetitionQualifiedHint,
+          },
+          {
+            key: "opponents",
+            label: "Oponentes",
+            hint: getCompetitionOpponentsHint,
+          },
           { key: "active", label: "Ativo", format: "boolean" },
-          { key: "status", label: "Estado" },
+          {
+            key: "status",
+            label: "Estado",
+            hint: getCompetitionStatusHint,
+          },
         ]}
       />
 

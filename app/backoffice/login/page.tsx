@@ -20,12 +20,15 @@ export default function LoginPage() {
       return;
     }
 
-    alert("Credenciais inválidas.");
+    alert("Credenciais inválidas");
   }
 
   return (
     <>
-      <Title label="Login Backoffice" />
+      <Title
+        label="Login Backoffice"
+        description="Introduza as suas credenciais para aceder à área de gestão"
+      />
 
       <Form<ILoginFormValues>
         fields={[

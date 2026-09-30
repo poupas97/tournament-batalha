@@ -10,6 +10,12 @@ import {
 } from "@/lib/websocket";
 import { MatchBEResponse } from "@/types/match";
 import { SocketEvents } from "@/enums/socket";
+import {
+  getMatchCompetitionConfigHint,
+  getMatchStatusHint,
+  getMatchOpponentsHint,
+  getMatchQualifiedHint,
+} from "@/lib/detailHints";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import {
@@ -95,14 +101,30 @@ export default function ViewMatchPage() {
         data={data}
         fields={[
           { key: "competition.name", label: "Competição" },
-          { key: "competition.config", label: "Configuração" },
-          { key: "competition.opponents", label: "Oponentes" },
-          { key: "competition.qualified", label: "Qualificados" },
+          {
+            key: "competition.config",
+            label: "Configuração",
+            hint: getMatchCompetitionConfigHint,
+          },
+          {
+            key: "competition.opponents",
+            label: "Oponentes",
+            hint: getMatchOpponentsHint,
+          },
+          {
+            key: "competition.qualified",
+            label: "Qualificados",
+            hint: getMatchQualifiedHint,
+          },
           { key: "date", label: "Data", format: "date" },
           { key: "round", label: "Ronda" },
           { key: "homeTeam.name", label: "Equipa da Casa" },
           { key: "awayTeam.name", label: "Equipa Visitante" },
-          { key: "status", label: "Estado" },
+          {
+            key: "status",
+            label: "Estado",
+            hint: getMatchStatusHint,
+          },
         ]}
       />
 

@@ -1,11 +1,13 @@
 "use client";
 
 import { formatDateTime } from "@/lib/utils";
+import HintTooltip from "@/components/HintTooltip";
 import get from "lodash/get";
 
-type DetailField = {
+type DetailField<T extends Record<string, unknown>> = {
   key: string;
   label: string;
+  hint?: string | ((data: T) => string);
   format?: "date" | "boolean";
 };
 
@@ -13,7 +15,7 @@ type DetailProps<T extends Record<string, unknown>> = {
   error: string | undefined;
   loading: boolean;
   data: T | undefined;
-  fields: DetailField[];
+  fields: DetailField<T>[];
   emptyMessage?: string;
 };
 
@@ -28,7 +30,7 @@ export default function Detail<T extends Record<string, unknown>>({
 
   if (error) return <p style={{ color: "crimson" }}>{error}</p>;
 
-  if (!data) return <p>{emptyMessage || "Sem dados para mostrar."}</p>;
+  if (!data) return <p>{emptyMessage || "Sem dados para mostrar"}</p>;
 
   return (
     <div
@@ -40,10 +42,14 @@ export default function Detail<T extends Record<string, unknown>>({
     >
       {fields.map((it) => {
         const value = get(data, it.key, "");
+        const hint = typeof it.hint === "function" ? it.hint(data) : it.hint;
 
         return (
           <div key={it.key}>
-            <strong>{it.label}</strong>
+            <div className="flex items-center gap-1">
+              <strong>{it.label}</strong>
+              {hint && <HintTooltip label={it.label} hint={hint} />}
+            </div>
             <div>
               <>
                 {it.format === "date"

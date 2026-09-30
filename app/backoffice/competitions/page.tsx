@@ -27,7 +27,10 @@ export default function BackofficeCompetitionsPage() {
 
   return (
     <>
-      <Title label="Competições" />
+      <Title
+        label="Competições"
+        description="Consulte e gere as configurações das competições"
+      />
 
       <GridTable
         loading={loading}

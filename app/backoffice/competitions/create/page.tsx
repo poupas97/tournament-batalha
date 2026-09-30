@@ -3,6 +3,10 @@
 import Form from "@/components/Form";
 import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
+import {
+  getCompetitionOpponentsHint,
+  getCompetitionQualifiedHint,
+} from "@/lib/detailHints";
 import { ICompetitionFormValues } from "@/types/competition";
 import { useRouter } from "next/navigation";
 
@@ -19,8 +23,8 @@ export default function CreateCompetitionPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao criar competição." }));
-      alert(error.error ?? "Erro ao criar competição.");
+        .catch(() => ({ error: "Erro ao criar competição" }));
+      alert(error.error ?? "Erro ao criar competição");
       return;
     }
 
@@ -29,7 +33,11 @@ export default function CreateCompetitionPage() {
 
   return (
     <>
-      <Title label="Criar competição" back />
+      <Title
+        label="Criar competição"
+        description="Defina a configuração e as regras da nova competição"
+        back
+      />
 
       <Form<ICompetitionFormValues>
         fields={[
@@ -43,8 +51,16 @@ export default function CreateCompetitionPage() {
               value: it,
             })),
           },
-          { key: "qualified", label: "Qualificados" },
-          { key: "opponents", label: "Oponentes" },
+          {
+            key: "qualified",
+            label: "Qualificados",
+            hint: getCompetitionQualifiedHint,
+          },
+          {
+            key: "opponents",
+            label: "Oponentes",
+            hint: getCompetitionOpponentsHint,
+          },
         ]}
         onSubmit={handleSubmit}
       />

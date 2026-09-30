@@ -18,8 +18,8 @@ export default function CreateMatchPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao criar jogos." }));
-      alert(error.error ?? "Erro ao criar jogos.");
+        .catch(() => ({ error: "Erro ao criar jogos" }));
+      alert(error.error ?? "Erro ao criar jogos");
       return;
     }
 
@@ -28,7 +28,11 @@ export default function CreateMatchPage() {
 
   return (
     <>
-      <Title label="Criar jogo" back />
+      <Title
+        label="Criar jogo"
+        description="Agende um jogo entre duas equipas da mesma competição"
+        back
+      />
 
       <FormMatch handleSubmit={handleSubmit} />
     </>

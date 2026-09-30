@@ -18,6 +18,7 @@ export default function ViewUserPage() {
     <>
       <Title
         label="Ver utilizador"
+        description="Consulte os dados e as permissões deste utilizador"
         back
         edit={`/backoffice/users/${userId}/edit`}
       />

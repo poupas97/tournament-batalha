@@ -30,8 +30,8 @@ export default function EditUserPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao guardar utilizador." }));
-      alert(error.error ?? "Erro ao guardar utilizador.");
+        .catch(() => ({ error: "Erro ao guardar utilizador" }));
+      alert(error.error ?? "Erro ao guardar utilizador");
       return;
     }
 
@@ -40,7 +40,7 @@ export default function EditUserPage() {
 
   async function handleSubmitPassword(values: IUserPasswordFormValues) {
     if (values.password !== values.confirm) {
-      alert("A nova password e a confirmação não coincidem.");
+      alert("A nova password e a confirmação não coincidem");
       return;
     }
 
@@ -53,8 +53,8 @@ export default function EditUserPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao guardar password." }));
-      alert(error.error ?? "Erro ao guardar password.");
+        .catch(() => ({ error: "Erro ao guardar password" }));
+      alert(error.error ?? "Erro ao guardar password");
       return;
     }
 
@@ -63,7 +63,11 @@ export default function EditUserPage() {
 
   return (
     <>
-      <Title label="Editar utilizador" back />
+      <Title
+        label="Editar utilizador"
+        description="Atualize os dados e as permissões deste utilizador"
+        back
+      />
 
       {loading && <p>A carregar utilizador...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}

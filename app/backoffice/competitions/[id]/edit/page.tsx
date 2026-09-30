@@ -5,6 +5,10 @@ import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import {
+  getCompetitionOpponentsHint,
+  getCompetitionQualifiedHint,
+} from "@/lib/detailHints";
+import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
@@ -32,8 +36,8 @@ export default function EditCompetitionPage() {
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: "Erro ao guardar competição." }));
-      alert(error.error ?? "Erro ao guardar competição.");
+        .catch(() => ({ error: "Erro ao guardar competição" }));
+      alert(error.error ?? "Erro ao guardar competição");
       return;
     }
 
@@ -42,7 +46,11 @@ export default function EditCompetitionPage() {
 
   return (
     <>
-      <Title label="Editar competição" back />
+      <Title
+        label="Editar competição"
+        description="Atualize as configurações e regras desta competição"
+        back
+      />
 
       {loading && <p>A carregar competição...</p>}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
@@ -61,8 +69,16 @@ export default function EditCompetitionPage() {
                 value: it,
               })),
             },
-            { key: "qualified", label: "Qualificados" },
-            { key: "opponents", label: "Oponentes" },
+            {
+              key: "qualified",
+              label: "Qualificados",
+              hint: getCompetitionQualifiedHint,
+            },
+            {
+              key: "opponents",
+              label: "Oponentes",
+              hint: getCompetitionOpponentsHint,
+            },
             { key: "active", label: "Ativo", type: "checkbox" },
           ]}
           onSubmit={handleSubmit}
