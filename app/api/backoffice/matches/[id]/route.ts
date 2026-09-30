@@ -69,11 +69,6 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const body = await request.json().catch(() => null);
-
-  if (body?.status !== undefined) {
-    return invalidParam("Status");
-  }
-
   const date = sanitizeDate(body?.date);
   const round = sanitizeText(body?.round);
   const competitionId = sanitizeNumber(body?.competitionId);
@@ -82,22 +77,6 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!date) {
     return invalidParam("Date");
-  }
-
-  if (!round) {
-    return invalidParam("Round");
-  }
-
-  if (!competitionId) {
-    return invalidParam("Competition");
-  }
-
-  if (
-    !homeTeamId ||
-    !awayTeamId ||
-    (homeTeamId && awayTeamId && homeTeamId === awayTeamId)
-  ) {
-    return invalidParam("Teams");
   }
 
   const existing = await prisma.match.findUnique({
@@ -109,16 +88,50 @@ export async function PUT(request: Request, context: RouteContext) {
     },
   });
 
-  if (!existing) {
-    return noFound("Match");
-  }
+  if (!existing) return noFound("Match");
 
-  if (existing.status !== MatchStatus.SCHEDULED) {
+  const isScheduled = existing.status === MatchStatus.SCHEDULED;
+  const isPostponed = existing.status === MatchStatus.POSTPONED;
+
+  if (!isScheduled && !isPostponed) {
     return invalidParam("MatchStatus");
   }
 
+  if (isPostponed) {
+    if (existing.competition.status !== CompetitionStatus.IN_PROGRESS) {
+      return invalidParam("CompetitionStatus");
+    }
+
+    const matchUpdated = await prisma.match.update({
+      where: { id: matchId },
+      data: {
+        date,
+        status: MatchStatus.SCHEDULED,
+      },
+      include: {
+        competition: true,
+        homeTeam: true,
+        awayTeam: true,
+      },
+    });
+
+    return updatedResponse(matchUpdated);
+  }
+
+  // SCHEDULED: edição normal
   if (existing.competition.status !== CompetitionStatus.DRAFT) {
     return invalidParam("CompetitionStatus");
+  }
+
+  if (!round) {
+    return invalidParam("Round");
+  }
+  if (!competitionId) {
+    return invalidParam("Competition");
+  }
+
+  if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) {
+    return invalidParam("Teams");
   }
 
   const teams = await prisma.team.findMany({
@@ -128,19 +141,6 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (teams.length !== 2) {
     return invalidParam("Teams");
-  }
-
-  const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
-    select: { id: true, status: true },
-  });
-
-  if (!competition) {
-    return invalidParam("Competition");
-  }
-
-  if (competition.status !== CompetitionStatus.DRAFT) {
-    return invalidParam("CompetitionStatus");
   }
 
   const matchUpdated = await prisma.match.update({

@@ -9,7 +9,7 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { CompetitionStatus, MatchStatus } from "@/generated/prisma";
+import { CompetitionStatus, Match, MatchStatus } from "@/generated/prisma";
 import { notifyMatchStatus } from "@/lib/socket";
 import { canTransition } from "@/lib/match";
 
@@ -67,7 +67,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("CompetitionStatus");
   }
 
-  if (!canTransition(existing.status, status)) {
+  if (!canTransition(existing as unknown as Match, status)) {
     return invalidParam("MatchStatus");
   }
 

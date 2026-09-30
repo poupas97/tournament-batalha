@@ -33,7 +33,6 @@ export default function CompetitionShuffle({
   return (
     <>
       <h2>Classificação</h2>
-
       {view.isGroupCompetition ? (
         <GroupTables
           groups={view.groups}
@@ -48,13 +47,7 @@ export default function CompetitionShuffle({
         />
       )}
 
-      <KnockoutBracket
-        rounds={view.knockoutRounds}
-        isBackoffice={isBackoffice}
-      />
-
-      <h2>Todo o calendário</h2>
-
+      <h2>Jornadas</h2>
       {view.isGroupCompetition ? (
         <GroupSchedule groups={view.groups} isBackoffice={isBackoffice} />
       ) : (
@@ -63,6 +56,12 @@ export default function CompetitionShuffle({
           isBackoffice={isBackoffice}
         />
       )}
+
+      <h2>Eliminatórias</h2>
+      <KnockoutBracket
+        rounds={view.knockoutRounds}
+        isBackoffice={isBackoffice}
+      />
     </>
   );
 }
@@ -146,19 +145,19 @@ function LeagueTable({
   isBackoffice: boolean;
 }) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <table style={{ width: "100%" }}>
       <thead>
         <tr>
-          <th>º</th>
+          <th style={{ width: "5%" }}>º</th>
           <th>Equipa</th>
-          <th>P</th>
-          <th>J</th>
-          <th>V</th>
-          <th>E</th>
-          <th>D</th>
-          <th>GM</th>
-          <th>GS</th>
-          <th>DG</th>
+          <th style={{ width: "5%" }}>P</th>
+          <th style={{ width: "5%" }}>J</th>
+          <th style={{ width: "5%" }}>V</th>
+          <th style={{ width: "5%" }}>E</th>
+          <th style={{ width: "5%" }}>D</th>
+          <th style={{ width: "5%" }}>GM</th>
+          <th style={{ width: "5%" }}>GS</th>
+          <th style={{ width: "5%" }}>DG</th>
         </tr>
       </thead>
 
@@ -172,10 +171,9 @@ function LeagueTable({
               style={{
                 background: isQualified ? "#dcfce7" : undefined,
                 color: isQualified ? "#166534" : undefined,
-                fontWeight: isQualified ? 600 : undefined,
               }}
             >
-              <td>{team.position}</td>
+              <td style={{ textAlign: "center" }}>{team.position}</td>
               <td>
                 <Link
                   href={
@@ -183,19 +181,19 @@ function LeagueTable({
                       ? `/backoffice/teams/${team.team.id}`
                       : `/teams/${team.team.id}`
                   }
-                  className="font-medium hover:underline"
+                  className="hover:underline"
                 >
                   {team.team.name}
                 </Link>
               </td>
-              <td>{team.points}</td>
-              <td>{team.played}</td>
-              <td>{team.won}</td>
-              <td>{team.drawn}</td>
-              <td>{team.lost}</td>
-              <td>{team.goalsFor}</td>
-              <td>{team.goalsAgainst}</td>
-              <td>{team.goalDifference}</td>
+              <td style={{ textAlign: "center" }}>{team.points}</td>
+              <td style={{ textAlign: "center" }}>{team.played}</td>
+              <td style={{ textAlign: "center" }}>{team.won}</td>
+              <td style={{ textAlign: "center" }}>{team.drawn}</td>
+              <td style={{ textAlign: "center" }}>{team.lost}</td>
+              <td style={{ textAlign: "center" }}>{team.goalsFor}</td>
+              <td style={{ textAlign: "center" }}>{team.goalsAgainst}</td>
+              <td style={{ textAlign: "center" }}>{team.goalDifference}</td>
             </tr>
           );
         })}
@@ -287,18 +285,12 @@ function KnockoutBracket({
   rounds,
   isBackoffice,
 }: {
-  rounds: {
-    stage: string;
-    matches: MatchBEResponse[];
-  }[];
+  rounds: MatchBEResponse[][];
   isBackoffice: boolean;
 }) {
   return (
     <>
-      <h2>Fase Eliminatória</h2>
-
       {!rounds.length && <p>Sem emparelhamento disponível.</p>}
-
       {!!rounds.length && (
         <div
           style={{
@@ -308,25 +300,22 @@ function KnockoutBracket({
             alignItems: "flex-start",
           }}
         >
-          {rounds.map(({ stage, matches }) => (
-            <div key={stage}>
-              <h3>{stage}</h3>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1.5rem",
-                }}
-              >
-                {matches.map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    isBackoffice={isBackoffice}
-                  />
-                ))}
-              </div>
+          {rounds.map((matches, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.5rem",
+              }}
+            >
+              {matches.map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  isBackoffice={isBackoffice}
+                />
+              ))}
             </div>
           ))}
         </div>

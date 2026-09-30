@@ -34,10 +34,6 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
 
-  if (body?.status !== undefined) {
-    return invalidParam("Status");
-  }
-
   const date = sanitizeDate(body?.date);
   const round = sanitizeText(body?.round);
   const competitionId = sanitizeNumber(body?.competitionId);

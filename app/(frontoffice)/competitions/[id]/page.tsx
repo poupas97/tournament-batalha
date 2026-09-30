@@ -111,7 +111,11 @@ export default function ViewCompetitionPage() {
         clickableRow={(it) => router.push(`/teams/${it.id}`)}
         notChangeRoute
         title={`Equipas (${competitionData?.teams.length})`}
-        columns={[{ key: "name", header: "Nome" }]}
+        columns={[
+          { key: "name", header: "Nome" },
+          { key: "_count.players", header: "Jogadores" },
+          { key: "_count.staffs", header: "Staffs" },
+        ]}
       />
 
       <GridTable

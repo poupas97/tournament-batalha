@@ -72,7 +72,7 @@ export const MATCH_STATE_MACHINE: Record<MatchStatus, MatchStatus[]> = {
     MatchStatus.CANCELED,
   ],
 
-  [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELED],
+  [MatchStatus.POSTPONED]: [MatchStatus.CANCELED],
 
   [MatchStatus.CANCELED]: [],
 };

@@ -44,7 +44,7 @@ export default function DetailsTeam({
         error={error}
         data={team?.staffs || []}
         notChangeRoute
-        title={`Staff (${team?.staffs.length})`}
+        title={`Staffs (${team?.staffs.length})`}
         columns={[{ key: "name", header: "Nome" }]}
       />
     </>

@@ -264,7 +264,7 @@ function getStages(qualified: number): string[] {
   return stagesByQualified[qualified] ?? [];
 }
 
-function isKnockoutRound(round: string) {
+export function isKnockoutRound(round: string) {
   return knockoutRounds.has(round);
 }
 
@@ -395,11 +395,8 @@ function groupMatchesByStage(matches: MatchBEResponse[], stages: string[]) {
   }
 
   return stages
-    .map((stage) => ({
-      stage,
-      matches: matchesByStage.get(stage) ?? [],
-    }))
-    .filter((stage) => stage.matches.length);
+    .map((stage) => matchesByStage.get(stage) ?? [])
+    .filter((stage) => stage.length);
 }
 
 export function getCompetitionShuffleView(

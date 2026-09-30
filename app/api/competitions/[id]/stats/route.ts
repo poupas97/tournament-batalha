@@ -25,11 +25,10 @@ export async function GET(request: Request, context: RouteContext) {
         t.name AS "teamName",
         COUNT(*)::int AS goals,
         COUNT(DISTINCT me."matchId")::int AS matches,
-        ROW_NUMBER() OVER (
+        RANK() OVER (
             ORDER BY
                 COUNT(*) DESC,
-                COUNT(DISTINCT me."matchId") ASC,
-                p.name ASC
+                COUNT(DISTINCT me."matchId") ASC
         )::int AS position
     FROM "MatchEvent" me
     JOIN "Player" p ON p.id = me."playerId"
@@ -46,8 +45,8 @@ export async function GET(request: Request, context: RouteContext) {
     ORDER BY
         goals DESC,
         matches ASC,
-        p.name;
-  `;
+        p.name ASC;
+`;
 
   const rankingTeams = await prisma.$queryRaw`
     WITH match_scores AS (

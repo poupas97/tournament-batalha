@@ -64,12 +64,10 @@ export default function ViewMatchPage() {
         body: JSON.stringify({ ...values, teamId, matchId, [key]: id }),
       });
 
-      const responseData = (await response
-        .json()
-        .catch(() => null)) as MatchEvent | null;
+      const responseData = await response.json().catch(() => null);
 
-      if (!responseData) {
-        alert("Erro ao guardar evento.");
+      if (!response?.ok || responseData?.error) {
+        alert(responseData?.error ?? "Erro ao guardar evento.");
         return;
       }
 
@@ -99,6 +97,7 @@ export default function ViewMatchPage() {
             },
             { key: "minute", label: "Minuto" },
           ]}
+          vertical
           onSubmit={handleAddEvent("staffId", staffId, teamId)}
         />
       ),
@@ -149,6 +148,7 @@ export default function ViewMatchPage() {
             },
             { key: "minute", label: "Minuto" },
           ]}
+          vertical
           onSubmit={handleAddEvent("playerId", playerId, teamId)}
         />
       ),
@@ -161,7 +161,8 @@ export default function ViewMatchPage() {
         label="Ver jogo"
         back
         edit={
-          data?.status === MatchStatus.SCHEDULED
+          data?.status === MatchStatus.SCHEDULED ||
+          data?.status === MatchStatus.POSTPONED
             ? `/backoffice/matches/${matchId}/edit`
             : undefined
         }
@@ -184,30 +185,43 @@ export default function ViewMatchPage() {
         ]}
       />
 
-      <h3>Estado do jogo</h3>
+      <h3>Mudar o estado do jogo:</h3>
       {data && (
         <div
           style={{
-            flex: 2,
             display: "grid",
             gridTemplateColumns: "repeat(5, 1fr)",
             gap: "1rem",
           }}
         >
-          {Object.values(MatchStatus).map((status) => (
-            <button
-              key={status}
-              disabled={
-                updatingStatus ||
-                !data.awayTeamId ||
-                !data.homeTeamId ||
-                !canTransition(data.status, status)
-              }
-              onClick={() => handleChangeStatus(status)}
-            >
-              {status}
-            </button>
-          ))}
+          {Object.values(MatchStatus)
+            .filter((status) => canTransition(data, status))
+            .map((status) => (
+              <button
+                key={status}
+                type="button"
+                disabled={
+                  updatingStatus || !data.homeTeamId || !data.awayTeamId
+                }
+                onClick={() => handleChangeStatus(status)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: "0.25rem",
+                  padding: "0.75rem 1rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "0.5rem",
+                  background: "#fff",
+                  color: "#222",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "border-color 0.2s, background 0.2s",
+                }}
+              >
+                {status}
+              </button>
+            ))}
         </div>
       )}
 
@@ -227,7 +241,6 @@ export default function ViewMatchPage() {
       )}
 
       <h3>Tabela de Eventos</h3>
-
       <DataTable
         data={data?.events || []}
         columns={[

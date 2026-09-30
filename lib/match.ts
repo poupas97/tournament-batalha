@@ -1,6 +1,12 @@
 import { MATCH_STATE_MACHINE } from "@/enums/matches";
-import { MatchStatus } from "@/generated/prisma";
+import { Match, MatchStatus } from "@/generated/prisma";
+import { isKnockoutRound } from "./shuffle";
+import { MatchBEResponse } from "@/types/match";
 
-export function canTransition(from: MatchStatus, to: MatchStatus) {
-  return MATCH_STATE_MACHINE[from].includes(to);
+export function canTransition(match: Match | MatchBEResponse, to: MatchStatus) {
+  if (match.status === MatchStatus.RT_END && !isKnockoutRound(match.round)) {
+    return false;
+  }
+
+  return MATCH_STATE_MACHINE[match.status].includes(to);
 }

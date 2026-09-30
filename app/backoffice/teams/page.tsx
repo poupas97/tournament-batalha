@@ -36,7 +36,7 @@ export default function BackofficeTeamsPage() {
           { key: "name", header: "Nome" },
           { key: "competition.name", header: "Competição" },
           { key: "_count.players", header: "Jogadores" },
-          { key: "_count.staffs", header: "Staff" },
+          { key: "_count.staffs", header: "Staffs" },
         ]}
       />
     </>

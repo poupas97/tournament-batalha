@@ -13,6 +13,7 @@ import {
   MatchStatus,
 } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
+import { isKnockoutRound } from "@/lib/shuffle";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -46,10 +47,6 @@ export async function POST(request: Request) {
   const staffId = sanitizeNumber(body?.staffId);
   const teamId = sanitizeNumber(body?.teamId);
 
-  if (body?.status !== undefined) {
-    return invalidParam("Status");
-  }
-
   if (!matchId) {
     return invalidParam("Match");
   }
@@ -82,6 +79,7 @@ export async function POST(request: Request) {
     where: { id: matchId },
     select: {
       status: true,
+      round: true,
       homeTeamId: true,
       awayTeamId: true,
       competition: { select: { status: true } },
@@ -109,6 +107,17 @@ export async function POST(request: Request) {
   ];
 
   if (!eventAllowedStatuses.includes(match.status)) {
+    return invalidParam("MatchStatus");
+  }
+
+  const isCard =
+    type === MatchEventType.YELLOW_CARD || type === MatchEventType.RED_CARD;
+
+  if (
+    match.status === MatchStatus.RT_END &&
+    !isKnockoutRound(match.round) &&
+    !isCard
+  ) {
     return invalidParam("MatchStatus");
   }
 
