@@ -55,7 +55,7 @@ export default function ViewMatchPage() {
         return;
       }
 
-      setData((prev) => (prev ? { ...prev, ...responseData } : prev));
+      setData(responseData);
     } finally {
       setUpdatingStatus(false);
     }

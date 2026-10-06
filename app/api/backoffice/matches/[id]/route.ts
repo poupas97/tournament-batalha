@@ -10,7 +10,12 @@ import {
   unauthorized,
   updatedResponse,
 } from "@/lib/api";
-import { CompetitionStatus, MatchStatus } from "@/generated/prisma";
+import {
+  AuditAction,
+  CompetitionStatus,
+  MatchStatus,
+} from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -83,6 +88,12 @@ export async function PUT(request: Request, context: RouteContext) {
     where: { id: matchId },
     select: {
       id: true,
+      date: true,
+      round: true,
+      competitionId: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      group: true,
       status: true,
       competition: { select: { id: true, status: true } },
     },
@@ -100,14 +111,30 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   if (isPostponed) {
-    const matchUpdated = await prisma.match.update({
-      where: { id: matchId },
-      data: { date, status: MatchStatus.SCHEDULED },
-      include: {
-        competition: true,
-        homeTeam: true,
-        awayTeam: true,
-      },
+    const matchUpdated = await prisma.$transaction(async (tx) => {
+      const updated = await tx.match.update({
+        where: { id: matchId },
+        data: { date, status: MatchStatus.SCHEDULED },
+        include: {
+          competition: true,
+          homeTeam: true,
+          awayTeam: true,
+        },
+      });
+
+      await createAuditLog(
+        {
+          token,
+          action: AuditAction.UPDATE,
+          entity: "Match",
+          entityId: matchId,
+          before: existing,
+          after: updated,
+        },
+        tx,
+      );
+
+      return updated;
     });
 
     return updatedResponse(matchUpdated);
@@ -138,20 +165,36 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Teams");
   }
 
-  const matchUpdated = await prisma.match.update({
-    where: { id: matchId },
-    data: {
-      date,
-      round,
-      competitionId,
-      homeTeamId,
-      awayTeamId,
-    },
-    include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
-    },
+  const matchUpdated = await prisma.$transaction(async (tx) => {
+    const updated = await tx.match.update({
+      where: { id: matchId },
+      data: {
+        date,
+        round,
+        competitionId,
+        homeTeamId,
+        awayTeamId,
+      },
+      include: {
+        competition: true,
+        homeTeam: true,
+        awayTeam: true,
+      },
+    });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.UPDATE,
+        entity: "Match",
+        entityId: matchId,
+        before: existing,
+        after: updated,
+      },
+      tx,
+    );
+
+    return updated;
   });
 
   return updatedResponse(matchUpdated);

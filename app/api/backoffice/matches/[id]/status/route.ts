@@ -9,9 +9,15 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { CompetitionStatus, Match, MatchStatus } from "@/generated/prisma";
+import {
+  AuditAction,
+  CompetitionStatus,
+  Match,
+  MatchStatus,
+} from "@/generated/prisma";
 import { notifyMatchStatus } from "@/lib/socket";
 import { canTransition } from "@/lib/match";
+import { createAuditLog } from "@/lib/audit";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -71,9 +77,30 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("MatchStatus");
   }
 
-  const match = await prisma.match.update({
-    where: { id: matchId },
-    data: { status },
+  const match = await prisma.$transaction(async (tx) => {
+    const updated = await tx.match.update({
+      where: { id: matchId },
+      data: { status },
+      select: {
+        id: true,
+        status: true,
+        competition: { select: { id: true, status: true } },
+      },
+    });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.UPDATE,
+        entity: "Match",
+        entityId: matchId,
+        before: existing,
+        after: updated,
+      },
+      tx,
+    );
+
+    return updated;
   });
 
   notifyMatchStatus(matchId, { status: match.status });

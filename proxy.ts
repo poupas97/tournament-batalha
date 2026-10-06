@@ -3,7 +3,7 @@ import { requireToken } from "./lib/api";
 import { UserRole } from "./generated/prisma";
 
 const PUBLIC_PATHS = ["/backoffice/login"];
-const ADMIN_PATHS = ["/backoffice/users"];
+const ADMIN_PATHS = ["/backoffice/users", "/backoffice/audit-log"];
 
 function matchesPath(pathname: string, paths: string[]) {
   return paths.some(

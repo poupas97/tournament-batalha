@@ -19,13 +19,13 @@ export async function GET(request: Request, context: RouteContext) {
     return unauthorized();
   }
 
-  const user = await getParamId(context);
-  if (!user) {
+  const userId = await getParamId(context);
+  if (!userId) {
     return invalidParam("User");
   }
 
-  const player = await prisma.user.findUnique({
-    where: { id: user },
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
     select: {
       id: true,
       name: true,
@@ -35,11 +35,11 @@ export async function GET(request: Request, context: RouteContext) {
     },
   });
 
-  if (!player) {
-    return noFound("Player");
+  if (!user) {
+    return noFound("User");
   }
 
-  return getResponse(player);
+  return getResponse(user);
 }
 
 export async function PUT(request: Request, context: RouteContext) {

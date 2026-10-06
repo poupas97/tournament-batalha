@@ -14,6 +14,7 @@ model User {
   password  String
   role      UserRole     @default(MANAGER)
   createdAt DateTime @default(now())
+  auditLogs AuditLog[] @relation("AuditLogActor")
 }
 
 model Team {
@@ -158,4 +159,25 @@ enum MatchEventType {
 enum CompetitionConfig {
   LEAGUE
   GROUP
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model AuditLog {
+  id        Int         @id @default(autoincrement())
+  actorId   Int?
+  actor     User?       @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action    AuditAction
+  entity    String
+  entityId  Int?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
 }

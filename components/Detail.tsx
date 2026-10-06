@@ -8,7 +8,7 @@ type DetailField<T extends Record<string, unknown>> = {
   key: string;
   label: string;
   hint?: string | ((data: T) => string);
-  format?: "date" | "boolean";
+  format?: "date" | "boolean" | "json";
 };
 
 type DetailProps<T extends Record<string, unknown>> = {
@@ -58,7 +58,9 @@ export default function Detail<T extends Record<string, unknown>>({
                     ? value
                       ? "Sim"
                       : "Não"
-                    : value}
+                    : it.format === "json"
+                      ? JSON.stringify(value, null, 2)
+                      : value}
               </>
             </div>
           </div>
