@@ -84,11 +84,13 @@ export async function PUT(request: Request, context: RouteContext) {
     select: {
       id: true,
       status: true,
-      competition: { select: { status: true } },
+      competition: { select: { id: true, status: true } },
     },
   });
 
-  if (!existing) return noFound("Match");
+  if (!existing) {
+    return noFound("Match");
+  }
 
   const isScheduled = existing.status === MatchStatus.SCHEDULED;
   const isPostponed = existing.status === MatchStatus.POSTPONED;
@@ -98,16 +100,9 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   if (isPostponed) {
-    if (existing.competition.status !== CompetitionStatus.IN_PROGRESS) {
-      return invalidParam("CompetitionStatus");
-    }
-
     const matchUpdated = await prisma.match.update({
       where: { id: matchId },
-      data: {
-        date,
-        status: MatchStatus.SCHEDULED,
-      },
+      data: { date, status: MatchStatus.SCHEDULED },
       include: {
         competition: true,
         homeTeam: true,
@@ -118,7 +113,6 @@ export async function PUT(request: Request, context: RouteContext) {
     return updatedResponse(matchUpdated);
   }
 
-  // SCHEDULED: edição normal
   if (existing.competition.status !== CompetitionStatus.DRAFT) {
     return invalidParam("CompetitionStatus");
   }
@@ -126,6 +120,7 @@ export async function PUT(request: Request, context: RouteContext) {
   if (!round) {
     return invalidParam("Round");
   }
+
   if (!competitionId) {
     return invalidParam("Competition");
   }

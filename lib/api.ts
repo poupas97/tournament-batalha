@@ -1,6 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { RouteContext } from "@/types/api";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function requireToken(request: Request) {
   return getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
@@ -38,4 +38,8 @@ export function updatedResponse<T>(entity: T) {
 
 export function deletedResponse() {
   return NextResponse.json({ success: true }, { status: 202 });
+}
+
+export function getSearchParam(request: NextRequest, key: string) {
+  return request.nextUrl.searchParams.get(key);
 }

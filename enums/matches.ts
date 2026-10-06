@@ -3,7 +3,6 @@ import { MatchStatus } from "@/generated/prisma";
 export const MATCH_STATE_MACHINE: Record<MatchStatus, MatchStatus[]> = {
   [MatchStatus.SCHEDULED]: [
     MatchStatus.RT_START,
-    MatchStatus.INTERRUPTED,
     MatchStatus.POSTPONED,
     MatchStatus.CANCELED,
   ],

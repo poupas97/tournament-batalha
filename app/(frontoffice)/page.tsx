@@ -1,11 +1,25 @@
+"use client";
+
+import MatchesGridTable from "@/components/MatchesGridTable";
 import Title from "@/components/Title";
+import useGetState from "@/hooks/useGetState";
+import { MatchBEResponse } from "@/types/match";
 
 export default function Home() {
+  const { data, loading, error } = useGetState<MatchBEResponse[]>(
+    "/api/matches?today=true",
+  );
+
   return (
     <>
-      <Title label="Frontoffice" />
+      <Title label="Bem-vindo" />
 
-      <p>Bem-vindo ao frontoffice. Esta é a página principal pública.</p>
+      <MatchesGridTable
+        loading={loading}
+        error={error}
+        data={data}
+        emptyMessage="Nenhum jogo encontrado para o dia de hoje."
+      />
     </>
   );
 }
