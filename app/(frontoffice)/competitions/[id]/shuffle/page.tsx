@@ -5,6 +5,7 @@ import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
+import { Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 
 export default function ViewCompetitionMatchesPage() {
@@ -31,12 +32,22 @@ export default function ViewCompetitionMatchesPage() {
     <>
       <Title label="Ver sorteio" back />
 
-      {matchesLoading && <p>A carregar sorteio...</p>}
-      {matchesError && <p style={{ color: "crimson" }}>{matchesError}</p>}
+      {matchesLoading && (
+        <Typography variant="body1">A carregar sorteio...</Typography>
+      )}
+      {matchesError && (
+        <Typography variant="body1" color="error">
+          {matchesError}
+        </Typography>
+      )}
 
-      {competitionLoading && <p>A carregar competição...</p>}
+      {competitionLoading && (
+        <Typography variant="body1">A carregar competição...</Typography>
+      )}
       {competitionError && (
-        <p style={{ color: "crimson" }}>{competitionError}</p>
+        <Typography variant="body1" color="error">
+          {competitionError}
+        </Typography>
       )}
 
       {!matchesLoading &&

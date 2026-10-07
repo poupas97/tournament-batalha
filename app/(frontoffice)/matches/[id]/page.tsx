@@ -25,6 +25,7 @@ import {
 } from "@/types/socket";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
+import { Typography } from "@mui/material";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -128,7 +129,7 @@ export default function ViewMatchPage() {
         ]}
       />
 
-      <h3>Tabela de Eventos</h3>
+      <Typography variant="h6">Eventos de jogo</Typography>
       <DataTable
         // loading={loading}
         // error={error}

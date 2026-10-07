@@ -17,8 +17,7 @@ import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
-import { Button } from "@heroui/react";
-import Link from "next/link";
+import { Button } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 export default function ViewCompetitionPage() {
@@ -146,31 +145,29 @@ export default function ViewCompetitionPage() {
       />
 
       {data?.status === CompetitionStatus.DRAFT && (
-        <Button size="sm" onPress={openShuffleModal}>
+        <Button size="small" onClick={openShuffleModal}>
           Fazer sorteio
         </Button>
       )}
       {data?.status === CompetitionStatus.DRAWN && (
         <Button
-          size="sm"
-          onPress={() => changeCompetitionStatus(CompetitionStatus.IN_PROGRESS)}
+          size="small"
+          onClick={() => changeCompetitionStatus(CompetitionStatus.IN_PROGRESS)}
         >
           Iniciar competição
         </Button>
       )}
       {data?.status === CompetitionStatus.IN_PROGRESS && (
         <Button
-          size="sm"
-          onPress={() => changeCompetitionStatus(CompetitionStatus.FINISHED)}
+          size="small"
+          onClick={() => changeCompetitionStatus(CompetitionStatus.FINISHED)}
         >
           Finalizar competição
         </Button>
       )}
       {(data?.status === CompetitionStatus.DRAWN ||
         data?.status === CompetitionStatus.IN_PROGRESS) && (
-        <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
-          Ver sorteio
-        </Link>
+        <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
       )}
 
       <GridTable

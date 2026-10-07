@@ -12,6 +12,7 @@ import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
+import { Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditCompetitionPage() {
@@ -52,8 +53,14 @@ export default function EditCompetitionPage() {
         back
       />
 
-      {loading && <p>A carregar competição...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {loading && (
+        <Typography variant="body1">A carregar competição...</Typography>
+      )}
+      {error && (
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+      )}
 
       {!loading && data && (
         <Form<ICompetitionFormValues>

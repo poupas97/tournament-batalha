@@ -19,6 +19,7 @@ import { MatchBEResponse } from "@/types/match";
 import { IMatchEventFormValues } from "@/types/match-event";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { Button, Typography } from "@mui/material";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -208,7 +209,7 @@ export default function ViewMatchPage() {
         ]}
       />
 
-      <h3>Mudar o estado do jogo:</h3>
+      <Typography variant="h6">Mudar o estado do jogo</Typography>
       {data && (
         <div
           style={{
@@ -220,30 +221,16 @@ export default function ViewMatchPage() {
           {Object.values(MatchStatus)
             .filter((status) => canTransition(data, status))
             .map((status) => (
-              <button
+              <Button
                 key={status}
-                type="button"
+                variant="contained"
                 disabled={
                   updatingStatus || !data.homeTeamId || !data.awayTeamId
                 }
                 onClick={() => handleChangeStatus(status)}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  gap: "0.25rem",
-                  padding: "0.75rem 1rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "0.5rem",
-                  background: "#fff",
-                  color: "#222",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "border-color 0.2s, background 0.2s",
-                }}
               >
                 {status}
-              </button>
+              </Button>
             ))}
         </div>
       )}
@@ -263,7 +250,7 @@ export default function ViewMatchPage() {
         </div>
       )}
 
-      <h3>Tabela de Eventos</h3>
+      <Typography variant="h6">Eventos de jogo</Typography>
       <DataTable
         data={data?.events || []}
         columns={[
@@ -276,19 +263,9 @@ export default function ViewMatchPage() {
             key: "actions",
             header: "Ações",
             render: (it) => (
-              <button
-                type="button"
-                onClick={() => handleRemoveEvent(it)}
-                style={{
-                  padding: 0,
-                  border: "none",
-                  background: "transparent",
-                  color: "crimson",
-                  cursor: "pointer",
-                }}
-              >
+              <Button onClick={() => handleRemoveEvent(it)} color="error">
                 Remover
-              </button>
+              </Button>
             ),
           },
         ]}

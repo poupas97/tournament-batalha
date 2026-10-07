@@ -9,6 +9,7 @@ import {
   IUserPasswordFormValues,
   UserBEResponse,
 } from "@/types/user";
+import { Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditUserPage() {
@@ -69,8 +70,14 @@ export default function EditUserPage() {
         back
       />
 
-      {loading && <p>A carregar utilizador...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {loading && (
+        <Typography variant="body1">A carregar utilizador...</Typography>
+      )}
+      {error && (
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+      )}
 
       {!loading && data && (
         <>
@@ -92,7 +99,7 @@ export default function EditUserPage() {
             onSubmit={handleSubmit}
           />
 
-          <h3>Password</h3>
+          <Typography variant="h6">Password</Typography>
           <Form<IUserPasswordFormValues>
             fields={[
               { key: "actual", label: "Atual", type: "password" },

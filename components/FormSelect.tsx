@@ -1,5 +1,7 @@
 "use client";
 
+import TextField from "@mui/material/TextField";
+
 type FormSelectProps = {
   name: string;
   value: string;
@@ -14,11 +16,14 @@ export default function FormSelect({
   onChange,
 }: FormSelectProps) {
   return (
-    <select
+    <TextField
+      select
       name={name}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="min-h-12 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+      fullWidth
+      size="small"
+      slotProps={{ select: { native: true } }}
     >
       <option value="">Selecione...</option>
 
@@ -27,6 +32,6 @@ export default function FormSelect({
           {option.label}
         </option>
       ))}
-    </select>
+    </TextField>
   );
 }

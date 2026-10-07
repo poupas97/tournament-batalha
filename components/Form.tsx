@@ -4,6 +4,7 @@ import FormCheckbox from "@/components/FormCheckbox";
 import HintTooltip from "@/components/HintTooltip";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import get from "lodash/get";
 import { FormEvent, useState, type ReactNode } from "react";
 
@@ -91,19 +92,34 @@ export default function Form<T extends Record<string, unknown>>({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div
-        className={`grid gap-4 ${
-          vertical ? "grid-cols-1" : "grid-cols-1 md:grid-cols-5"
-        }`}
+    <Stack component="form" onSubmit={handleSubmit} spacing={2}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: vertical
+            ? "1fr"
+            : { xs: "1fr", md: "repeat(5, minmax(0, 1fr))" },
+          gap: 2,
+        }}
       >
         {fields.map((field) => (
-          <label
+          <Stack
+            component="label"
             key={String(field.key)}
             id={String(field.key)}
-            className="flex flex-col gap-1 text-sm font-medium text-slate-700"
+            spacing={0.75}
           >
-            <span className="flex items-center gap-1">
+            <Typography
+              component="span"
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                fontWeight: 700,
+              }}
+            >
               {field.label}
               {field.hint && (
                 <HintTooltip
@@ -115,7 +131,7 @@ export default function Form<T extends Record<string, unknown>>({
                   }
                 />
               )}
-            </span>
+            </Typography>
 
             {field.options ? (
               <FormSelect
@@ -143,18 +159,19 @@ export default function Form<T extends Record<string, unknown>>({
                 onChange={(value) => handleChange(field.key, value)}
               />
             )}
-          </label>
+          </Stack>
         ))}
-      </div>
+      </Box>
 
       {children}
 
-      <button
+      <Button
         type="submit"
-        className="min-h-12 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        variant="contained"
+        sx={{ minHeight: 48, fontWeight: 700 }}
       >
         Guardar
-      </button>
-    </form>
+      </Button>
+    </Stack>
   );
 }

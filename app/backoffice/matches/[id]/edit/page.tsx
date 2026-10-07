@@ -4,6 +4,7 @@ import FormMatch from "@/components/FormMatch";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
+import { Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditMatchPage() {
@@ -41,8 +42,12 @@ export default function EditMatchPage() {
         back
       />
 
-      {loading && <p>A carregar jogo...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {loading && <Typography variant="body1">A carregar jogo...</Typography>}
+      {error && (
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+      )}
 
       {!loading && data && (
         <FormMatch initialValues={data} handleSubmit={handleSubmit} />

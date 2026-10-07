@@ -1,6 +1,7 @@
 "use client";
 
 import { MatchBEResponse } from "@/types/match";
+import { Box, Grid, Typography } from "@mui/material";
 
 type MatchEventGridProps = {
   team: MatchBEResponse["homeTeam"] | MatchBEResponse["awayTeam"];
@@ -14,43 +15,41 @@ export default function MatchEventGrid({
   addStaffMatchEvent,
 }: MatchEventGridProps) {
   return (
-    <div style={{ flex: 1 }}>
-      <strong>Elementos equipa: {team?.name}</strong>
-      <div
-        style={{
-          flex: 2,
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "1rem",
-        }}
-      >
+    <Box sx={{ flex: 1 }}>
+      <Typography variant="h6">Elementos equipa: {team?.name}</Typography>
+      <Grid container spacing={1}>
         {team?.players.map((it) => (
-          <div
+          <Grid
+            size={4}
             key={it.id}
             onClick={addPlayerMatchEvent(it.id, team.id)}
-            className="cursor-pointer transition-colors hover:brightness-95"
-            style={{
-              border: "0.05rem solid black",
-              backgroundColor: "aqua",
+            sx={{
+              p: 1,
+              backgroundColor: "lightblue",
+              borderRadius: 1,
+              cursor: "pointer",
             }}
           >
             {it.number} - {it.name}
-          </div>
+          </Grid>
         ))}
+
         {team?.staffs.map((it) => (
-          <div
+          <Grid
+            size={4}
             key={it.id}
             onClick={addStaffMatchEvent(it.id, team.id)}
-            className="cursor-pointer transition-colors hover:brightness-95"
-            style={{
-              border: "0.05rem solid black",
-              backgroundColor: "greenyellow",
+            sx={{
+              p: 1,
+              backgroundColor: "lightgreen",
+              borderRadius: 1,
+              cursor: "pointer",
             }}
           >
             {it.name}
-          </div>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 }

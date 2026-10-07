@@ -5,8 +5,10 @@ import DataTable from "./DataTable";
 import DataGrid from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { Button } from "@heroui/react";
 import get from "lodash/get";
+import { Box, Button, ButtonGroup, TextField, Typography } from "@mui/material";
+import GridViewIcon from "@mui/icons-material/GridView";
+import TableRowsIcon from "@mui/icons-material/TableRows";
 
 function GridTableContent<T>({
   emptyMessage,
@@ -53,51 +55,59 @@ function GridTableContent<T>({
 
   return (
     <>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           justifyContent: "space-between",
-          gap: "0.5rem",
+          gap: 2,
         }}
       >
-        <div style={{ flex: 1, alignContent: "center" }}>
+        <Box sx={{ flex: 1, alignContent: "center" }}>
           {create && (
-            <Button size="sm" onPress={() => router.push(create)}>
+            <Button size="small" onClick={() => router.push(create)}>
               + Adicionar
             </Button>
           )}
-          {title && <h3>{title}</h3>}
-        </div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <input
-            type="search"
+          {title && <Typography variant="h6">{title}</Typography>}
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Pesquisar..."
-            aria-label="Pesquisar"
-            style={{
-              padding: "0.5rem",
-              border: "0.05rem solid #d0d7de",
-              borderRadius: "0.375rem",
-            }}
+            size="small"
           />
+          <ButtonGroup aria-label="Selecionar visualização">
+            <Button
+              variant={view === "grid" ? "contained" : "outlined"}
+              onClick={() => onSetView("grid")}
+              aria-label="Grid"
+            >
+              <GridViewIcon />
+            </Button>
 
-          <button onClick={() => onSetView("grid")} disabled={view === "grid"}>
-            ⬜ Grid
-          </button>
-          <button
-            onClick={() => onSetView("table")}
-            disabled={view === "table"}
-          >
-            📋 Tabela
-          </button>
-        </div>
-      </div>
+            <Button
+              variant={view === "table" ? "contained" : "outlined"}
+              onClick={() => onSetView("table")}
+              aria-label="Tabela"
+            >
+              <TableRowsIcon />
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </Box>
 
-      {loading && <p>A carregar dados...</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {loading && <Typography variant="body1">A carregar dados...</Typography>}
+      {error && (
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+      )}
       {!filteredData?.length ? (
-        <p>{emptyMessage || "Sem dados para mostrar"}</p>
+        <Typography variant="body1">
+          {emptyMessage || "Sem dados para mostrar"}
+        </Typography>
       ) : view === "grid" ? (
         <DataGrid data={filteredData} {...rest} />
       ) : (
@@ -109,7 +119,7 @@ function GridTableContent<T>({
 
 export default function GridTable<T>(props: GridTableProps<T>) {
   return (
-    <Suspense fallback={<p>A carregar...</p>}>
+    <Suspense fallback={<Typography variant="body1">A carregar...</Typography>}>
       <GridTableContent {...props} />
     </Suspense>
   );

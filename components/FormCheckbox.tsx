@@ -1,5 +1,7 @@
 "use client";
 
+import Checkbox from "@mui/material/Checkbox";
+
 type FormCheckboxProps = {
   name: string;
   checked: boolean;
@@ -12,12 +14,11 @@ export default function FormCheckbox({
   onChange,
 }: FormCheckboxProps) {
   return (
-    <input
+    <Checkbox
       name={name}
-      type="checkbox"
       checked={checked}
       onChange={(event) => onChange(event.target.checked)}
-      className="mt-2 size-6 accent-blue-600"
+      sx={{ alignSelf: "flex-start", p: 0.5 }}
     />
   );
 }

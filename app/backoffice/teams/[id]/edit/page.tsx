@@ -5,6 +5,7 @@ import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { CompetitionBEResponse } from "@/types/competition";
 import { ITeamFormValues, TeamBEResponse } from "@/types/team";
+import { Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditTeamPage() {
@@ -50,12 +51,22 @@ export default function EditTeamPage() {
         back
       />
 
-      {teamLoading && <p>A carregar equipa...</p>}
-      {teamError && <p style={{ color: "crimson" }}>{teamError}</p>}
+      {teamLoading && (
+        <Typography variant="body1">A carregar equipa...</Typography>
+      )}
+      {teamError && (
+        <Typography variant="body1" color="error">
+          {teamError}
+        </Typography>
+      )}
 
-      {competitionsLoading && <p>A carregar competições...</p>}
+      {competitionsLoading && (
+        <Typography variant="body1">A carregar competições...</Typography>
+      )}
       {competitionsError && (
-        <p style={{ color: "crimson" }}>{competitionsError}</p>
+        <Typography variant="body1" color="error">
+          {competitionsError}
+        </Typography>
       )}
 
       {!teamLoading && teamData && competitionsData && (

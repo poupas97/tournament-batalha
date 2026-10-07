@@ -12,7 +12,7 @@ import {
   getCompetitionStatusHint,
 } from "@/lib/detailHints";
 import { CompetitionBEResponse } from "@/types/competition";
-import Link from "next/link";
+import { Button, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 type Stats = {
@@ -101,18 +101,16 @@ export default function ViewCompetitionPage() {
 
       {(competitionData?.status === CompetitionStatus.DRAWN ||
         competitionData?.status === CompetitionStatus.IN_PROGRESS) && (
-        <Link href={`${competitionId}/shuffle`} style={{ color: "#0366d6" }}>
-          Ver sorteio
-        </Link>
+        <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
       )}
 
-      {/* <h3>Classificações</h3>
-      <GridTable
+      {/* <GridTable
         loading={statsLoading}
         error={statsError}
         data={statsData?.rankingTeams || []}
         clickableRow={(it) => router.push(`/teams/${it.teamId}`)}
         notChangeRoute
+        title="Classificação"
         columns={[
           { key: "position", header: "º" },
           { key: "teamName", header: "Equipa" },

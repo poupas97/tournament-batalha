@@ -1,5 +1,12 @@
 import { formatDateTime } from "@/lib/utils";
 import { DataTableProps } from "@/types/grid-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import get from "lodash/get";
 
 export default function DataTable<T>({
@@ -8,11 +15,11 @@ export default function DataTable<T>({
   clickableRow,
 }: DataTableProps<T>) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr style={{ background: "#f6f8fa" }}>
+    <Table>
+      <TableHead>
+        <TableRow>
           {columns.map((column) => (
-            <th
+            <TableCell
               key={column.key}
               style={{
                 textAlign: "left",
@@ -21,26 +28,18 @@ export default function DataTable<T>({
               }}
             >
               {column.header}
-            </th>
+            </TableCell>
           ))}
-        </tr>
-      </thead>
-      <tbody>
+        </TableRow>
+      </TableHead>
+      <TableBody>
         {data.map((item, index) => (
-          <tr
-            key={index}
-            onClick={() => clickableRow?.(item)}
-            className={
-              clickableRow
-                ? "cursor-pointer border-b border-slate-200 transition-colors hover:bg-slate-50 focus-within:bg-slate-50"
-                : "border-b border-slate-200"
-            }
-          >
+          <TableRow key={index} onClick={() => clickableRow?.(item)}>
             {columns.map((it) => {
               const value = get(item, it.key, "");
 
               return (
-                <td key={it.key} style={{ padding: "0.75rem" }}>
+                <TableCell key={it.key} style={{ padding: "0.75rem" }}>
                   {it.render?.(item) ||
                     (it.format === "date"
                       ? formatDateTime(value as string)
@@ -49,12 +48,12 @@ export default function DataTable<T>({
                           ? "Sim"
                           : "Não"
                         : String(value))}
-                </td>
+                </TableCell>
               );
             })}
-          </tr>
+          </TableRow>
         ))}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }

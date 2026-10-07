@@ -3,6 +3,7 @@
 import { formatDateTime } from "@/lib/utils";
 import HintTooltip from "@/components/HintTooltip";
 import get from "lodash/get";
+import { Grid, Typography } from "@mui/material";
 
 type DetailField<T extends Record<string, unknown>> = {
   key: string;
@@ -26,31 +27,37 @@ export default function Detail<T extends Record<string, unknown>>({
   fields,
   emptyMessage,
 }: DetailProps<T>) {
-  if (loading) return <p>A carregar dados...</p>;
+  if (loading)
+    return <Typography variant="body1">A carregar dados...</Typography>;
 
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
+  if (error)
+    return (
+      <Typography variant="body1" color="error">
+        {error}
+      </Typography>
+    );
 
-  if (!data) return <p>{emptyMessage || "Sem dados para mostrar"}</p>;
+  if (!data)
+    return (
+      <Typography variant="body1">
+        {emptyMessage || "Sem dados para mostrar"}
+      </Typography>
+    );
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(5, 1fr)",
-        gap: "1rem",
-      }}
-    >
+    <Grid container spacing={2}>
       {fields.map((it) => {
         const value = get(data, it.key, "");
         const hint = typeof it.hint === "function" ? it.hint(data) : it.hint;
 
         return (
-          <div key={it.key}>
-            <div className="flex items-center gap-1">
-              <strong>{it.label}</strong>
+          <Grid size={2} key={it.key}>
+            <Typography variant="caption" color="text.secondary">
+              {it.label}
               {hint && <HintTooltip label={it.label} hint={hint} />}
-            </div>
-            <div>
+            </Typography>
+
+            <Typography variant="body1">
               <>
                 {it.format === "date"
                   ? formatDateTime(value as string | undefined)
@@ -62,10 +69,10 @@ export default function Detail<T extends Record<string, unknown>>({
                       ? JSON.stringify(value, null, 2)
                       : value}
               </>
-            </div>
-          </div>
+            </Typography>
+          </Grid>
         );
       })}
-    </div>
+    </Grid>
   );
 }

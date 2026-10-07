@@ -10,6 +10,7 @@ import {
 } from "@/types/team";
 import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
+import { Button, Typography } from "@mui/material";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
@@ -149,10 +150,10 @@ export default function FormTeam({
           justifyContent: "space-between",
         }}
       >
-        <h3>Jogadores ({players.length})</h3>
-        <button type="button" onClick={openPlayerModal()}>
-          Adicionar
-        </button>
+        <Typography variant="h6">Jogadores ({players.length})</Typography>
+        <Button size="small" onClick={openPlayerModal()}>
+          + Adicionar
+        </Button>
       </div>
 
       <DataTable
@@ -165,32 +166,10 @@ export default function FormTeam({
             header: "Ações",
             render: (it) => (
               <>
-                <button
-                  type="button"
-                  onClick={openPlayerModal(it)}
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    background: "transparent",
-                    color: "dimgrey",
-                    cursor: "pointer",
-                  }}
-                >
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removePlayer(it)}
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    background: "transparent",
-                    color: "crimson",
-                    cursor: "pointer",
-                  }}
-                >
+                <Button onClick={openPlayerModal(it)}>Editar</Button>
+                <Button onClick={() => removePlayer(it)} color="error">
                   Remover
-                </button>
+                </Button>
               </>
             ),
           },
@@ -204,10 +183,10 @@ export default function FormTeam({
           justifyContent: "space-between",
         }}
       >
-        <h3>Staff ({staffs.length})</h3>
-        <button type="button" onClick={openStaffModal()}>
-          Adicionar
-        </button>
+        <Typography variant="h6">Staff ({staffs.length})</Typography>
+        <Button size="small" onClick={openStaffModal()}>
+          + Adicionar
+        </Button>
       </div>
 
       <DataTable
@@ -219,32 +198,12 @@ export default function FormTeam({
             header: "Ações",
             render: (it) => (
               <>
-                <button
-                  type="button"
-                  onClick={openStaffModal(it)}
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    background: "transparent",
-                    color: "dimgrey",
-                    cursor: "pointer",
-                  }}
-                >
+                <Button onClick={openStaffModal(it)} style={{}}>
                   Editar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeStaff(it)}
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    background: "transparent",
-                    color: "crimson",
-                    cursor: "pointer",
-                  }}
-                >
+                </Button>
+                <Button color="error" onClick={() => removeStaff(it)}>
                   Remover
-                </button>
+                </Button>
               </>
             ),
           },

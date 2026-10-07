@@ -8,6 +8,17 @@ import {
 } from "@/types/competition";
 import { CompetitionForShuffle } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
+import {
+  Box,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -21,7 +32,11 @@ export default function CompetitionShuffle({
   isBackoffice?: boolean;
 }) {
   if (!competition.config) {
-    return <p>Esta competição ainda não tem configuração.</p>;
+    return (
+      <Typography variant="body1">
+        Esta competição ainda não tem configuração.
+      </Typography>
+    );
   }
 
   const configuredCompetition: CompetitionForShuffle = {
@@ -32,7 +47,7 @@ export default function CompetitionShuffle({
 
   return (
     <>
-      <h2>Classificação</h2>
+      <Typography variant="h5">Classificação</Typography>
       {view.isGroupCompetition ? (
         <GroupTables
           groups={view.groups}
@@ -47,7 +62,7 @@ export default function CompetitionShuffle({
         />
       )}
 
-      <h2>Jornadas</h2>
+      <Typography variant="h5">Jornadas</Typography>
       {view.isGroupCompetition ? (
         <GroupSchedule groups={view.groups} isBackoffice={isBackoffice} />
       ) : (
@@ -57,7 +72,7 @@ export default function CompetitionShuffle({
         />
       )}
 
-      <h2>Eliminatórias</h2>
+      <Typography variant="h5">Eliminatórias</Typography>
       <KnockoutBracket
         rounds={view.knockoutRounds}
         isBackoffice={isBackoffice}
@@ -69,9 +84,11 @@ export default function CompetitionShuffle({
 function MatchCard({
   match,
   isBackoffice,
+  isKnockoutMatch,
 }: {
   match: MatchBEResponse;
   isBackoffice: boolean;
+  isKnockoutMatch?: boolean;
 }) {
   const router = useRouter();
 
@@ -82,56 +99,77 @@ function MatchCard({
     match.status === MatchStatus.PENALTIES;
 
   return (
-    <div
-      onClick={() =>
-        router.push(`${isBackoffice ? "/backoffice" : ""}/matches/${match.id}`)
-      }
-      className="cursor-pointer transition-colors hover:border-slate-400 hover:bg-slate-50"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        border: "0.05rem solid #ddd",
-        borderRadius: "0.5rem",
-        padding: "1rem",
-        gap: "0.5rem",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
+    <Grid size={isKnockoutMatch ? 12 : 4}>
+      <Paper
+        elevation={0}
+        onClick={() => {
+          router.push(
+            `${isBackoffice ? "/backoffice" : ""}/matches/${match.id}`,
+          );
+        }}
+        sx={{
+          p: 2,
+          cursor: "pointer",
+          height: isKnockoutMatch ? undefined : "100%",
+
+          "&:hover": { borderColor: "primary.main", boxShadow: 2 },
         }}
       >
-        <div style={{ flex: 1, color: "#666" }}>{match.round}</div>
-        <div style={{ flex: 1, color: "#666", textAlign: "end" }}>
-          {formatDateTime(match.date)}
-        </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          width: "100%",
-        }}
-      >
-        <div style={{ fontWeight: 600, flex: 1 }}>
-          {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
-        </div>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {match.round}
+          </Typography>
 
-        <div style={{ fontWeight: 600 }}>
-          {showScore ? `${homeGoals} vs ${awayGoals}` : "vs"}
-        </div>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {formatDateTime(match.date)}
+          </Typography>
+        </Box>
 
-        <div style={{ fontWeight: 600, flex: 1, textAlign: "end" }}>
-          {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
-        </div>
-      </div>
-      <div style={{ color: "#666" }}>{match.status}</div>
-    </div>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mt: 2,
+            mb: 2,
+          }}
+        >
+          <Typography variant="body2" sx={{ flex: 1 }}>
+            {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
+          </Typography>
+
+          <Typography
+            variant="body2"
+            sx={{
+              minWidth: 50,
+              textAlign: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {showScore ? `${homeGoals} - ${awayGoals}` : "vs"}
+          </Typography>
+
+          <Typography variant="body2" sx={{ flex: 1, textAlign: "right" }}>
+            {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
+          </Typography>
+        </Box>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          align="center"
+          sx={{ display: "block", flex: 1 }}
+        >
+          {match.status}
+        </Typography>
+      </Paper>
+    </Grid>
   );
 }
 
@@ -145,60 +183,67 @@ function LeagueTable({
   isBackoffice: boolean;
 }) {
   return (
-    <table style={{ width: "100%" }}>
-      <thead>
-        <tr>
-          <th style={{ width: "5%" }}>º</th>
-          <th>Equipa</th>
-          <th style={{ width: "5%" }}>P</th>
-          <th style={{ width: "5%" }}>J</th>
-          <th style={{ width: "5%" }}>V</th>
-          <th style={{ width: "5%" }}>E</th>
-          <th style={{ width: "5%" }}>D</th>
-          <th style={{ width: "5%" }}>GM</th>
-          <th style={{ width: "5%" }}>GS</th>
-          <th style={{ width: "5%" }}>DG</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell sx={{ width: "5%" }}>º</TableCell>
+          <TableCell>Equipa</TableCell>
+          <TableCell sx={{ width: "5%" }}>P</TableCell>
+          <TableCell sx={{ width: "5%" }}>J</TableCell>
+          <TableCell sx={{ width: "5%" }}>V</TableCell>
+          <TableCell sx={{ width: "5%" }}>E</TableCell>
+          <TableCell sx={{ width: "5%" }}>D</TableCell>
+          <TableCell sx={{ width: "5%" }}>GM</TableCell>
+          <TableCell sx={{ width: "5%" }}>GS</TableCell>
+          <TableCell sx={{ width: "5%" }}>DG</TableCell>
+        </TableRow>
+      </TableHead>
 
-      <tbody>
+      <TableBody>
         {standings.map((team) => {
           const isQualified = qualifiedTeamIds?.has(team.team.id);
 
           return (
-            <tr
+            <TableRow
               key={team.team.id}
-              style={{
+              sx={{
                 background: isQualified ? "#dcfce7" : undefined,
                 color: isQualified ? "#166534" : undefined,
               }}
             >
-              <td style={{ textAlign: "center" }}>{team.position}</td>
-              <td>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.position}
+              </TableCell>
+              <TableCell>
                 <Link
                   href={
                     isBackoffice
                       ? `/backoffice/teams/${team.team.id}`
                       : `/teams/${team.team.id}`
                   }
-                  className="hover:underline"
                 >
                   {team.team.name}
                 </Link>
-              </td>
-              <td style={{ textAlign: "center" }}>{team.points}</td>
-              <td style={{ textAlign: "center" }}>{team.played}</td>
-              <td style={{ textAlign: "center" }}>{team.won}</td>
-              <td style={{ textAlign: "center" }}>{team.drawn}</td>
-              <td style={{ textAlign: "center" }}>{team.lost}</td>
-              <td style={{ textAlign: "center" }}>{team.goalsFor}</td>
-              <td style={{ textAlign: "center" }}>{team.goalsAgainst}</td>
-              <td style={{ textAlign: "center" }}>{team.goalDifference}</td>
-            </tr>
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.points}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.played}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.won}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.drawn}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.lost}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalsFor}
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalsAgainst}
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalDifference}
+              </TableCell>
+            </TableRow>
           );
         })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }
 
@@ -212,24 +257,18 @@ function GroupTables({
   isBackoffice: boolean;
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: "1.5rem",
-      }}
-    >
+    <Grid container spacing={2}>
       {groups.map(({ group, standings }) => (
-        <section key={group}>
-          <h3>Grupo {group}</h3>
+        <Box key={group}>
+          <Typography variant="h6">Grupo {group}</Typography>
           <LeagueTable
             standings={standings}
             qualifiedTeamIds={qualifiedTeamIds}
             isBackoffice={isBackoffice}
           />
-        </section>
+        </Box>
       ))}
-    </div>
+    </Grid>
   );
 }
 
@@ -241,21 +280,15 @@ function GroupSchedule({
   isBackoffice: boolean;
 }) {
   return groups.map(({ group, matches }) => (
-    <section key={group}>
-      <h3>Grupo {group}</h3>
+    <Box key={group}>
+      <Typography variant="h6">Grupo {group}</Typography>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      <Grid container spacing={2}>
         {matches.map((match) => (
           <MatchCard key={match.id} match={match} isBackoffice={isBackoffice} />
         ))}
-      </div>
-    </section>
+      </Grid>
+    </Box>
   ));
 }
 
@@ -267,17 +300,11 @@ function LeagueSchedule({
   isBackoffice: boolean;
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-        gap: "1.5rem",
-      }}
-    >
+    <Grid container spacing={2}>
       {matches.map((match) => (
         <MatchCard key={match.id} match={match} isBackoffice={isBackoffice} />
       ))}
-    </div>
+    </Grid>
   );
 }
 
@@ -288,38 +315,26 @@ function KnockoutBracket({
   rounds: MatchBEResponse[][];
   isBackoffice: boolean;
 }) {
+  if (!rounds.length) {
+    return (
+      <Typography variant="body1">Sem emparelhamento disponível.</Typography>
+    );
+  }
+
   return (
-    <>
-      {!rounds.length && <p>Sem emparelhamento disponível.</p>}
-      {!!rounds.length && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${rounds.length}, minmax(0, 1fr))`,
-            gap: "1.5rem",
-            alignItems: "flex-start",
-          }}
-        >
-          {rounds.map((matches, index) => (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1.5rem",
-              }}
-            >
-              {matches.map((match) => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  isBackoffice={isBackoffice}
-                />
-              ))}
-            </div>
+    <Grid container spacing={4}>
+      {rounds.map((matches, index) => (
+        <Grid key={index} container spacing={2} size={12 / rounds.length}>
+          {matches.map((match) => (
+            <MatchCard
+              key={match.id}
+              match={match}
+              isBackoffice={isBackoffice}
+              isKnockoutMatch
+            />
           ))}
-        </div>
-      )}
-    </>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
