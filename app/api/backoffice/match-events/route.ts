@@ -14,6 +14,7 @@ import {
 } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
 import { isKnockoutRound } from "@/lib/shuffle";
+import { MatchEventBEResponse } from "@/types/match-event";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -155,7 +156,7 @@ export async function POST(request: Request) {
     },
   });
 
-  notifyAddMatchEvent(matchId, matchEvent);
+  notifyAddMatchEvent(matchId, matchEvent as unknown as MatchEventBEResponse);
 
   return createdResponse(matchEvent);
 }
