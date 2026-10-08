@@ -12,7 +12,7 @@ import {
   getCompetitionStatusHint,
 } from "@/lib/detailHints";
 import { CompetitionBEResponse } from "@/types/competition";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 
 type Stats = {
@@ -103,6 +103,11 @@ export default function ViewCompetitionPage() {
         competitionData?.status === CompetitionStatus.IN_PROGRESS) && (
         <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
       )}
+
+      {/* 
+      TODO: se a competição estiver em progresso ou desenhada
+        mostrar o sorteio e afins, se ainda nao estiver mostrar a lista de equipas apenas 
+        */}
 
       {/* <GridTable
         loading={statsLoading}

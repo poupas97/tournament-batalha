@@ -78,7 +78,7 @@ export function createGroupMatches(
           competitionId,
           homeTeamId: home.id,
           awayTeamId: away.id,
-          group: getGroupLabel(groupIndex + 1),
+          group: String.fromCharCode(64 + groupIndex + 1),
           round: `Jornada ${roundIndex + 1}`,
           date: getMatchDate(matches.length),
         });
@@ -90,7 +90,14 @@ export function createGroupMatches(
 }
 
 function createGroups(teams: Team[], teamsPerGroup: number): Team[][] {
-  const shuffled = shuffle(teams);
+  const shuffled = [...teams];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
   const totalGroups = Math.ceil(shuffled.length / teamsPerGroup);
   const baseSize = Math.floor(shuffled.length / totalGroups);
   const groups: Team[][] = [];
@@ -202,25 +209,8 @@ function calculateLeagueStandings(
       ...team,
       goalDifference: team.goalsFor - team.goalsAgainst,
     }))
-    .sort((a, b) => {
-      if (b.points !== a.points) {
-        return b.points - a.points;
-      }
-
-      if (b.goalDifference !== a.goalDifference) {
-        return b.goalDifference - a.goalDifference;
-      }
-
-      if (b.goalsFor !== a.goalsFor) {
-        return b.goalsFor - a.goalsFor;
-      }
-
-      return a.team.name.localeCompare(b.team.name);
-    })
-    .map((team, index) => ({
-      ...team,
-      position: index + 1,
-    }));
+    .sort(compareStandingCriteria)
+    .map((team, index) => ({ ...team, position: index + 1 }));
 
   return table;
 }
@@ -292,15 +282,7 @@ export function createKnockoutMatches(
   return matches;
 }
 
-function isPowerOfTwo(value: number) {
-  return value > 1 && (value & (value - 1)) === 0;
-}
-
-function compareStandings(a: LeagueStanding, b: LeagueStanding) {
-  if (a.position !== b.position) {
-    return a.position - b.position;
-  }
-
+function compareStandingCriteria(a: LeagueStanding, b: LeagueStanding) {
   if (b.points !== a.points) {
     return b.points - a.points;
   }
@@ -327,39 +309,40 @@ function getQualifiedSeeds({
   teams: TeamBEResponse[];
   matches: MatchBEResponse[];
 }): KnockoutSeed[] {
-  if (!isPowerOfTwo(qualified)) {
+  if (qualified <= 1 || (qualified & (qualified - 1)) !== 0) {
     return [];
   }
 
   if (config === CompetitionConfig.LEAGUE) {
     return calculateLeagueStandings(teams, matches)
       .slice(0, qualified)
-      .map((standing, index) => ({
-        seed: index + 1,
-        standing,
-      }));
+      .map((standing, index) => ({ seed: index + 1, standing }));
   }
 
   return calculateGroupStandings(matches)
     .flatMap(({ group, standings }) =>
-      standings.map((standing) => ({
-        group,
-        standing,
-      })),
+      standings.map((standing) => ({ group, standing })),
     )
-    .sort((a, b) => compareStandings(a.standing, b.standing))
+    .sort((a, b) => {
+      if (a.standing.position !== b.standing.position) {
+        return a.standing.position - b.standing.position;
+      }
+
+      return compareStandingCriteria(a.standing, b.standing);
+    })
     .slice(0, qualified)
-    .map((seed, index) => ({
-      ...seed,
-      seed: index + 1,
-    }));
+    .map((seed, index) => ({ ...seed, seed: index + 1 }));
 }
 
 function createLeagueQualificationSources(qualified: number) {
   return (bracketSeeds[qualified] ?? []).map((seed) => `${seed}.º class`);
 }
 
-export function getMatchScore(match: MatchBEResponse) {
+export function getMatchScore(match: MatchBEResponse | undefined) {
+  if (!match) {
+    return { homeGoals: 0, awayGoals: 0 };
+  }
+
   let homeGoals = 0;
   let awayGoals = 0;
 
@@ -420,10 +403,7 @@ export function getCompetitionShuffleView(
   }
 
   const standings = calculateLeagueStandings(competition.teams, leagueMatches);
-  const groups = calculateGroupStandings(initialMatches).map((group) => ({
-    ...group,
-    groups: calculateGroupStandings(initialMatches),
-  }));
+  const groups = calculateGroupStandings(initialMatches);
   const qualified = competition.qualified ?? 0;
   const seeds = getQualifiedSeeds({
     config: competition.config,
@@ -533,9 +513,7 @@ export function addKnockoutPlaceholders<T extends MatchForPlaceholders>({
   matches: T[];
 }) {
   const stages = getStages(qualified);
-  const initialMatches = matches.filter(
-    (match) => !isKnockoutRound(match.round),
-  );
+  const initialMatches = matches.filter((it) => !isKnockoutRound(it.round));
   const qualificationSources =
     config === CompetitionConfig.GROUP
       ? createGroupQualificationSourcesFromMatches(initialMatches, qualified)
@@ -561,10 +539,6 @@ export function addKnockoutPlaceholders<T extends MatchForPlaceholders>({
   });
 }
 
-function getGroupLabel(index: number) {
-  return String.fromCharCode(64 + index);
-}
-
 function getMatchDate(index: number, intervalMinutes = 60, startDate?: Date) {
   const start = startDate ? new Date(startDate) : new Date();
 
@@ -577,18 +551,6 @@ function getMatchDate(index: number, intervalMinutes = 60, startDate?: Date) {
   start.setMinutes(start.getMinutes() + index * intervalMinutes);
 
   return start;
-}
-
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-
-  return result;
 }
 
 function createLeagueRounds(teams: Team[]): RoundMatch[][] {
@@ -626,4 +588,58 @@ function createLeagueRounds(teams: Team[]): RoundMatch[][] {
   }
 
   return rounds;
+}
+
+export function getMatchStatusStyle(status: MatchStatus) {
+  switch (status) {
+    case MatchStatus.SCHEDULED:
+      return {
+        borderColor: "primary.main",
+        borderWidth: 1,
+        statusColor: "primary.main",
+      };
+
+    case MatchStatus.RT_START:
+    case MatchStatus.RT_HALF_TIME:
+    case MatchStatus.RT_RESTART:
+    case MatchStatus.ET_START:
+    case MatchStatus.ET_HALF_TIME:
+    case MatchStatus.ET_RESTART:
+    case MatchStatus.PENALTIES:
+      return {
+        borderColor: "success.main",
+        borderWidth: 2,
+        statusColor: "success.main",
+      };
+
+    case MatchStatus.RT_END:
+    case MatchStatus.ET_END:
+      return {
+        borderColor: "divider",
+        borderWidth: 1,
+        statusColor: "text.secondary",
+      };
+
+    case MatchStatus.INTERRUPTED:
+    case MatchStatus.POSTPONED:
+      return {
+        borderColor: "warning.main",
+        borderWidth: 2,
+        statusColor: "warning.main",
+      };
+
+    case MatchStatus.CANCELED:
+      return {
+        borderColor: "error.main",
+        borderWidth: 2,
+        statusColor: "error.main",
+      };
+
+    default:
+      return {
+        borderColor: "divider",
+        borderWidth: 1,
+        statusColor: "text.secondary",
+      };
+  }
 }

@@ -6,11 +6,11 @@ import { Box, Button } from "@mui/material";
 
 const navItems = [
   { href: "/backoffice", label: "Dashboard" },
-  { href: "/backoffice/users", label: "Utilizadores", adminOnly: true },
-  { href: "/backoffice/audit-log", label: "Auditoria", adminOnly: true },
   { href: "/backoffice/competitions", label: "Competições" },
   { href: "/backoffice/teams", label: "Equipas" },
   { href: "/backoffice/matches", label: "Jogos" },
+  { href: "/backoffice/users", label: "Utilizadores", adminOnly: true },
+  { href: "/backoffice/audit-log", label: "Auditoria", adminOnly: true },
 ];
 
 type BackofficeNavbarProps = {

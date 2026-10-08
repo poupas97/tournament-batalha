@@ -1,6 +1,5 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import {
   dispatchSocketMessage,
@@ -26,6 +25,8 @@ import {
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { Typography } from "@mui/material";
+import { getMatchScore } from "@/lib/shuffle";
+import MatchEventsTable from "@/components/MatchEventsTable";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -92,6 +93,8 @@ export default function ViewMatchPage() {
     };
   }, [matchId]);
 
+  const { homeGoals, awayGoals } = getMatchScore(data);
+
   return (
     <>
       <Title label="Ver Jogo" back />
@@ -129,19 +132,11 @@ export default function ViewMatchPage() {
         ]}
       />
 
-      <Typography variant="h6">Eventos de jogo</Typography>
-      <DataTable
-        // loading={loading}
-        // error={error}
-        data={data?.events || []}
-        columns={[
-          { key: "type", header: "Tipo" },
-          { key: "minute", header: "Minuto" },
-          { key: "player.name", header: "Jogador" },
-          { key: "staff.name", header: "Staff" },
-          { key: "team.name", header: "Equipa" },
-        ]}
-      />
+      <Typography variant="h5" align="center">
+        {`${data?.homeTeam?.name} ${homeGoals} - ${awayGoals} ${data?.awayTeam?.name}`}
+      </Typography>
+
+      <MatchEventsTable data={data} />
     </>
   );
 }

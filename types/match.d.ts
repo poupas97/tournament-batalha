@@ -1,6 +1,7 @@
 import { Competition, MatchEvent, MatchStatus, Team } from "@/generated/prisma";
 import { TeamBEResponse } from "./team";
 import { CompetitionBEResponse } from "./competition";
+import { MatchEventBEResponse } from "./match-event";
 
 export type IMatchFormValues = {
   date: string;
@@ -23,7 +24,7 @@ export type MatchBEResponse = {
   awayTeam?: TeamBEResponse;
   homePlaceholder?: string;
   awayPlaceholder?: string;
-  events?: MatchEvent[];
+  events?: MatchEventBEResponse[];
   status: MatchStatus;
 };
 

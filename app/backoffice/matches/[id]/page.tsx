@@ -1,12 +1,11 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import Form from "@/components/Form";
 import MatchEventGrid from "@/components/MatchEventGrid";
 import { useModal } from "@/components/ModalProvider";
 import Title from "@/components/Title";
-import { MatchEvent, MatchEventType, MatchStatus } from "@/generated/prisma";
+import { MatchEventType, MatchStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import { canTransition } from "@/lib/match";
 import {
@@ -16,10 +15,15 @@ import {
   getMatchCompetitionConfigHint,
 } from "@/lib/detailHints";
 import { MatchBEResponse } from "@/types/match";
-import { IMatchEventFormValues } from "@/types/match-event";
+import {
+  IMatchEventFormValues,
+  MatchEventBEResponse,
+} from "@/types/match-event";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
+import { getMatchScore } from "@/lib/shuffle";
+import MatchEventsTable from "@/components/MatchEventsTable";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -111,7 +115,7 @@ export default function ViewMatchPage() {
     });
   };
 
-  const handleRemoveEvent = async (matchEvent: MatchEvent) => {
+  const onRemoveMatchEvent = async (matchEvent: MatchEventBEResponse) => {
     const response = await fetch(
       `/api/backoffice/match-events/${matchEvent.id}`,
       {
@@ -162,6 +166,8 @@ export default function ViewMatchPage() {
     });
   };
 
+  const { homeGoals, awayGoals } = getMatchScore(data);
+
   return (
     <>
       <Title
@@ -209,6 +215,10 @@ export default function ViewMatchPage() {
         ]}
       />
 
+      <Typography variant="h5" align="center">
+        {`${data?.homeTeam?.name} ${homeGoals} - ${awayGoals} ${data?.awayTeam?.name}`}
+      </Typography>
+
       <Typography variant="h6">Mudar o estado do jogo</Typography>
       {data && (
         <div
@@ -250,26 +260,7 @@ export default function ViewMatchPage() {
         </div>
       )}
 
-      <Typography variant="h6">Eventos de jogo</Typography>
-      <DataTable
-        data={data?.events || []}
-        columns={[
-          { key: "type", header: "Tipo" },
-          { key: "minute", header: "Minuto" },
-          { key: "player.name", header: "Jogador" },
-          { key: "staff.name", header: "Staff" },
-          { key: "team.name", header: "Equipa" },
-          {
-            key: "actions",
-            header: "Ações",
-            render: (it) => (
-              <Button onClick={() => handleRemoveEvent(it)} color="error">
-                Remover
-              </Button>
-            ),
-          },
-        ]}
-      />
+      <MatchEventsTable data={data} onRemoveMatchEvent={onRemoveMatchEvent} />
     </>
   );
 }

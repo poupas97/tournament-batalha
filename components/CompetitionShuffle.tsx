@@ -1,5 +1,9 @@
 import { MatchStatus } from "@/generated/prisma";
-import { getCompetitionShuffleView, getMatchScore } from "@/lib/shuffle";
+import {
+  getCompetitionShuffleView,
+  getMatchScore,
+  getMatchStatusStyle,
+} from "@/lib/shuffle";
 import { formatDateTime } from "@/lib/utils";
 import {
   CompetitionBEResponse,
@@ -97,6 +101,7 @@ function MatchCard({
     match.status === MatchStatus.RT_END ||
     match.status === MatchStatus.ET_END ||
     match.status === MatchStatus.PENALTIES;
+  const statusStyle = getMatchStatusStyle(match.status);
 
   return (
     <Grid size={isKnockoutMatch ? 12 : 4}>
@@ -111,8 +116,11 @@ function MatchCard({
           p: 2,
           cursor: "pointer",
           height: isKnockoutMatch ? undefined : "100%",
+          borderStyle: "solid",
+          borderColor: statusStyle.borderColor,
+          borderWidth: statusStyle.borderWidth,
 
-          "&:hover": { borderColor: "primary.main", boxShadow: 2 },
+          "&:hover": { boxShadow: 2 },
         }}
       >
         <Box
@@ -122,11 +130,11 @@ function MatchCard({
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="caption" color="text.secondary" noWrap>
+          <Typography variant="body2" color="text.secondary" noWrap>
             {match.round}
           </Typography>
 
-          <Typography variant="caption" color="text.secondary" noWrap>
+          <Typography variant="body2" color="text.secondary" noWrap>
             {formatDateTime(match.date)}
           </Typography>
         </Box>
@@ -140,12 +148,12 @@ function MatchCard({
             mb: 2,
           }}
         >
-          <Typography variant="body2" sx={{ flex: 1 }}>
+          <Typography variant="body1" sx={{ flex: 1 }}>
             {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
           </Typography>
 
           <Typography
-            variant="body2"
+            variant="body1"
             sx={{
               minWidth: 50,
               textAlign: "center",
@@ -155,17 +163,23 @@ function MatchCard({
             {showScore ? `${homeGoals} - ${awayGoals}` : "vs"}
           </Typography>
 
-          <Typography variant="body2" sx={{ flex: 1, textAlign: "right" }}>
+          <Typography variant="body1" sx={{ flex: 1, textAlign: "right" }}>
             {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
           </Typography>
         </Box>
 
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          align="center"
-          sx={{ display: "block", flex: 1 }}
-        >
+        <Typography variant="body1" align="center">
+          <Box
+            component="span"
+            sx={{
+              display: "inline-block",
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              bgcolor: statusStyle.statusColor,
+              mr: 1,
+            }}
+          />
           {match.status}
         </Typography>
       </Paper>
