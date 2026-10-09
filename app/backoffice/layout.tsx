@@ -1,4 +1,5 @@
 import BackofficeNavbar from "@/components/BackofficeNavbar";
+import Footer from "@/components/Footer";
 import ModalProvider from "@/components/ModalProvider";
 import { UserRole } from "@/generated/prisma";
 import { authOptions } from "@/lib/nextAuth";
@@ -27,6 +28,7 @@ export default async function BackofficeLayout({
       >
         {children}
       </main>
+      <Footer />
     </ModalProvider>
   );
 }

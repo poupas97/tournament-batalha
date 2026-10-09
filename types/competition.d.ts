@@ -56,3 +56,16 @@ export type CompetitionForShuffle = {
   qualified?: number | null;
   teams: TeamBEResponse[];
 };
+
+type CompetitionStatsBEResponse = {
+  rankingScores:
+    | {
+        position: number;
+        playerId: number;
+        playerName: string;
+        goals: number;
+        teamName: string;
+        matches: number;
+      }[]
+    | undefined;
+};

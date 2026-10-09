@@ -32,7 +32,7 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
         position: "sticky",
         top: 0,
         zIndex: 20,
-        borderBottom: "1px solid #d0d7de",
+        borderBottom: "3px solid #d0d7de",
         bgcolor: "background.paper",
       }}
     >

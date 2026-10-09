@@ -1,9 +1,14 @@
 "use client";
 
 import CompetitionShuffle from "@/components/CompetitionShuffle";
+import DataTable from "@/components/DataTable";
+import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import { CompetitionBEResponse } from "@/types/competition";
+import {
+  CompetitionBEResponse,
+  CompetitionStatsBEResponse,
+} from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import { Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -27,6 +32,16 @@ export default function ViewCompetitionMatchesPage() {
   } = useGetState<MatchBEResponse[]>(
     competitionId
       ? `/api/backoffice/competitions/${competitionId}/shuffle`
+      : undefined,
+  );
+
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+  } = useGetState<CompetitionStatsBEResponse>(
+    competitionId
+      ? `/api/backoffice/competitions/${competitionId}/stats`
       : undefined,
   );
 
@@ -66,6 +81,19 @@ export default function ViewCompetitionMatchesPage() {
             isBackoffice
           />
         )}
+
+      <Typography variant="h5">Marcadores</Typography>
+      <DataTable
+        data={statsData?.rankingScores || []}
+        //TODO: clickableRow={(it) => router.push(`/players/${it.playerId}`)}
+        columns={[
+          { key: "position", header: "º" },
+          { key: "playerName", header: "Nome" },
+          { key: "teamName", header: "Equipa" },
+          { key: "goals", header: "Golos" },
+          { key: "matches", header: "Jogos" },
+        ]}
+      />
     </>
   );
 }

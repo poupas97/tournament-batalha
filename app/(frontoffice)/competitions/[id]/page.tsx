@@ -1,5 +1,7 @@
 "use client";
 
+import CompetitionShuffle from "@/components/CompetitionShuffle";
+import DataTable from "@/components/DataTable";
 import Detail from "@/components/Detail";
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
@@ -11,37 +13,13 @@ import {
   getCompetitionQualifiedHint,
   getCompetitionStatusHint,
 } from "@/lib/detailHints";
-import { CompetitionBEResponse } from "@/types/competition";
-import { Button } from "@mui/material";
+import {
+  CompetitionBEResponse,
+  CompetitionStatsBEResponse,
+} from "@/types/competition";
+import { MatchBEResponse } from "@/types/match";
+import { Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-
-type Stats = {
-  rankingScores:
-    | {
-        position: number;
-        playerId: number;
-        playerName: string;
-        goals: number;
-        teamName: string;
-        matches: number;
-      }[]
-    | undefined;
-  rankingTeams:
-    | {
-        draws: number;
-        goalDifference: string;
-        goalsAgainst: number;
-        goalsFor: string;
-        losses: number;
-        matches: string;
-        points: number;
-        position: string;
-        teamId: number;
-        teamName: string;
-        wins: string;
-      }[]
-    | undefined;
-};
 
 export default function ViewCompetitionPage() {
   const params = useParams();
@@ -57,10 +35,18 @@ export default function ViewCompetitionPage() {
   );
 
   const {
+    data: matchesData,
+    loading: matchesLoading,
+    error: matchesError,
+  } = useGetState<MatchBEResponse[]>(
+    competitionId ? `/api/competitions/${competitionId}/shuffle` : undefined,
+  );
+
+  const {
     data: statsData,
     loading: statsLoading,
     error: statsError,
-  } = useGetState<Stats>(
+  } = useGetState<CompetitionStatsBEResponse>(
     competitionId ? `/api/competitions/${competitionId}/stats` : undefined,
   );
 
@@ -99,65 +85,56 @@ export default function ViewCompetitionPage() {
         ]}
       />
 
-      {(competitionData?.status === CompetitionStatus.DRAWN ||
-        competitionData?.status === CompetitionStatus.IN_PROGRESS) && (
-        <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
+      {competitionLoading || statsLoading || matchesLoading ? (
+        <Typography variant="body1">A carregar competição...</Typography>
+      ) : competitionError || statsError || matchesError ? (
+        <Typography variant="body1" color="error">
+          {competitionError || statsError || matchesError}
+        </Typography>
+      ) : (
+        !!competitionData &&
+        !!statsData &&
+        !!matchesData && (
+          <>
+            {competitionData?.status === CompetitionStatus.DRAFT ||
+            competitionData?.status === CompetitionStatus.DRAWN ? (
+              <GridTable
+                loading={false}
+                error={undefined}
+                data={competitionData?.teams}
+                clickableRow={(it) => router.push(`/teams/${it.id}`)}
+                notChangeRoute
+                title={`Equipas (${competitionData?.teams.length})`}
+                columns={[
+                  { key: "name", header: "Nome" },
+                  { key: "_count.players", header: "Jogadores" },
+                  { key: "_count.staffs", header: "Staffs" },
+                ]}
+              />
+            ) : (
+              <>
+                <CompetitionShuffle
+                  competition={competitionData}
+                  matches={matchesData}
+                />
+
+                <Typography variant="h5">Marcadores</Typography>
+                <DataTable
+                  data={statsData.rankingScores || []}
+                  //TODO: clickableRow={(it) => router.push(`/players/${it.playerId}`)}
+                  columns={[
+                    { key: "position", header: "º" },
+                    { key: "playerName", header: "Nome" },
+                    { key: "teamName", header: "Equipa" },
+                    { key: "goals", header: "Golos" },
+                    { key: "matches", header: "Jogos" },
+                  ]}
+                />
+              </>
+            )}
+          </>
+        )
       )}
-
-      {/* 
-      TODO: se a competição estiver em progresso ou desenhada
-        mostrar o sorteio e afins, se ainda nao estiver mostrar a lista de equipas apenas 
-        */}
-
-      {/* <GridTable
-        loading={statsLoading}
-        error={statsError}
-        data={statsData?.rankingTeams || []}
-        clickableRow={(it) => router.push(`/teams/${it.teamId}`)}
-        notChangeRoute
-        title="Classificação"
-        columns={[
-          { key: "position", header: "º" },
-          { key: "teamName", header: "Equipa" },
-          { key: "matches", header: "Jogos" },
-          { key: "wins", header: "V" },
-          { key: "draws", header: "E" },
-          { key: "losses", header: "D" },
-          { key: "goalsAgainst", header: "GM" },
-          { key: "goalsFor", header: "GS" },
-          { key: "goalDifference", header: "DG" },
-        ]}
-      /> */}
-
-      <GridTable
-        loading={competitionLoading}
-        error={competitionError}
-        data={competitionData?.teams}
-        clickableRow={(it) => router.push(`/teams/${it.id}`)}
-        notChangeRoute
-        title={`Equipas (${competitionData?.teams.length})`}
-        columns={[
-          { key: "name", header: "Nome" },
-          { key: "_count.players", header: "Jogadores" },
-          { key: "_count.staffs", header: "Staffs" },
-        ]}
-      />
-
-      <GridTable
-        loading={statsLoading}
-        error={statsError}
-        data={statsData?.rankingScores || []}
-        clickableRow={(it) => router.push(`/players/${it.playerId}`)}
-        notChangeRoute
-        title="Marcadores"
-        columns={[
-          { key: "position", header: "º" },
-          { key: "playerName", header: "Nome" },
-          { key: "teamName", header: "Equipa" },
-          { key: "goals", header: "Golos" },
-          { key: "matches", header: "Jogos" },
-        ]}
-      />
     </>
   );
 }

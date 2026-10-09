@@ -1,9 +1,21 @@
 import prisma from "@/lib/prisma";
-import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
+import {
+  getParamId,
+  getResponse,
+  invalidParam,
+  noFound,
+  requireToken,
+  unauthorized,
+} from "@/lib/api";
 import { RouteContext } from "@/types/api";
 import { rankingScoresQuery } from "@/enums/competitionStats";
 
 export async function GET(request: Request, context: RouteContext) {
+  const token = await requireToken(request);
+  if (!token) {
+    return unauthorized();
+  }
+
   const competitionId = await getParamId(context);
 
   if (!competitionId) {
