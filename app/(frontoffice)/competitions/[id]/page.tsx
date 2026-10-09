@@ -104,7 +104,7 @@ export default function ViewCompetitionPage() {
                 data={competitionData?.teams}
                 clickableRow={(it) => router.push(`/teams/${it.id}`)}
                 notChangeRoute
-                title={`Equipas (${competitionData?.teams.length})`}
+                title={`Equipas (${competitionData?.teams.length || 0})`}
                 columns={[
                   { key: "name", header: "Nome" },
                   { key: "_count.players", header: "Jogadores" },

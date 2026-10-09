@@ -24,6 +24,7 @@ export default async function BackofficeLayout({
           flexDirection: "column",
           padding: "2rem",
           gap: "2rem",
+          flex: 1,
         }}
       >
         {children}

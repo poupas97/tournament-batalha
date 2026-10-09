@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-PT">
-      <body>
+      <body style={{ display: "flex", flexDirection: "column" }}>
         <MuiProvider>{children}</MuiProvider>
       </body>
     </html>

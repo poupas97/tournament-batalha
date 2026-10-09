@@ -32,7 +32,7 @@ export default function DetailsTeam({
         error={error}
         data={team?.players || []}
         notChangeRoute
-        title={`Jogadores (${team?.players.length})`}
+        title={`Jogadores (${team?.players.length || 0})`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "number", header: "Nº" },
@@ -44,7 +44,7 @@ export default function DetailsTeam({
         error={error}
         data={team?.staffs || []}
         notChangeRoute
-        title={`Staffs (${team?.staffs.length})`}
+        title={`Staffs (${team?.staffs.length || 0})`}
         columns={[{ key: "name", header: "Nome" }]}
       />
     </>
