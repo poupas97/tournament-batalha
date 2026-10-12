@@ -11,6 +11,7 @@ import {
   unauthorized,
 } from "@/lib/api";
 import { notifyRemoveMatchEvent } from "@/lib/socket";
+import { isEventAllowedStatuses } from "@/lib/matchEvents";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -72,19 +73,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     return invalidParam("CompetitionStatus");
   }
 
-  const eventAllowedStatuses: MatchStatus[] = [
-    MatchStatus.RT_START,
-    MatchStatus.RT_HALF_TIME,
-    MatchStatus.RT_RESTART,
-    MatchStatus.RT_END,
-    MatchStatus.ET_START,
-    MatchStatus.ET_HALF_TIME,
-    MatchStatus.ET_RESTART,
-    MatchStatus.ET_END,
-    MatchStatus.PENALTIES,
-  ];
-
-  if (!eventAllowedStatuses.includes(matchEvent.match.status)) {
+  if (!isEventAllowedStatuses(matchEvent.match.status)) {
     return invalidParam("MatchStatus");
   }
 

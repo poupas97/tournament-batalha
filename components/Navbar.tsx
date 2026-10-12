@@ -21,7 +21,8 @@ export default function Navbar() {
         position: "sticky",
         top: 0,
         zIndex: 20,
-        borderBottom: "3px solid #d0d7de",
+        borderBottom: "3px solid",
+        borderBottomColor: "divider",
         bgcolor: "background.paper",
       }}
     >

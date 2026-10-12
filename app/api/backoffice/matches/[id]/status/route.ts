@@ -18,6 +18,7 @@ import {
 import { notifyMatchStatus } from "@/lib/socket";
 import { canTransition } from "@/lib/match";
 import { createAuditLog } from "@/lib/audit";
+import { isMatchFinished, resolveCompetitionProgression } from "@/lib/shuffle";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -42,7 +43,10 @@ export async function PUT(request: Request, context: RouteContext) {
     select: {
       id: true,
       status: true,
-      competition: { select: { id: true, status: true } },
+      round: true,
+      competition: {
+        select: { id: true, status: true },
+      },
     },
   });
 
@@ -84,9 +88,15 @@ export async function PUT(request: Request, context: RouteContext) {
       select: {
         id: true,
         status: true,
-        competition: { select: { id: true, status: true } },
+        competition: {
+          select: { id: true, status: true },
+        },
       },
     });
+
+    if (isMatchFinished(updated.status)) {
+      await resolveCompetitionProgression(updated.competition.id, tx);
+    }
 
     await createAuditLog(
       {

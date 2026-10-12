@@ -24,7 +24,8 @@ export default function DataTable<T>({
               style={{
                 textAlign: "left",
                 padding: "1rem",
-                borderBottom: "0.05rem solid #d0d7de",
+                borderBottom: "0.05rem solid",
+                borderBottomColor: "divider.",
               }}
             >
               {column.header}

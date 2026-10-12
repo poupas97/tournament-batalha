@@ -1,6 +1,6 @@
 "use client";
 
-import { Drawer, IconButton, Typography } from "@mui/material";
+import { Box, Drawer, IconButton, Typography } from "@mui/material";
 import { useEffect, useId, type ReactNode } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -9,7 +9,6 @@ type SideModalProps = {
   title: string;
   onClose: () => void;
   children: ReactNode;
-  footer?: ReactNode;
 };
 
 export default function SideModal({
@@ -17,7 +16,6 @@ export default function SideModal({
   title,
   onClose,
   children,
-  footer,
 }: SideModalProps) {
   const titleId = useId();
 
@@ -50,36 +48,26 @@ export default function SideModal({
       onClose={onClose}
       slotProps={{ paper: { sx: { width: "33vw" } } }}
     >
-      <div
+      <Box
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           gap: "1rem",
           padding: "1rem",
-          borderBottom: "0.05rem solid #d0d7de",
+          borderBottom: "1px solid",
+          borderBottomColor: "divider",
         }}
       >
         <Typography variant="h6">{title}</Typography>
         <IconButton size="small" onClick={onClose} aria-label="Fechar">
           <CloseIcon fontSize="small" />
         </IconButton>
-      </div>
+      </Box>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "1rem" }}>
         {children}
       </div>
-
-      {footer && (
-        <footer
-          style={{
-            padding: "1rem",
-            borderTop: "0.05rem solid #d0d7de",
-          }}
-        >
-          {footer}
-        </footer>
-      )}
     </Drawer>
   );
 }

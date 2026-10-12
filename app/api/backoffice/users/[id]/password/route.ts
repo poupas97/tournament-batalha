@@ -48,9 +48,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },
-    data: {
-      password: hashedPassword,
-    },
+    data: { password: hashedPassword },
     select: {
       id: true,
       name: true,

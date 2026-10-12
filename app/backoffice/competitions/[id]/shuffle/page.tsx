@@ -1,8 +1,7 @@
 "use client";
 
 import CompetitionShuffle from "@/components/CompetitionShuffle";
-import DataTable from "@/components/DataTable";
-import GridTable from "@/components/GridTable";
+import RankingScoresTable from "@/components/RankingScoresTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import {
@@ -82,18 +81,7 @@ export default function ViewCompetitionMatchesPage() {
           />
         )}
 
-      <Typography variant="h5">Marcadores</Typography>
-      <DataTable
-        data={statsData?.rankingScores || []}
-        //TODO: clickableRow={(it) => router.push(`/players/${it.playerId}`)}
-        columns={[
-          { key: "position", header: "º" },
-          { key: "playerName", header: "Nome" },
-          { key: "teamName", header: "Equipa" },
-          { key: "goals", header: "Golos" },
-          { key: "matches", header: "Jogos" },
-        ]}
-      />
+      <RankingScoresTable rankingScores={statsData?.rankingScores} />
     </>
   );
 }

@@ -14,24 +14,14 @@ export async function GET(request: Request, context: RouteContext) {
     include: {
       competition: true,
       homeTeam: {
-        include: {
-          players: true,
-          staffs: true,
-        },
+        include: { players: true, staffs: true },
       },
       awayTeam: {
-        include: {
-          players: true,
-          staffs: true,
-        },
+        include: { players: true, staffs: true },
       },
       events: {
         orderBy: { createdAt: "desc" },
-        include: {
-          team: true,
-          player: true,
-          staff: true,
-        },
+        include: { team: true, player: true, staff: true },
       },
     },
   });

@@ -49,9 +49,7 @@ export async function POST(request: Request) {
 
   const competition = await prisma.competition.create({
     data: { name, config, qualified, opponents },
-    include: {
-      teams: true,
-    },
+    include: { teams: true },
   });
 
   return createdResponse(competition);

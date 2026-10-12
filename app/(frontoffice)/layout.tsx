@@ -2,11 +2,13 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ReactNode } from "react";
 
+interface FrontOfficeLayoutProps {
+  children: ReactNode;
+}
+
 export default function FrontOfficeLayout({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: FrontOfficeLayoutProps) {
   return (
     <>
       <Navbar />

@@ -15,6 +15,7 @@ import {
 import { notifyAddMatchEvent } from "@/lib/socket";
 import { isKnockoutRound } from "@/lib/shuffle";
 import { MatchEventBEResponse } from "@/types/match-event";
+import { isEventAllowedStatuses } from "@/lib/matchEvents";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -24,11 +25,7 @@ export async function GET(request: Request) {
 
   const matchEvents = await prisma.matchEvent.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      player: true,
-      staff: true,
-      team: true,
-    },
+    include: { player: true, staff: true, team: true },
   });
 
   return getResponse(matchEvents);
@@ -68,11 +65,10 @@ export async function POST(request: Request) {
     return invalidParam("PlayerOrStaff");
   }
 
-  if (
-    staffId &&
-    type !== MatchEventType.YELLOW_CARD &&
-    type !== MatchEventType.RED_CARD
-  ) {
+  const isCard =
+    type === MatchEventType.YELLOW_CARD || type === MatchEventType.RED_CARD;
+
+  if (staffId && !isCard) {
     return invalidParam("Type");
   }
 
@@ -95,24 +91,9 @@ export async function POST(request: Request) {
     return invalidParam("CompetitionStatus");
   }
 
-  const eventAllowedStatuses: MatchStatus[] = [
-    MatchStatus.RT_START,
-    MatchStatus.RT_HALF_TIME,
-    MatchStatus.RT_RESTART,
-    MatchStatus.RT_END,
-    MatchStatus.ET_START,
-    MatchStatus.ET_HALF_TIME,
-    MatchStatus.ET_RESTART,
-    MatchStatus.ET_END,
-    MatchStatus.PENALTIES,
-  ];
-
-  if (!eventAllowedStatuses.includes(match.status)) {
+  if (!isEventAllowedStatuses(match.status)) {
     return invalidParam("MatchStatus");
   }
-
-  const isCard =
-    type === MatchEventType.YELLOW_CARD || type === MatchEventType.RED_CARD;
 
   if (
     match.status === MatchStatus.RT_END &&
@@ -141,19 +122,8 @@ export async function POST(request: Request) {
   }
 
   const matchEvent = await prisma.matchEvent.create({
-    data: {
-      matchId,
-      type,
-      minute,
-      playerId,
-      staffId,
-      teamId,
-    },
-    include: {
-      player: true,
-      staff: true,
-      team: true,
-    },
+    data: { matchId, type, minute, playerId, staffId, teamId },
+    include: { player: true, staff: true, team: true },
   });
 
   notifyAddMatchEvent(matchId, matchEvent as unknown as MatchEventBEResponse);

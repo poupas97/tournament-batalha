@@ -77,10 +77,7 @@ export async function POST(request: Request) {
       players: players?.length ? { create: players } : undefined,
       staffs: staffs?.length ? { create: staffs } : undefined,
     },
-    include: {
-      players: true,
-      staffs: true,
-    },
+    include: { players: true, staffs: true },
   });
 
   return createdResponse(team);

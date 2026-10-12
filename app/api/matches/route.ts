@@ -17,11 +17,7 @@ export async function GET(request: NextRequest) {
       ...(today && { date: { gte: startOfDay, lte: endOfDay } }),
     },
     orderBy: [{ competition: { name: "asc" } }, { date: "asc" }],
-    include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
-    },
+    include: { competition: true, homeTeam: true, awayTeam: true },
   });
 
   return getResponse(matches);

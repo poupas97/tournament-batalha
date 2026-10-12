@@ -16,11 +16,7 @@ export async function GET(request: Request) {
 
   const matches = await prisma.match.findMany({
     orderBy: [{ competition: { name: "asc" } }, { date: "asc" }],
-    include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
-    },
+    include: { competition: true, homeTeam: true, awayTeam: true },
   });
 
   return getResponse(matches);
@@ -86,11 +82,7 @@ export async function POST(request: Request) {
       homeTeamId,
       awayTeamId,
     },
-    include: {
-      competition: true,
-      homeTeam: true,
-      awayTeam: true,
-    },
+    include: { competition: true, homeTeam: true, awayTeam: true },
   });
 
   return createdResponse(match);

@@ -1,5 +1,6 @@
 import { CompetitionConfig, CompetitionStatus } from "@/generated/prisma";
 import { TeamBEResponse } from "./team";
+import { MatchBEResponse } from "./match";
 
 export type ICompetitionFormValues = {
   name: string;
@@ -14,6 +15,7 @@ export type CompetitionBEResponse = {
   name: string;
   status: CompetitionStatus;
   teams: TeamBEResponse[];
+  matches?: MatchBEResponse[];
   config: CompetitionConfig;
   qualified?: number;
   opponents?: number;

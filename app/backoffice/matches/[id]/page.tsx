@@ -215,9 +215,11 @@ export default function ViewMatchPage() {
         ]}
       />
 
-      <Typography variant="h5" align="center">
-        {`${data?.homeTeam?.name} ${homeGoals} - ${awayGoals} ${data?.awayTeam?.name}`}
-      </Typography>
+      {data?.homeTeam?.name && data?.awayTeam?.name && (
+        <Typography variant="h5" align="center">
+          {`${data.homeTeam.name} ${homeGoals} - ${awayGoals} ${data.awayTeam.name}`}
+        </Typography>
+      )}
 
       <Typography variant="h6">Mudar o estado do jogo</Typography>
       {data && (

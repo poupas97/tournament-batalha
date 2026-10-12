@@ -26,9 +26,7 @@ export async function GET(request: Request, context: RouteContext) {
 
   const player = await prisma.player.findUnique({
     where: { id: playerId },
-    include: {
-      team: true,
-    },
+    include: { team: true },
   });
 
   if (!player) {
