@@ -11,7 +11,7 @@ export default function ViewTeamPage() {
   const teamId = params?.id;
 
   const { data, loading, error } = useGetState<TeamBEResponse>(
-    teamId ? `/api/teams/${teamId}` : undefined,
+    `/api/teams/${teamId}`,
   );
 
   return (

@@ -1,5 +1,6 @@
 import { Competition, Player, Staff } from "@/generated/prisma";
 import { CompetitionBEResponse } from "./competition";
+import { MatchBEResponse } from "./match";
 
 export type IStaffFormValues = {
   id: number;
@@ -26,4 +27,6 @@ export type TeamBEResponse = {
   staffs: Staff[];
   competitionId: Competition["id"];
   competition: CompetitionBEResponse;
+  awayMatches?: MatchBEResponse[];
+  homeMatches?: MatchBEResponse[];
 };

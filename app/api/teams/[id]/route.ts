@@ -12,6 +12,20 @@ export async function GET(request: Request, context: RouteContext) {
     where: { id: teamId, competition: { active: true } },
     include: {
       competition: true,
+      awayMatches: {
+        include: {
+          competition: { select: { name: true } },
+          awayTeam: { select: { name: true } },
+          homeTeam: { select: { name: true } },
+        },
+      },
+      homeMatches: {
+        include: {
+          competition: { select: { name: true } },
+          awayTeam: { select: { name: true } },
+          homeTeam: { select: { name: true } },
+        },
+      },
       players: {
         orderBy: { createdAt: "asc" },
       },

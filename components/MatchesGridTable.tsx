@@ -7,6 +7,7 @@ interface MatchesGridTableProps {
   loading: boolean;
   error: string | undefined;
   emptyMessage?: string;
+  title?: string;
 }
 
 export default function MatchesGridTable({
@@ -14,6 +15,7 @@ export default function MatchesGridTable({
   loading,
   error,
   emptyMessage,
+  title,
 }: MatchesGridTableProps) {
   const router = useRouter();
 
@@ -23,6 +25,7 @@ export default function MatchesGridTable({
       error={error}
       data={data}
       clickableRow={(it) => router.push(`/matches/${it.id}`)}
+      title={title}
       emptyMessage={emptyMessage}
       columns={[
         { key: "competition.name", header: "Competição" },

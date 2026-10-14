@@ -3,6 +3,7 @@
 import Detail from "@/components/Detail";
 import { TeamBEResponse } from "@/types/team";
 import GridTable from "./GridTable";
+import MatchesGridTable from "./MatchesGridTable";
 
 type DetailsTeamProps = {
   loading: boolean;
@@ -25,6 +26,15 @@ export default function DetailsTeam({
           { key: "name", label: "Nome" },
           { key: "competition.name", label: "Competição" },
         ]}
+      />
+
+      <MatchesGridTable
+        loading={loading}
+        error={error}
+        data={[...(team?.awayMatches || []), ...(team?.homeMatches || [])].sort(
+          (a, b) => (a.date > b.date ? 1 : -1),
+        )}
+        title="Jogos"
       />
 
       <GridTable
