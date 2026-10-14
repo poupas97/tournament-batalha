@@ -1,24 +1,30 @@
 "use client";
 
-import MatchesGridTable from "@/components/MatchesGridTable";
-import Title from "@/components/Title";
+import MatchCalendar from "@/components/MatchCalendar";
 import useGetState from "@/hooks/useGetState";
 import { MatchBEResponse } from "@/types/match";
+import { Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const { data, loading, error } = useGetState<MatchBEResponse[]>(
-    "/api/matches?today=true",
-  );
+  const router = useRouter();
+
+  const { data, loading, error } =
+    useGetState<MatchBEResponse[]>("/api/matches");
 
   return (
     <>
-      <Title label="Bem-vindo" />
+      {loading && <Typography variant="body1">A carregar dados...</Typography>}
 
-      <MatchesGridTable
-        loading={loading}
-        error={error}
+      {error && (
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+      )}
+
+      <MatchCalendar
         data={data}
-        emptyMessage="Nenhum jogo encontrado para o dia de hoje."
+        onMatchClick={(it) => router.push(`/matches/${it.id}`)}
       />
     </>
   );

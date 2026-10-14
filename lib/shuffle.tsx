@@ -203,12 +203,9 @@ function calculateLeagueStandings(
   }
 
   const table = [...standings.values()]
-    .map((team) => ({
-      ...team,
-      goalDifference: team.goalsFor - team.goalsAgainst,
-    }))
+    .map((it) => ({ ...it, goalDifference: it.goalsFor - it.goalsAgainst }))
     .sort(compareStandingCriteria)
-    .map((team, index) => ({ ...team, position: index + 1 }));
+    .map((it, index) => ({ ...it, position: index + 1 }));
 
   return table;
 }
@@ -329,7 +326,7 @@ function getQualifiedSeeds({
       return compareStandingCriteria(a.standing, b.standing);
     })
     .slice(0, qualified)
-    .map((seed, index) => ({ ...seed, seed: index + 1 }));
+    .map((it, index) => ({ ...it, seed: index + 1 }));
 }
 
 function createLeagueQualificationSources(qualified: number) {
@@ -524,16 +521,19 @@ export function addKnockoutPlaceholders<T extends MatchForPlaceholders>({
   });
 }
 
-function getMatchDate(index: number, intervalMinutes = 60, startDate?: Date) {
-  const start = startDate ? new Date(startDate) : new Date();
+function getMatchDate(index: number) {
+  const start = new Date();
+  start.setDate(start.getDate() + 1);
+  start.setHours(18, 0, 0, 0);
 
-  // by default, start from the next day at 9:00 AM
-  if (!startDate) {
-    start.setDate(start.getDate() + 1);
-    start.setHours(9, 0, 0, 0);
-  }
+  const matchesPerDay = 3;
+  const intervalMinutes = 60;
 
-  start.setMinutes(start.getMinutes() + index * intervalMinutes);
+  const day = Math.floor(index / matchesPerDay);
+  const positionInDay = index % matchesPerDay;
+
+  start.setDate(start.getDate() + day);
+  start.setMinutes(start.getMinutes() + positionInDay * intervalMinutes);
 
   return start;
 }
@@ -650,11 +650,11 @@ function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 function getRegularMatches(matches: MatchBEResponse[]) {
-  return matches.filter((match) => !isKnockoutRound(match.round));
+  return matches.filter((it) => !isKnockoutRound(it.round));
 }
 
 function getKnockoutMatches(matches: MatchBEResponse[]) {
-  return matches.filter((match) => isKnockoutRound(match.round));
+  return matches.filter((it) => isKnockoutRound(it.round));
 }
 
 function getKnockoutWinner(match: MatchBEResponse) {
@@ -826,7 +826,7 @@ async function resolveRegularPhase(
 
   if (
     !regularMatches.length ||
-    !regularMatches.every((match) => isMatchFinished(match.status)) ||
+    !regularMatches.every((it) => isMatchFinished(it.status)) ||
     !qualified
   ) {
     return;

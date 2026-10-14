@@ -7,6 +7,7 @@
 - refazer o estado de jogo terminado
   - refazer penalties para PENALTIES_START e adicionar PENALTIES_END
   - refazer as funcoes que verificar se o jogo acabou ou usando PENALTIES_END
+  - esconder/impossibilitar buttao "Finalizar competicao", deve ser uma acao automatica do BE
 
 - no component RankingScoresTable
   - adicionar o click para ir para a pagina do jogador
@@ -17,3 +18,6 @@
     - é enviada para o BE e depois o BE é que trata do storage
 
 - refazer/analisar o file @libs/shuffle
+
+- adicionar cor para a competicao
+  - ajustar a cor no MatchCalendar component

@@ -126,7 +126,10 @@ export async function PUT(request: Request, context: RouteContext) {
     return updatedResponse(matchUpdated);
   }
 
-  if (existing.competition.status !== CompetitionStatus.DRAFT) {
+  if (
+    existing.competition.status !== CompetitionStatus.DRAFT &&
+    existing.competition.status !== CompetitionStatus.DRAWN
+  ) {
     return invalidParam("CompetitionStatus");
   }
 
@@ -138,17 +141,19 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Competition");
   }
 
-  if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) {
-    return invalidParam("Teams");
-  }
+  if (homeTeamId && awayTeamId) {
+    if (homeTeamId === awayTeamId) {
+      return invalidParam("Teams");
+    }
 
-  const teams = await prisma.team.findMany({
-    where: { id: { in: [homeTeamId, awayTeamId] }, competitionId },
-    select: { id: true },
-  });
+    const teams = await prisma.team.findMany({
+      where: { id: { in: [homeTeamId, awayTeamId] }, competitionId },
+      select: { id: true },
+    });
 
-  if (teams.length !== 2) {
-    return invalidParam("Teams");
+    if (teams.length !== 2) {
+      return invalidParam("Teams");
+    }
   }
 
   const matchUpdated = await prisma.$transaction(async (tx) => {

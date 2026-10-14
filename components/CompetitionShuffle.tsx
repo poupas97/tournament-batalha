@@ -181,60 +181,66 @@ function LeagueTable({
   isBackoffice: boolean;
 }) {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ width: "5%" }}>º</TableCell>
-          <TableCell>Equipa</TableCell>
-          <TableCell sx={{ width: "5%" }}>P</TableCell>
-          <TableCell sx={{ width: "5%" }}>J</TableCell>
-          <TableCell sx={{ width: "5%" }}>V</TableCell>
-          <TableCell sx={{ width: "5%" }}>E</TableCell>
-          <TableCell sx={{ width: "5%" }}>D</TableCell>
-          <TableCell sx={{ width: "5%" }}>GM</TableCell>
-          <TableCell sx={{ width: "5%" }}>GS</TableCell>
-          <TableCell sx={{ width: "5%" }}>DG</TableCell>
-        </TableRow>
-      </TableHead>
-
-      <TableBody>
-        {standings.map((team) => (
-          <TableRow
-            key={team.team.id}
-            sx={{
-              backgroundColor: qualifiedTeamIds?.has(team.team.id)
-                ? "success.light"
-                : undefined,
-            }}
-          >
-            <TableCell sx={{ textAlign: "center" }}>{team.position}</TableCell>
-            <TableCell>
-              <Link
-                href={
-                  isBackoffice
-                    ? `/backoffice/teams/${team.team.id}`
-                    : `/teams/${team.team.id}`
-                }
-              >
-                {team.team.name}
-              </Link>
-            </TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.points}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.played}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.won}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.drawn}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.lost}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>{team.goalsFor}</TableCell>
-            <TableCell sx={{ textAlign: "center" }}>
-              {team.goalsAgainst}
-            </TableCell>
-            <TableCell sx={{ textAlign: "center" }}>
-              {team.goalDifference}
-            </TableCell>
+    <Paper>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: "5%" }}>º</TableCell>
+            <TableCell>Equipa</TableCell>
+            <TableCell sx={{ width: "5%" }}>P</TableCell>
+            <TableCell sx={{ width: "5%" }}>J</TableCell>
+            <TableCell sx={{ width: "5%" }}>V</TableCell>
+            <TableCell sx={{ width: "5%" }}>E</TableCell>
+            <TableCell sx={{ width: "5%" }}>D</TableCell>
+            <TableCell sx={{ width: "5%" }}>GM</TableCell>
+            <TableCell sx={{ width: "5%" }}>GS</TableCell>
+            <TableCell sx={{ width: "5%" }}>DG</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+
+        <TableBody>
+          {standings.map((team) => (
+            <TableRow
+              key={team.team.id}
+              sx={{
+                backgroundColor: qualifiedTeamIds?.has(team.team.id)
+                  ? "success.light"
+                  : undefined,
+              }}
+            >
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.position}
+              </TableCell>
+              <TableCell>
+                <Link
+                  href={
+                    isBackoffice
+                      ? `/backoffice/teams/${team.team.id}`
+                      : `/teams/${team.team.id}`
+                  }
+                >
+                  {team.team.name}
+                </Link>
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.points}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.played}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.won}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.drawn}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>{team.lost}</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalsFor}
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalsAgainst}
+              </TableCell>
+              <TableCell sx={{ textAlign: "center" }}>
+                {team.goalDifference}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
   );
 }
 

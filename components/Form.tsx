@@ -4,7 +4,7 @@ import FormCheckbox from "@/components/FormCheckbox";
 import HintTooltip from "@/components/HintTooltip";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button, Grid, Stack, Typography } from "@mui/material";
 import get from "lodash/get";
 import { FormEvent, useState, type ReactNode } from "react";
 
@@ -76,15 +76,8 @@ export default function Form<T extends Record<string, unknown>>({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const hasRequiredValues = fields.every((field) => {
-      const value = get(values, field.key);
 
-      return (
-        value !== undefined && value !== null && String(value).trim() !== ""
-      );
-    });
-
-    if (!values || !hasRequiredValues) {
+    if (!values) {
       return;
     }
 
@@ -92,23 +85,10 @@ export default function Form<T extends Record<string, unknown>>({
   }
 
   return (
-    <Stack component="form" onSubmit={handleSubmit} spacing={2}>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: vertical
-            ? "1fr"
-            : { xs: "1fr", md: "repeat(5, minmax(0, 1fr))" },
-          gap: 2,
-        }}
-      >
+    <Stack component="form" onSubmit={handleSubmit} spacing={4}>
+      <Grid container spacing={2}>
         {fields.map((field) => (
-          <Stack
-            component="label"
-            key={String(field.key)}
-            id={String(field.key)}
-            spacing={0.75}
-          >
+          <Grid size={2} key={String(field.key)} spacing={0.75}>
             <Typography
               component="span"
               variant="body2"
@@ -159,9 +139,9 @@ export default function Form<T extends Record<string, unknown>>({
                 onChange={(value) => handleChange(field.key, value)}
               />
             )}
-          </Stack>
+          </Grid>
         ))}
-      </Box>
+      </Grid>
 
       {children}
 

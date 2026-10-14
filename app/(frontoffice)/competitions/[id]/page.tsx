@@ -96,8 +96,7 @@ export default function ViewCompetitionPage() {
         !!statsData &&
         !!matchesData && (
           <>
-            {competitionData?.status === CompetitionStatus.DRAFT ||
-            competitionData?.status === CompetitionStatus.DRAWN ? (
+            {competitionData?.status === CompetitionStatus.DRAFT ? (
               <GridTable
                 loading={false}
                 error={undefined}
