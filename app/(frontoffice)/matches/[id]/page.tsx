@@ -120,7 +120,7 @@ export default function ViewMatchPage() {
             label: "Qualificados",
             hint: getCompetitionQualifiedHint,
           },
-          { key: "date", label: "Data", format: "date" },
+          { key: "date", label: "Data", format: "datetime" },
           { key: "round", label: "Ronda" },
           { key: "homeTeam.name", label: "Equipa da Casa" },
           { key: "awayTeam.name", label: "Equipa Visitante" },

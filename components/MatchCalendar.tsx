@@ -10,6 +10,7 @@ import {
   formatMonth,
   formatTime,
   getCalendarDays,
+  getLocalDateKey,
   isSameDay,
   isSameMonth,
 } from "@/lib/date";
@@ -67,9 +68,7 @@ export default function MatchCalendar({
   }, [data]);
 
   function getDayMatches(day: Date) {
-    const key = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`;
-
-    return matchesByDay.get(key) ?? [];
+    return matchesByDay.get(getLocalDateKey(day)) ?? [];
   }
 
   function previousMonth() {

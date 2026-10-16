@@ -76,8 +76,7 @@ export function getCalendarDays(date: Date) {
 
 export function isSameDay(first: Date, second: Date) {
   return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
+    isSameMonth(first, second) &&
     first.getDate() === second.getDate()
   );
 }
@@ -87,6 +86,14 @@ export function isSameMonth(first: Date, second: Date) {
     first.getFullYear() === second.getFullYear() &&
     first.getMonth() === second.getMonth()
   );
+}
+
+export function getLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 export function formatMonth(date: Date) {

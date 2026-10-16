@@ -32,7 +32,7 @@ export default function MatchesGridTable({
         { key: "round", header: "Ronda" },
         { key: "homeTeam.name", header: "Equipa da Casa" },
         { key: "awayTeam.name", header: "Equipa Visitante" },
-        { key: "date", header: "Data", format: "date" },
+        { key: "date", header: "Data", format: "datetime" },
       ]}
     />
   );
