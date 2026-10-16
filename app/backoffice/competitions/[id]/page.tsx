@@ -158,14 +158,6 @@ export default function ViewCompetitionPage() {
           Iniciar competição
         </Button>
       )}
-      {data?.status === CompetitionStatus.IN_PROGRESS && (
-        <Button
-          size="small"
-          onClick={() => changeCompetitionStatus(CompetitionStatus.FINISHED)}
-        >
-          Finalizar competição
-        </Button>
-      )}
       {(data?.status === CompetitionStatus.DRAWN ||
         data?.status === CompetitionStatus.IN_PROGRESS) && (
         <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>

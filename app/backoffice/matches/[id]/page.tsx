@@ -8,6 +8,7 @@ import Title from "@/components/Title";
 import { MatchEventType, MatchStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
 import { canTransition } from "@/lib/match";
+import { getAvailableMatchEventTypes } from "@/lib/matchEvents";
 import {
   getMatchStatusHint,
   getMatchOpponentsHint,
@@ -152,10 +153,9 @@ export default function ViewMatchPage() {
               key: "type",
               label: "Tipo",
               type: "select",
-              options: Object.keys(MatchEventType).map((it) => ({
-                label: it,
-                value: it,
-              })),
+              options: getAvailableMatchEventTypes(
+                data?.status ?? MatchStatus.SCHEDULED,
+              ).map((it) => ({ label: it, value: it })),
             },
             { key: "minute", label: "Minuto" },
           ]}

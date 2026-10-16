@@ -118,8 +118,11 @@ export function getMatchStatusHint(match: MatchBEResponse) {
     case MatchStatus.ET_END:
       return "ET_END: o prolongamento terminou";
 
-    case MatchStatus.PENALTIES:
-      return "PENALTIES: o vencedor está a ser decidido nos penáltis";
+    case MatchStatus.PENALTIES_START:
+      return "PENALTIES_START: o vencedor está a ser decidido nos penáltis";
+
+    case MatchStatus.PENALTIES_END:
+      return "PENALTIES_END: o jogo terminou após os penáltis";
 
     case MatchStatus.INTERRUPTED:
       return "INTERRUPTED: o jogo foi interrompido e pode ser retomado";

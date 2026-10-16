@@ -12,6 +12,7 @@ import {
 import {
   AuditAction,
   CompetitionStatus,
+  MatchEventType,
   Match,
   MatchStatus,
 } from "@/generated/prisma";
@@ -44,6 +45,8 @@ export async function PUT(request: Request, context: RouteContext) {
       id: true,
       status: true,
       round: true,
+      homeTeamId: true,
+      awayTeamId: true,
       competition: {
         select: { id: true, status: true },
       },
@@ -67,7 +70,8 @@ export async function PUT(request: Request, context: RouteContext) {
     MatchStatus.ET_HALF_TIME,
     MatchStatus.ET_RESTART,
     MatchStatus.ET_END,
-    MatchStatus.PENALTIES,
+    MatchStatus.PENALTIES_START,
+    MatchStatus.PENALTIES_END,
   ];
 
   if (
@@ -79,6 +83,23 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!canTransition(existing as unknown as Match, status)) {
     return invalidParam("MatchStatus");
+  }
+
+  if (status === MatchStatus.PENALTIES_END) {
+    const penaltyEvents = await prisma.matchEvent.findMany({
+      where: { matchId, type: MatchEventType.PENALTY_GOAL },
+      select: { teamId: true },
+    });
+    const homePenaltyGoals = penaltyEvents.filter(
+      (event) => event.teamId === existing.homeTeamId,
+    ).length;
+    const awayPenaltyGoals = penaltyEvents.filter(
+      (event) => event.teamId === existing.awayTeamId,
+    ).length;
+
+    if (homePenaltyGoals === awayPenaltyGoals) {
+      return invalidParam("MatchStatus");
+    }
   }
 
   const match = await prisma.$transaction(async (tx) => {

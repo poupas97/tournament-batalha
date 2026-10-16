@@ -575,14 +575,10 @@ function createLeagueRounds(teams: Team[]): RoundMatch[][] {
   return rounds;
 }
 
-export function getMatchStatusStyle(status: MatchStatus) {
+export function getMatchStatusColor(status: MatchStatus) {
   switch (status) {
     case MatchStatus.SCHEDULED:
-      return {
-        borderColor: "primary.main",
-        borderWidth: 1,
-        statusColor: "primary.main",
-      };
+      return "primary.main";
 
     case MatchStatus.RT_START:
     case MatchStatus.RT_HALF_TIME:
@@ -590,42 +586,23 @@ export function getMatchStatusStyle(status: MatchStatus) {
     case MatchStatus.ET_START:
     case MatchStatus.ET_HALF_TIME:
     case MatchStatus.ET_RESTART:
-    case MatchStatus.PENALTIES:
-      return {
-        borderColor: "success.main",
-        borderWidth: 2,
-        statusColor: "success.main",
-      };
+    case MatchStatus.PENALTIES_START:
+      return "success.main";
 
     case MatchStatus.RT_END:
     case MatchStatus.ET_END:
-      return {
-        borderColor: "divider",
-        borderWidth: 1,
-        statusColor: "text.secondary",
-      };
+    case MatchStatus.PENALTIES_END:
+      return "text.secondary";
 
     case MatchStatus.INTERRUPTED:
     case MatchStatus.POSTPONED:
-      return {
-        borderColor: "warning.main",
-        borderWidth: 2,
-        statusColor: "warning.main",
-      };
+      return "warning.main";
 
     case MatchStatus.CANCELED:
-      return {
-        borderColor: "error.main",
-        borderWidth: 2,
-        statusColor: "error.main",
-      };
+      return "error.main";
 
     default:
-      return {
-        borderColor: "divider",
-        borderWidth: 1,
-        statusColor: "text.secondary",
-      };
+      return "text.secondary";
   }
 }
 
@@ -633,7 +610,7 @@ export function isMatchFinished(status: MatchStatus) {
   return (
     status === MatchStatus.RT_END ||
     status === MatchStatus.ET_END ||
-    status === MatchStatus.PENALTIES
+    status === MatchStatus.PENALTIES_END
   );
 }
 
@@ -680,7 +657,10 @@ function getMatchesByRound(matches: MatchBEResponse[], round: string) {
 function isKnockoutRoundFinished(matches: MatchBEResponse[]) {
   return (
     matches.length > 0 &&
-    matches.every((match) => isMatchFinished(match.status))
+    matches.every(
+      (match) =>
+        isMatchFinished(match.status) && getKnockoutWinner(match) !== null,
+    )
   );
 }
 

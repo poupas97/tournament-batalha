@@ -1,7 +1,7 @@
 import {
   getCompetitionShuffleView,
   getMatchScore,
-  getMatchStatusStyle,
+  getMatchStatusColor,
   isMatchFinished,
 } from "@/lib/shuffle";
 import { formatDateTime } from "@/lib/utils";
@@ -98,7 +98,7 @@ function MatchCard({
 
   const { homeGoals, awayGoals } = getMatchScore(match);
   const showScore = isMatchFinished(match.status);
-  const statusStyle = getMatchStatusStyle(match.status);
+  const statusColor = getMatchStatusColor(match.status);
 
   return (
     <Grid size={isKnockoutMatch ? 12 : 4} sx={{ alignContent: "center" }}>
@@ -113,9 +113,8 @@ function MatchCard({
           p: 2,
           cursor: "pointer",
           height: isKnockoutMatch ? undefined : "100%",
-          borderStyle: "solid",
-          borderColor: statusStyle.borderColor,
-          borderWidth: statusStyle.borderWidth,
+          display: "flex",
+          flexDirection: "column",
 
           "&:hover": { boxShadow: 2 },
         }}
@@ -137,7 +136,14 @@ function MatchCard({
         </Box>
 
         <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2, mb: 2 }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mt: 2,
+            mb: 2,
+            flex: 1,
+          }}
         >
           <Typography variant="body1" sx={{ flex: 1 }}>
             {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
@@ -152,7 +158,7 @@ function MatchCard({
           </Typography>
         </Box>
 
-        <Typography variant="body1" align="center">
+        <Typography variant="body1" align="center" sx={{ color: statusColor }}>
           <Box
             component="span"
             sx={{
@@ -160,7 +166,7 @@ function MatchCard({
               width: 12,
               height: 12,
               borderRadius: "50%",
-              bgcolor: statusStyle.statusColor,
+              bgcolor: statusColor,
               mr: 1,
             }}
           />

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { CompetitionStatus, MatchStatus } from "@/generated/prisma";
+import { CompetitionStatus } from "@/generated/prisma";
 import { sanitizeEnum } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
@@ -45,28 +45,6 @@ export async function PUT(request: Request, context: RouteContext) {
 
     const matches = await prisma.match.count({ where: { competitionId } });
     if (matches === 0) {
-      return invalidParam("Matches");
-    }
-  } else if (status === CompetitionStatus.FINISHED) {
-    if (competition.status !== CompetitionStatus.IN_PROGRESS) {
-      return invalidParam("CompetitionStatus");
-    }
-
-    const pendingMatches = await prisma.match.count({
-      where: {
-        competitionId,
-        status: {
-          notIn: [
-            MatchStatus.RT_END,
-            MatchStatus.ET_END,
-            MatchStatus.PENALTIES,
-            MatchStatus.CANCELED,
-          ],
-        },
-      },
-    });
-
-    if (pendingMatches > 0) {
       return invalidParam("Matches");
     }
   } else {

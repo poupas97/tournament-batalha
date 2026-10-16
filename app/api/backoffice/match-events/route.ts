@@ -15,7 +15,10 @@ import {
 import { notifyAddMatchEvent } from "@/lib/socket";
 import { isKnockoutRound } from "@/lib/shuffle";
 import { MatchEventBEResponse } from "@/types/match-event";
-import { isEventAllowedStatuses } from "@/lib/matchEvents";
+import {
+  isEventAllowedStatuses,
+  isMatchEventTypeAllowed,
+} from "@/lib/matchEvents";
 
 export async function GET(request: Request) {
   const token = await requireToken(request);
@@ -92,6 +95,10 @@ export async function POST(request: Request) {
   }
 
   if (!isEventAllowedStatuses(match.status)) {
+    return invalidParam("MatchStatus");
+  }
+
+  if (!isMatchEventTypeAllowed(match.status, type)) {
     return invalidParam("MatchStatus");
   }
 
