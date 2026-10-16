@@ -1,9 +1,10 @@
 import { config } from "dotenv";
 import { defineConfig } from "@prisma/config";
 
-if (process.env.NODE_ENV !== "production") {
-  config({ path: ".env.local" });
-}
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.prd" : ".env.local";
+
+config({ path: envFile });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
