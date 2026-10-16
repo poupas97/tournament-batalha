@@ -1,5 +1,5 @@
-import { Player } from "@/generated/prisma";
-import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
+import { PLAYER_NUMBER_MAX } from "@/constants/validation";
+import { parsePositiveInteger, sanitizeName } from "@/lib/sanitize";
 
 type PlayerInput = {
   name: string;
@@ -31,15 +31,16 @@ export function sanitizePlayers(value: unknown): PlayerInput[] | undefined {
       return undefined;
     }
 
-    const name = typeof item.name === "string" ? sanitizeText(item.name) : "";
+    const name = sanitizeName(item.name);
     const number =
-      typeof item.number === "string" ? sanitizeNumber(item.number) : undefined;
+      typeof item.number === "string"
+        ? parsePositiveInteger(item.number)
+        : undefined;
 
     if (
       !name ||
-      name.length > 100 ||
       !number ||
-      number > 99 ||
+      number > PLAYER_NUMBER_MAX ||
       numbers.has(number)
     ) {
       return undefined;
@@ -70,9 +71,9 @@ export function sanitizeStaffs(
       return null;
     }
 
-    const name = typeof item.name === "string" ? sanitizeText(item.name) : "";
+    const name = sanitizeName(item.name);
 
-    if (!name || name.length > 100) {
+    if (!name) {
       return null;
     }
 

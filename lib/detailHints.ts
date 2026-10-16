@@ -42,10 +42,6 @@ export function getCompetitionQualifiedHint() {
   return "Número de equipas avançam para a fase eliminatória";
 }
 
-export function getMatchQualifiedHint() {
-  return getCompetitionQualifiedHint();
-}
-
 export function getCompetitionOpponentsHint(
   competition: CompetitionBEResponse | ICompetitionFormValues | undefined,
 ) {

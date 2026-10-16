@@ -1,16 +1,16 @@
+import { getCompetitionShuffleView } from "@/lib/competition/standings";
+import { formatDateTime } from "@/lib/date";
 import {
-  getCompetitionShuffleView,
   getMatchScore,
   getMatchStatusColor,
   isMatchFinished,
-} from "@/lib/shuffle";
-import { formatDateTime } from "@/lib/utils";
+} from "@/lib/match";
 import {
   CompetitionBEResponse,
+  CompetitionForShuffle,
   CompetitionShuffleGroup,
   LeagueStanding,
 } from "@/types/competition";
-import { CompetitionForShuffle } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import {
   Box,

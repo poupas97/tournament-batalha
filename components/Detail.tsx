@@ -3,13 +3,13 @@
 import HintTooltip from "@/components/HintTooltip";
 import get from "lodash/get";
 import { Grid, Typography } from "@mui/material";
-import { formattedValue } from "@/lib/utils";
+import { formattedValue } from "@/lib/formattedValue";
 
 type DetailField<T extends Record<string, unknown>> = {
   key: string;
   label: string;
   hint?: string | ((data: T) => string);
-  format?: "date" | "boolean" | "json" | "color";
+  format?: "date" | "datetime" | "boolean" | "json" | "color";
 };
 
 type DetailProps<T extends Record<string, unknown>> = {

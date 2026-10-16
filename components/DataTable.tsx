@@ -1,4 +1,4 @@
-import { formattedValue } from "@/lib/utils";
+import { formattedValue } from "@/lib/formattedValue";
 import { DataTableProps } from "@/types/grid-table";
 import {
   Table,

@@ -10,4 +10,8 @@
 - pode ter uma foto, é opcional nos formularios
   - é enviada para o BE e depois o BE é que trata do storage
 
-3. refazer/analisar o file @libs/shuffle
+4. as equiopas devem ter um "estatuto"
+
+- dado o exemplo de 4 equipas muito fortes
+  - nao podem jogar todas entre elas, tem de ser devidamente separadas por entre os jogos em LEAGUE ou em GROUPS
+  - acho que se podia atribuir um ranking/pote ao criar a equipa e ao fazer o sorteio esse ranking/pote era tido em conta para separar as equipas equititivamente

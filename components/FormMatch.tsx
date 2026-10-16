@@ -2,6 +2,7 @@
 
 import Form from "@/components/Form";
 import useGetState from "@/hooks/useGetState";
+import { getCompetitionRoundOptions } from "@/lib/competition/rounds";
 import { CompetitionBEResponse } from "@/types/competition";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
 import { TeamBEResponse } from "@/types/team";
@@ -37,6 +38,8 @@ export default function FormMatch({
   )
     return;
 
+  const roundOptions = getCompetitionRoundOptions(competitions);
+
   return (
     <Form<IMatchFormValues>
       initialValues={initialValues}
@@ -52,21 +55,7 @@ export default function FormMatch({
           key: "round",
           label: "Ronda",
           type: "select",
-          options: [
-            { value: `Jornada 1`, label: `Jornada 1` },
-            { value: `Jornada 2`, label: `Jornada 2` },
-            { value: `Jornada 3`, label: `Jornada 3` },
-            { value: `Jornada 4`, label: `Jornada 4` },
-            { value: `Jornada 5`, label: `Jornada 5` },
-            { value: `Jornada 6`, label: `Jornada 6` },
-            { value: `Jornada 7`, label: `Jornada 7` },
-            { value: `Jornada 8`, label: `Jornada 8` },
-            { value: "1/16 final", label: "1/16 final" },
-            { value: "1/8 final", label: "1/8 final" },
-            { value: "1/4 final", label: "1/4 final" },
-            { value: "1/2 final", label: "1/2 final" },
-            { value: "Final", label: "Final" },
-          ],
+          options: roundOptions,
         },
         {
           key: "homeTeamId",

@@ -1,4 +1,4 @@
-import { formattedValue } from "@/lib/utils";
+import { formattedValue } from "@/lib/formattedValue";
 import { DataGridProps } from "@/types/grid-table";
 import { Grid, Paper, Typography } from "@mui/material";
 import get from "lodash/get";

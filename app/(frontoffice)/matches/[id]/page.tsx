@@ -10,10 +10,10 @@ import {
 import { MatchBEResponse } from "@/types/match";
 import { SocketEvents } from "@/enums/socket";
 import {
+  getCompetitionQualifiedHint,
   getMatchCompetitionConfigHint,
   getMatchStatusHint,
   getMatchOpponentsHint,
-  getMatchQualifiedHint,
 } from "@/lib/detailHints";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
@@ -25,8 +25,8 @@ import {
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
 import { Typography } from "@mui/material";
-import { getMatchScore } from "@/lib/shuffle";
 import MatchEventsTable from "@/components/MatchEventsTable";
+import { getMatchScore } from "@/lib/match";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -118,7 +118,7 @@ export default function ViewMatchPage() {
           {
             key: "competition.qualified",
             label: "Qualificados",
-            hint: getMatchQualifiedHint,
+            hint: getCompetitionQualifiedHint,
           },
           { key: "date", label: "Data", format: "date" },
           { key: "round", label: "Ronda" },

@@ -22,6 +22,7 @@ export default function FormCompetition({
       initialValues={initialValues}
       fields={[
         { key: "name", label: "Nome" },
+        { key: "startDate", label: "Data de início", type: "date" },
         {
           key: "config",
           label: "Configuracao",

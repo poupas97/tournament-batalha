@@ -1,4 +1,9 @@
 import prisma from "@/lib/prisma";
+import { MINIMUM_ADMIN_COUNT } from "@/constants/auth";
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_NAME_LENGTH,
+} from "@/constants/validation";
 import { sanitizeEnum, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
@@ -58,11 +63,11 @@ export async function PUT(request: Request, context: RouteContext) {
   const email = sanitizeText(body?.email);
   const role = sanitizeEnum(body?.role, UserRole);
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 
-  if (!email || email.length > 100) {
+  if (!email || email.length > MAX_EMAIL_LENGTH) {
     return invalidParam("Email");
   }
 
@@ -85,7 +90,7 @@ export async function PUT(request: Request, context: RouteContext) {
         where: { role: UserRole.ADMIN },
       });
 
-      if (adminCount <= 1) {
+      if (adminCount <= MINIMUM_ADMIN_COUNT) {
         return null;
       }
     }
@@ -145,7 +150,7 @@ export async function DELETE(request: Request, context: RouteContext) {
           where: { role: UserRole.ADMIN },
         });
 
-        if (adminCount <= 1) {
+        if (adminCount <= MINIMUM_ADMIN_COUNT) {
           throw new Error("LAST_ADMIN");
         }
       }

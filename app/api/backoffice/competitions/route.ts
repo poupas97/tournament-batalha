@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
+import { MAX_NAME_LENGTH } from "@/constants/validation";
 import {
   sanitizeColor,
+  sanitizeDate,
   sanitizeEnum,
   sanitizeNumber,
   sanitizeText,
@@ -43,15 +45,20 @@ export async function POST(request: Request) {
   const name = sanitizeText(body?.name);
   const color = sanitizeColor(body?.color);
   const config = sanitizeEnum(body?.config, CompetitionConfig);
+  const startDate = sanitizeDate(body?.startDate);
   const qualified = sanitizeNumber(body?.qualified);
   const opponents = sanitizeNumber(body?.opponents);
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 
   if (!config) {
     return invalidParam("CompetitionConfig");
+  }
+
+  if (!startDate) {
+    return invalidParam("StartDate");
   }
 
   if (!color) {
@@ -64,7 +71,7 @@ export async function POST(request: Request) {
   }
 
   const competition = await prisma.competition.create({
-    data: { name, color, config, qualified, opponents },
+    data: { name, color, config, startDate, qualified, opponents },
     include: { teams: true },
   });
 

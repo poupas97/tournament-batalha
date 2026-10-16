@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { RouteContext } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
+import { parsePositiveInteger } from "@/lib/sanitize";
 
 export async function requireToken(request: Request) {
   return getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
@@ -8,8 +9,7 @@ export async function requireToken(request: Request) {
 
 export async function getParamId(context: RouteContext) {
   const params = await context.params;
-  const id = Number(params.id);
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return parsePositiveInteger(params.id) ?? null;
 }
 
 export function unauthorized() {

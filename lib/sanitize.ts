@@ -1,5 +1,17 @@
+import { MAX_NAME_LENGTH } from "@/constants/validation";
+
 export function sanitizeText(value: string) {
   return value.trim().replace(/["';<>]/g, "");
+}
+
+export function sanitizeName(value: unknown) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const name = sanitizeText(value);
+
+  return name.length > 0 && name.length <= MAX_NAME_LENGTH ? name : undefined;
 }
 
 export function sanitizeColor(value: unknown) {
@@ -9,6 +21,14 @@ export function sanitizeColor(value: unknown) {
 }
 
 export function sanitizeNumber(value: string) {
+  return parsePositiveInteger(value);
+}
+
+export function parsePositiveInteger(value: unknown) {
+  if (typeof value !== "number" && typeof value !== "string") {
+    return undefined;
+  }
+
   const number = Number(value);
   return Number.isInteger(number) && number > 0 ? number : undefined;
 }

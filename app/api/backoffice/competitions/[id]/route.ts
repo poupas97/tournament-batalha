@@ -1,7 +1,9 @@
 import prisma from "@/lib/prisma";
+import { MAX_NAME_LENGTH } from "@/constants/validation";
 import {
   sanitizeBoolean,
   sanitizeColor,
+  sanitizeDate,
   sanitizeEnum,
   sanitizeNumber,
   sanitizeText,
@@ -78,6 +80,10 @@ export async function PUT(request: Request, context: RouteContext) {
   const color = sanitizeColor(body?.color) || existing.color;
   const config =
     sanitizeEnum(body?.config, CompetitionConfig) || existing.config;
+  const startDate =
+    body?.startDate === undefined
+      ? existing.startDate
+      : sanitizeDate(body.startDate);
   const qualified = sanitizeNumber(body?.qualified) || existing.qualified;
   const opponents = sanitizeNumber(body?.opponents) || existing.opponents;
   const active =
@@ -85,12 +91,16 @@ export async function PUT(request: Request, context: RouteContext) {
       ? sanitizeBoolean(body?.active)
       : existing.active;
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 
   if (!config) {
     return invalidParam("CompetitionConfig");
+  }
+
+  if (!startDate) {
+    return invalidParam("StartDate");
   }
 
   if (!color) {
@@ -106,7 +116,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const competitionUpdated = await prisma.competition.update({
     where: { id: competitionId },
-    data: { name, color, config, qualified, opponents, active },
+    data: { name, color, config, startDate, qualified, opponents, active },
     include: {
       teams: {
         orderBy: { createdAt: "asc" },

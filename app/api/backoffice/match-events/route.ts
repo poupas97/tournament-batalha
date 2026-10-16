@@ -7,13 +7,14 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
+import { MATCH_EVENT_MAX_MINUTE } from "@/constants/validation";
 import {
   CompetitionStatus,
   MatchEventType,
   MatchStatus,
 } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
-import { isKnockoutRound } from "@/lib/shuffle";
+import { isKnockoutRound } from "@/lib/competition/rounds";
 import { MatchEventBEResponse } from "@/types/match-event";
 import {
   isEventAllowedStatuses,
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
     return invalidParam("Team");
   }
 
-  if (!minute || minute > 130) {
+  if (!minute || minute > MATCH_EVENT_MAX_MINUTE) {
     return invalidParam("Minute");
   }
 

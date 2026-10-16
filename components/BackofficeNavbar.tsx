@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Box, Button } from "@mui/material";
+import { NAVBAR_BORDER_WIDTH_PX, NAVBAR_Z_INDEX } from "@/constants/layout";
 
 const navItems = [
   { href: "/backoffice", label: "Dashboard" },
@@ -31,8 +32,8 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
       sx={{
         position: "sticky",
         top: 0,
-        zIndex: 20,
-        borderBottom: "3px solid",
+        zIndex: NAVBAR_Z_INDEX,
+        borderBottom: `${NAVBAR_BORDER_WIDTH_PX}px solid`,
         borderBottomColor: "divider",
         bgcolor: "background.paper",
       }}

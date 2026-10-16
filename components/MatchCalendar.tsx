@@ -12,7 +12,7 @@ import {
   getCalendarDays,
   isSameDay,
   isSameMonth,
-} from "@/lib/utils";
+} from "@/lib/date";
 import { getContrastText } from "@/lib/match";
 
 type MatchCalendarProps = {

@@ -92,6 +92,7 @@ async function main() {
     {
       name: "2026 Masculinos",
       color: "#0969da",
+      startDate: new Date(),
       config: CompetitionConfig.LEAGUE,
       qualified: 8,
       opponents: 4,
@@ -99,6 +100,7 @@ async function main() {
     {
       name: "2026 Femininos",
       color: "#d92f2f",
+      startDate: new Date(),
       config: CompetitionConfig.LEAGUE,
       qualified: 2,
       opponents: 3,

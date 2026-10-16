@@ -7,12 +7,12 @@ import { useModal } from "@/components/ModalProvider";
 import Title from "@/components/Title";
 import { MatchEventType, MatchStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
-import { canTransition } from "@/lib/match";
+import { canTransition, getMatchScore } from "@/lib/match";
 import { getAvailableMatchEventTypes } from "@/lib/matchEvents";
 import {
+  getCompetitionQualifiedHint,
   getMatchStatusHint,
   getMatchOpponentsHint,
-  getMatchQualifiedHint,
   getMatchCompetitionConfigHint,
 } from "@/lib/detailHints";
 import { MatchBEResponse } from "@/types/match";
@@ -23,7 +23,6 @@ import {
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
-import { getMatchScore } from "@/lib/shuffle";
 import MatchEventsTable from "@/components/MatchEventsTable";
 
 export default function ViewMatchPage() {
@@ -201,7 +200,7 @@ export default function ViewMatchPage() {
           {
             key: "competition.qualified",
             label: "Qualificados",
-            hint: getMatchQualifiedHint,
+            hint: getCompetitionQualifiedHint,
           },
           { key: "date", label: "Data", format: "date" },
           { key: "round", label: "Ronda" },

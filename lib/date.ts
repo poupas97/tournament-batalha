@@ -1,12 +1,33 @@
-import ColorSwatch from "@/components/ColorSwatch";
+const dateTimeFormatter = new Intl.DateTimeFormat("pt-PT", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+const dateFormatter = new Intl.DateTimeFormat("pt-PT", {
+  dateStyle: "short",
+  timeZone: "UTC",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("pt-PT", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const monthFormatter = new Intl.DateTimeFormat("pt-PT", {
+  month: "long",
+  year: "numeric",
+});
 
 export function formatDateTime(date: Date | string | undefined) {
   if (!date) return undefined;
 
-  return new Intl.DateTimeFormat("pt-PT", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(date));
+  return dateTimeFormatter.format(new Date(date));
+}
+
+export function formatDate(date: Date | string | undefined) {
+  if (!date) return undefined;
+
+  return dateFormatter.format(new Date(date));
 }
 
 export function startOfMonth(date: Date) {
@@ -20,10 +41,9 @@ function endOfMonth(date: Date) {
 function startOfCalendar(date: Date) {
   const monthStart = startOfMonth(date);
   const day = monthStart.getDay();
-
   const diff = day === 0 ? -6 : 1 - day;
-
   const result = new Date(monthStart);
+
   result.setDate(monthStart.getDate() + diff);
 
   return result;
@@ -32,10 +52,9 @@ function startOfCalendar(date: Date) {
 function endOfCalendar(date: Date) {
   const monthEnd = endOfMonth(date);
   const day = monthEnd.getDay();
-
   const diff = day === 0 ? 0 : 7 - day;
-
   const result = new Date(monthEnd);
+
   result.setDate(monthEnd.getDate() + diff);
 
   return result;
@@ -44,7 +63,6 @@ function endOfCalendar(date: Date) {
 export function getCalendarDays(date: Date) {
   const start = startOfCalendar(date);
   const end = endOfCalendar(date);
-
   const days: Date[] = [];
   const current = new Date(start);
 
@@ -72,37 +90,9 @@ export function isSameMonth(first: Date, second: Date) {
 }
 
 export function formatMonth(date: Date) {
-  return date.toLocaleDateString("pt-PT", {
-    month: "long",
-    year: "numeric",
-  });
+  return monthFormatter.format(date);
 }
 
 export function formatTime(date: Date | string) {
-  return new Intl.DateTimeFormat("pt-PT", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(date));
-}
-
-export function formattedValue<T>(
-  value: unknown,
-  format?: "date" | "boolean" | "json" | "color",
-) {
-  switch (format) {
-    case "color":
-      return typeof value === "string" ? <ColorSwatch color={value} /> : "";
-
-    case "date":
-      return formatDateTime(value as string | undefined);
-
-    case "boolean":
-      return value ? "Sim" : "Não";
-
-    case "json":
-      return JSON.stringify(value, null, 2);
-
-    default:
-      return String(value || "-");
-  }
+  return timeFormatter.format(new Date(date));
 }

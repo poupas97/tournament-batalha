@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
 import { getParamId, getResponse, invalidParam, noFound } from "@/lib/api";
-import { addKnockoutPlaceholders } from "@/lib/shuffle";
+import { addKnockoutPlaceholders } from "@/lib/competition/placeholders";
 
 export async function GET(request: Request, context: RouteContext) {
   const competitionId = await getParamId(context);

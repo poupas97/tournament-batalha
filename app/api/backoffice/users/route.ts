@@ -1,4 +1,9 @@
 import prisma from "@/lib/prisma";
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_NAME_LENGTH,
+} from "@/constants/validation";
+import { PASSWORD_HASH_ROUNDS } from "@/constants/auth";
 import { sanitizeText } from "@/lib/sanitize";
 import bcrypt from "bcryptjs";
 import {
@@ -38,13 +43,13 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body?.name);
   const email = sanitizeText(body?.email);
-  const password = await bcrypt.hash(body?.password, 12);
+  const password = await bcrypt.hash(body?.password, PASSWORD_HASH_ROUNDS);
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 
-  if (!email || email.length > 100) {
+  if (!email || email.length > MAX_EMAIL_LENGTH) {
     return invalidParam("Email");
   }
 

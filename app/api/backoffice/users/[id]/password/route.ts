@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { PASSWORD_HASH_ROUNDS } from "@/constants/auth";
 import bcrypt from "bcryptjs";
 import { RouteContext } from "@/types/api";
 import {
@@ -44,7 +45,7 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Password");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(password, PASSWORD_HASH_ROUNDS);
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },

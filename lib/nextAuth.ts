@@ -2,6 +2,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
 import prisma from "./prisma";
+import { AUTH_SESSION_MAX_AGE_SECONDS } from "@/constants/auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -30,10 +31,10 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 2 * 60 * 60,
+    maxAge: AUTH_SESSION_MAX_AGE_SECONDS,
   },
   jwt: {
-    maxAge: 2 * 60 * 60,
+    maxAge: AUTH_SESSION_MAX_AGE_SECONDS,
   },
   callbacks: {
     async jwt({ token, user }) {

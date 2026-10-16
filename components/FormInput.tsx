@@ -9,6 +9,7 @@ type FormInputProps = {
     | "number"
     | "email"
     | "password"
+    | "date"
     | "datetime-local"
     | "color";
   value: string;

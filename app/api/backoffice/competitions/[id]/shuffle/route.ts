@@ -10,15 +10,15 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
+import { canCreateKnockout } from "@/lib/competition/rounds";
 import {
-  addKnockoutPlaceholders,
   canCreateGroups,
-  canCreateKnockout,
   canCreateLeague,
   createGroupMatches,
   createKnockoutMatches,
   createLeagueMatches,
-} from "@/lib/shuffle";
+} from "@/lib/competition/schedule";
+import { addKnockoutPlaceholders } from "@/lib/competition/placeholders";
 import {
   CompetitionConfig,
   CompetitionStatus,
@@ -135,16 +135,31 @@ export async function POST(request: Request, context: RouteContext) {
       return invalidParam("Opponents");
     }
 
-    initialMatches = createLeagueMatches(competition.id, teams, opponents);
+    initialMatches = createLeagueMatches(
+      competition.id,
+      teams,
+      opponents,
+      competition.startDate,
+    );
   } else {
     if (!canCreateGroups(teams.length, opponents)) {
       return invalidParam("Opponents");
     }
 
-    initialMatches = createGroupMatches(competition.id, teams, opponents);
+    initialMatches = createGroupMatches(
+      competition.id,
+      teams,
+      opponents,
+      competition.startDate,
+    );
   }
 
-  const knockoutMatches = createKnockoutMatches(competition.id, qualified);
+  const knockoutMatches = createKnockoutMatches(
+    competition.id,
+    qualified,
+    initialMatches,
+    competition.startDate,
+  );
 
   if (!knockoutMatches.length) {
     return invalidParam("Qualified");

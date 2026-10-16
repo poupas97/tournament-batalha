@@ -68,6 +68,7 @@ model Competition {
   id        Int      @id @default(autoincrement())
   name      String
   color     String   @unique
+  startDate DateTime
   createdAt DateTime @default(now())
   teams     Team[]
   matches     Match[]

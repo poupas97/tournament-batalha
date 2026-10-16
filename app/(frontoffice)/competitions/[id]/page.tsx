@@ -60,6 +60,7 @@ export default function ViewCompetitionPage() {
         data={competitionData}
         fields={[
           { key: "name", label: "Nome" },
+          { key: "startDate", label: "Data de início", format: "date" },
           {
             key: "config",
             label: "Configuração",

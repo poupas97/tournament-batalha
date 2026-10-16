@@ -13,6 +13,7 @@ type FormInputType =
   | "number"
   | "email"
   | "password"
+  | "date"
   | "datetime-local"
   | "color";
 
@@ -53,6 +54,26 @@ function formatDateTimeLocalValue(value: unknown) {
       "-",
     ) + `T${pad(date.getHours())}:${pad(date.getMinutes())}`
   );
+}
+
+function formatDateInputValue(value: unknown) {
+  if (!value) {
+    return "";
+  }
+
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return value.slice(0, 10);
+  }
+
+  const date = value instanceof Date ? value : new Date(String(value));
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  const pad = (part: number) => String(part).padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function getInputType(type: FormFieldType | undefined): FormInputType {
@@ -132,9 +153,11 @@ export default function Form<T extends Record<string, unknown>>({
                 name={String(field.key)}
                 type={getInputType(field.type)}
                 value={
-                  field.type === "datetime-local"
-                    ? formatDateTimeLocalValue(get(values, field.key))
-                    : String(get(values, field.key) ?? "")
+                  field.type === "date"
+                    ? formatDateInputValue(get(values, field.key))
+                    : field.type === "datetime-local"
+                      ? formatDateTimeLocalValue(get(values, field.key))
+                      : String(get(values, field.key) ?? "")
                 }
                 placeholder={field.placeholder}
                 onChange={(value) => handleChange(field.key, value)}

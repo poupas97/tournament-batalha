@@ -1,4 +1,8 @@
 import prisma from "@/lib/prisma";
+import {
+  MAX_NAME_LENGTH,
+  PLAYER_NUMBER_MAX,
+} from "@/constants/validation";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { CompetitionStatus } from "@/generated/prisma";
 import {
@@ -35,11 +39,11 @@ export async function POST(request: Request) {
   const number = sanitizeNumber(body?.number);
   const teamId = sanitizeNumber(body?.teamId);
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 
-  if (!number || number > 99) {
+  if (!number || number > PLAYER_NUMBER_MAX) {
     return invalidParam("Number");
   }
 

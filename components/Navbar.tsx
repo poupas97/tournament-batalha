@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { Box, Button } from "@mui/material";
+import { NAVBAR_BORDER_WIDTH_PX, NAVBAR_Z_INDEX } from "@/constants/layout";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -20,8 +21,8 @@ export default function Navbar() {
       sx={{
         position: "sticky",
         top: 0,
-        zIndex: 20,
-        borderBottom: "3px solid",
+        zIndex: NAVBAR_Z_INDEX,
+        borderBottom: `${NAVBAR_BORDER_WIDTH_PX}px solid`,
         borderBottomColor: "divider",
         bgcolor: "background.paper",
       }}

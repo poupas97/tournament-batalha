@@ -17,9 +17,9 @@ import {
   MatchStatus,
 } from "@/generated/prisma";
 import { notifyMatchStatus } from "@/lib/socket";
-import { canTransition } from "@/lib/match";
+import { canTransition, isMatchFinished } from "@/lib/match";
 import { createAuditLog } from "@/lib/audit";
-import { isMatchFinished, resolveCompetitionProgression } from "@/lib/shuffle";
+import { resolveCompetitionProgression } from "@/lib/competition/progression";
 
 export async function PUT(request: Request, context: RouteContext) {
   const token = await requireToken(request);

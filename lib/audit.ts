@@ -1,6 +1,7 @@
 import { AuditAction, PrismaClient } from "@/generated/prisma";
 import { InputJsonValue } from "@/generated/prisma/runtime/client";
 import { JWT } from "next-auth/jwt";
+import { parsePositiveInteger } from "@/lib/sanitize";
 
 type AuditEntity =
   | "Competition"
@@ -31,12 +32,7 @@ const SENSITIVE_KEYS = new Set([
 ]);
 
 function toNullableNumber(value: number | string | null | undefined) {
-  if (value === null || value === undefined || value === "") {
-    return null;
-  }
-
-  const numberValue = Number(value);
-  return Number.isInteger(numberValue) && numberValue > 0 ? numberValue : null;
+  return parsePositiveInteger(value) ?? null;
 }
 
 function sanitizeAuditValue(value: unknown): InputJsonValue | undefined {

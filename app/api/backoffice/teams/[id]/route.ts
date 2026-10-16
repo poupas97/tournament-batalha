@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { MAX_NAME_LENGTH } from "@/constants/validation";
 import { CompetitionStatus } from "@/generated/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import { sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
@@ -60,7 +61,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const players = sanitizePlayers(body?.players);
   const staffs = sanitizeStaffs(body?.staffs);
 
-  if (!name || name.length > 100) {
+  if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
   }
 

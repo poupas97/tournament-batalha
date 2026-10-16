@@ -1,12 +1,13 @@
 import { UserRole } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { requireToken } from "@/lib/api";
+import { parsePositiveInteger } from "@/lib/sanitize";
 
 export async function requireCurrentAdminToken(request: Request) {
   const token = await requireToken(request);
-  const userId = Number(token?.id);
+  const userId = parsePositiveInteger(token?.id);
 
-  if (!Number.isInteger(userId) || userId <= 0) {
+  if (!userId) {
     return false;
   }
 

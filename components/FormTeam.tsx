@@ -11,6 +11,10 @@ import {
 import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
 import { Button, Typography } from "@mui/material";
+import {
+  PLAYER_NUMBER_MAX,
+  PLAYER_NUMBER_MIN,
+} from "@/constants/validation";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
@@ -39,7 +43,12 @@ export default function FormTeam({
     const name = values.name.trim();
     const number = Number(values.number);
 
-    if (!name || !Number.isInteger(number) || number < 1 || number > 99) {
+    if (
+      !name ||
+      !Number.isInteger(number) ||
+      number < PLAYER_NUMBER_MIN ||
+      number > PLAYER_NUMBER_MAX
+    ) {
       alert("Por favor, preencha todos os campos do jogador");
       return;
     }

@@ -6,6 +6,7 @@ export type ICompetitionFormValues = {
   name: string;
   color: string;
   config: CompetitionConfig;
+  startDate: string;
   qualified?: number;
   opponents?: number;
   active?: boolean;
@@ -15,6 +16,7 @@ export type CompetitionBEResponse = {
   id: number;
   name: string;
   color: string;
+  startDate: string;
   status: CompetitionStatus;
   teams: TeamBEResponse[];
   matches?: MatchBEResponse[];
