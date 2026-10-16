@@ -64,7 +64,7 @@ function GridTableContent<T>({
       >
         <Box sx={{ flex: 1, alignContent: "center" }}>
           {create && (
-            <Button size="small" onClick={() => router.push(create)}>
+            <Button variant="outlined" onClick={() => router.push(create)}>
               + Adicionar
             </Button>
           )}

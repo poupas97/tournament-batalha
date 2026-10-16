@@ -2,6 +2,12 @@ export function sanitizeText(value: string) {
   return value.trim().replace(/["';<>]/g, "");
 }
 
+export function sanitizeColor(value: unknown) {
+  return typeof value === "string" && /^#[\da-fA-F]{6}$/.test(value)
+    ? value.toLowerCase()
+    : undefined;
+}
+
 export function sanitizeNumber(value: string) {
   const number = Number(value);
   return Number.isInteger(number) && number > 0 ? number : undefined;

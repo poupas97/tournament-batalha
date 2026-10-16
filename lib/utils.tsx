@@ -1,3 +1,5 @@
+import ColorSwatch from "@/components/ColorSwatch";
+
 export function formatDateTime(date: Date | string | undefined) {
   if (!date) return undefined;
 
@@ -81,4 +83,26 @@ export function formatTime(date: Date | string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(date));
+}
+
+export function formattedValue<T>(
+  value: unknown,
+  format?: "date" | "boolean" | "json" | "color",
+) {
+  switch (format) {
+    case "color":
+      return typeof value === "string" ? <ColorSwatch color={value} /> : "";
+
+    case "date":
+      return formatDateTime(value as string | undefined);
+
+    case "boolean":
+      return value ? "Sim" : "Não";
+
+    case "json":
+      return JSON.stringify(value, null, 2);
+
+    default:
+      return String(value || "-");
+  }
 }

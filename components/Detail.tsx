@@ -1,15 +1,15 @@
 "use client";
 
-import { formatDateTime } from "@/lib/utils";
 import HintTooltip from "@/components/HintTooltip";
 import get from "lodash/get";
 import { Grid, Typography } from "@mui/material";
+import { formattedValue } from "@/lib/utils";
 
 type DetailField<T extends Record<string, unknown>> = {
   key: string;
   label: string;
   hint?: string | ((data: T) => string);
-  format?: "date" | "boolean" | "json";
+  format?: "date" | "boolean" | "json" | "color";
 };
 
 type DetailProps<T extends Record<string, unknown>> = {
@@ -58,17 +58,7 @@ export default function Detail<T extends Record<string, unknown>>({
             </Typography>
 
             <Typography variant="body1">
-              <>
-                {it.format === "date"
-                  ? formatDateTime(value as string | undefined)
-                  : it.format === "boolean"
-                    ? value
-                      ? "Sim"
-                      : "Não"
-                    : it.format === "json"
-                      ? JSON.stringify(value, null, 2)
-                      : value}
-              </>
+              {formattedValue(value, it.format)}
             </Typography>
           </Grid>
         );

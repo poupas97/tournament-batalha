@@ -1,6 +1,6 @@
 # TODO
 
-- quando o jogo estiver em fase de penalties, so se pode criar match events do tipo penalties e cartoes,
+- quando o jogo estiver em fase de penalties, so se pode criar match events do tipo penalties e cartoes
   - no BE a rota tem de verificar isso
   - no FE tem de ser filtrado
 
@@ -18,6 +18,3 @@
     - é enviada para o BE e depois o BE é que trata do storage
 
 - refazer/analisar o file @libs/shuffle
-
-- adicionar cor para a competicao
-  - ajustar a cor no MatchCalendar component

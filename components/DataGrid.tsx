@@ -1,4 +1,4 @@
-import { formatDateTime } from "@/lib/utils";
+import { formattedValue } from "@/lib/utils";
 import { DataGridProps } from "@/types/grid-table";
 import { Grid, Paper, Typography } from "@mui/material";
 import get from "lodash/get";
@@ -30,14 +30,7 @@ export default function GridView<T>({
                 const value = get(item, column.key, "");
 
                 const displayValue =
-                  column.render?.(item) ??
-                  (column.format === "date"
-                    ? formatDateTime(value as string)
-                    : column.format === "boolean"
-                      ? value
-                        ? "Sim"
-                        : "Não"
-                      : String(value));
+                  column.render?.(item) ?? formattedValue(value, column.format);
 
                 return (
                   <Grid size={6} key={column.key}>
@@ -46,7 +39,7 @@ export default function GridView<T>({
                     </Typography>
 
                     <Typography variant="body1" noWrap>
-                      {displayValue || "-"}
+                      {displayValue}
                     </Typography>
                   </Grid>
                 );

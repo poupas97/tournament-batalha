@@ -4,6 +4,7 @@ import { MatchBEResponse } from "./match";
 
 export type ICompetitionFormValues = {
   name: string;
+  color: string;
   config: CompetitionConfig;
   qualified?: number;
   opponents?: number;
@@ -13,6 +14,7 @@ export type ICompetitionFormValues = {
 export type CompetitionBEResponse = {
   id: number;
   name: string;
+  color: string;
   status: CompetitionStatus;
   teams: TeamBEResponse[];
   matches?: MatchBEResponse[];

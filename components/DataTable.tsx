@@ -1,4 +1,4 @@
-import { formatDateTime } from "@/lib/utils";
+import { formattedValue } from "@/lib/utils";
 import { DataTableProps } from "@/types/grid-table";
 import {
   Table,
@@ -41,14 +41,7 @@ export default function DataTable<T>({
 
               return (
                 <TableCell key={it.key} style={{ padding: "0.75rem" }}>
-                  {it.render?.(item) ||
-                    (it.format === "date"
-                      ? formatDateTime(value as string)
-                      : it.format === "boolean"
-                        ? value
-                          ? "Sim"
-                          : "Não"
-                        : String(value))}
+                  {it.render?.(item) ?? formattedValue(value, it.format)}
                 </TableCell>
               );
             })}

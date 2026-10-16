@@ -13,7 +13,8 @@ type FormInputType =
   | "number"
   | "email"
   | "password"
-  | "datetime-local";
+  | "datetime-local"
+  | "color";
 
 type FormFieldType = FormInputType | "select" | "checkbox";
 
@@ -88,7 +89,7 @@ export default function Form<T extends Record<string, unknown>>({
     <Stack component="form" onSubmit={handleSubmit} spacing={4}>
       <Grid container spacing={2}>
         {fields.map((field) => (
-          <Grid size={2} key={String(field.key)} spacing={0.75}>
+          <Grid size={vertical ? 12 : 2} key={String(field.key)} spacing={0.75}>
             <Typography
               component="span"
               variant="body2"

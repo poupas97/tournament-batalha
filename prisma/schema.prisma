@@ -67,6 +67,7 @@ enum CompetitionStatus {
 model Competition {
   id        Int      @id @default(autoincrement())
   name      String
+  color     String   @unique
   createdAt DateTime @default(now())
   teams     Team[]
   matches     Match[]

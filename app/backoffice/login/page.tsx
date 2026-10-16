@@ -27,7 +27,7 @@ export default function LoginPage() {
     <>
       <Title
         label="Login Backoffice"
-        description="Introduza as suas credenciais para aceder à área de gestão"
+        description="Introduza as suas credenciais para aceder à área administrativa"
       />
 
       <Form<ILoginFormValues>

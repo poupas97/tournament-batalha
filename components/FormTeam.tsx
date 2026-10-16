@@ -151,7 +151,7 @@ export default function FormTeam({
         }}
       >
         <Typography variant="h6">Jogadores ({players.length || 0})</Typography>
-        <Button size="small" onClick={openPlayerModal()}>
+        <Button variant="outlined" onClick={openPlayerModal()}>
           + Adicionar
         </Button>
       </div>
@@ -184,7 +184,7 @@ export default function FormTeam({
         }}
       >
         <Typography variant="h6">Staffs ({staffs.length || 0})</Typography>
-        <Button size="small" onClick={openStaffModal()}>
+        <Button variant="outlined" onClick={openStaffModal()}>
           + Adicionar
         </Button>
       </div>

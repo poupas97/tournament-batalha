@@ -13,6 +13,7 @@ import {
   isSameDay,
   isSameMonth,
 } from "@/lib/utils";
+import { getContrastText } from "@/lib/match";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
@@ -138,7 +139,6 @@ export default function MatchCalendar({
         <Grid container>
           {calendarDays.map((day) => {
             const dayMatches = getDayMatches(day);
-
             const isToday = isSameDay(day, todayDate);
             const isCurrentMonth = isSameMonth(day, currentDate);
 
@@ -192,13 +192,13 @@ export default function MatchCalendar({
                       onClick={() => onMatchClick(match)}
                       sx={{
                         borderRadius: 1,
-                        bgcolor: "primary.main",
-                        color: "primary.contrastText",
+                        bgcolor: match.competition?.color,
+                        color: getContrastText(match.competition?.color),
                         cursor: "pointer",
                         overflow: "hidden",
                         justifyItems: "center",
 
-                        "&:hover": { bgcolor: "primary.dark" },
+                        "&:hover": { filter: "brightness(0.9)" },
                       }}
                     >
                       <Typography variant="body1" align="center">

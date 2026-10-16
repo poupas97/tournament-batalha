@@ -119,7 +119,6 @@ export default function ViewCompetitionPage() {
         data={data}
         fields={[
           { key: "name", label: "Nome" },
-          { key: "_count.teams", label: "Equipas" },
           {
             key: "config",
             label: "Configuração",
@@ -135,12 +134,14 @@ export default function ViewCompetitionPage() {
             label: "Oponentes",
             hint: getCompetitionOpponentsHint,
           },
-          { key: "active", label: "Ativo", format: "boolean" },
           {
             key: "status",
             label: "Estado",
             hint: getCompetitionStatusHint,
           },
+          { key: "_count.teams", label: "Equipas" },
+          { key: "color", label: "Cor", format: "color" },
+          { key: "active", label: "Ativo", format: "boolean" },
         ]}
       />
 

@@ -1,12 +1,7 @@
 "use client";
 
-import Form from "@/components/Form";
+import FormCompetition from "@/components/FormCompetition";
 import Title from "@/components/Title";
-import { CompetitionConfig } from "@/generated/prisma";
-import {
-  getCompetitionOpponentsHint,
-  getCompetitionQualifiedHint,
-} from "@/lib/detailHints";
 import { ICompetitionFormValues } from "@/types/competition";
 import { useRouter } from "next/navigation";
 
@@ -39,31 +34,7 @@ export default function CreateCompetitionPage() {
         back
       />
 
-      <Form<ICompetitionFormValues>
-        fields={[
-          { key: "name", label: "Nome" },
-          {
-            key: "config",
-            label: "Configuracao",
-            type: "select",
-            options: Object.keys(CompetitionConfig).map((it) => ({
-              label: it,
-              value: it,
-            })),
-          },
-          {
-            key: "qualified",
-            label: "Qualificados",
-            hint: getCompetitionQualifiedHint,
-          },
-          {
-            key: "opponents",
-            label: "Oponentes",
-            hint: getCompetitionOpponentsHint,
-          },
-        ]}
-        onSubmit={handleSubmit}
-      />
+      <FormCompetition onSubmit={handleSubmit} />
     </>
   );
 }

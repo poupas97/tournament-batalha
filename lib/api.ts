@@ -24,6 +24,10 @@ export function invalidParam(entity: string) {
   return NextResponse.json({ error: `Invalid - ${entity}` }, { status: 400 });
 }
 
+export function conflict(entity: string) {
+  return NextResponse.json({ error: `Conflict - ${entity}` }, { status: 409 });
+}
+
 export function getResponse<T>(entity: T) {
   return NextResponse.json(entity);
 }

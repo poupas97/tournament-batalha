@@ -26,9 +26,9 @@ export default function CompetitionsPage() {
           { key: "config", header: "Configuração" },
           { key: "qualified", header: "Qualificados" },
           { key: "opponents", header: "Oponentes" },
-          { key: "active", header: "Ativo", format: "boolean" },
-          { key: "_count.teams", header: "Equipas" },
           { key: "status", header: "Estado" },
+          { key: "_count.teams", header: "Equipas" },
+          { key: "color", header: "Cor", format: "color" },
         ]}
       />
     </>

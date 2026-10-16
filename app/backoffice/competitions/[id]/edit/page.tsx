@@ -1,13 +1,8 @@
 "use client";
 
-import Form from "@/components/Form";
+import FormCompetition from "@/components/FormCompetition";
 import Title from "@/components/Title";
-import { CompetitionConfig } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
-import {
-  getCompetitionOpponentsHint,
-  getCompetitionQualifiedHint,
-} from "@/lib/detailHints";
 import {
   CompetitionBEResponse,
   ICompetitionFormValues,
@@ -63,33 +58,7 @@ export default function EditCompetitionPage() {
       )}
 
       {!loading && data && (
-        <Form<ICompetitionFormValues>
-          initialValues={data}
-          fields={[
-            { key: "name", label: "Nome" },
-            {
-              key: "config",
-              label: "Configuracao",
-              type: "select",
-              options: Object.keys(CompetitionConfig).map((it) => ({
-                label: it,
-                value: it,
-              })),
-            },
-            {
-              key: "qualified",
-              label: "Qualificados",
-              hint: getCompetitionQualifiedHint,
-            },
-            {
-              key: "opponents",
-              label: "Oponentes",
-              hint: getCompetitionOpponentsHint,
-            },
-            { key: "active", label: "Ativo", type: "checkbox" },
-          ]}
-          onSubmit={handleSubmit}
-        />
+        <FormCompetition initialValues={data} onSubmit={handleSubmit} />
       )}
     </>
   );

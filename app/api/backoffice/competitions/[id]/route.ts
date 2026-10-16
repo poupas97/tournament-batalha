@@ -1,12 +1,14 @@
 import prisma from "@/lib/prisma";
 import {
   sanitizeBoolean,
+  sanitizeColor,
   sanitizeEnum,
   sanitizeNumber,
   sanitizeText,
 } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
+  conflict,
   createdResponse,
   getParamId,
   getResponse,
@@ -73,6 +75,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body?.name) || existing.name;
+  const color = sanitizeColor(body?.color) || existing.color;
   const config =
     sanitizeEnum(body?.config, CompetitionConfig) || existing.config;
   const qualified = sanitizeNumber(body?.qualified) || existing.qualified;
@@ -90,9 +93,20 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("CompetitionConfig");
   }
 
+  if (!color) {
+    return invalidParam("Color");
+  }
+
+  const colorInUse = await prisma.competition.findFirst({
+    where: { color, id: { not: competitionId } },
+  });
+  if (colorInUse) {
+    return conflict("Color");
+  }
+
   const competitionUpdated = await prisma.competition.update({
     where: { id: competitionId },
-    data: { name, config, qualified, opponents, active },
+    data: { name, color, config, qualified, opponents, active },
     include: {
       teams: {
         orderBy: { createdAt: "asc" },

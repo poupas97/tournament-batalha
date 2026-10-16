@@ -4,7 +4,13 @@ import TextField from "@mui/material/TextField";
 
 type FormInputProps = {
   name: string;
-  type?: "text" | "number" | "email" | "password" | "datetime-local";
+  type?:
+    | "text"
+    | "number"
+    | "email"
+    | "password"
+    | "datetime-local"
+    | "color";
   value: string;
   placeholder?: string;
   onChange: (value: string) => void;

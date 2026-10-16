@@ -1,6 +1,12 @@
 import prisma from "@/lib/prisma";
-import { sanitizeEnum, sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import {
+  sanitizeColor,
+  sanitizeEnum,
+  sanitizeNumber,
+  sanitizeText,
+} from "@/lib/sanitize";
+import {
+  conflict,
   createdResponse,
   getResponse,
   invalidParam,
@@ -35,6 +41,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body?.name);
+  const color = sanitizeColor(body?.color);
   const config = sanitizeEnum(body?.config, CompetitionConfig);
   const qualified = sanitizeNumber(body?.qualified);
   const opponents = sanitizeNumber(body?.opponents);
@@ -47,8 +54,17 @@ export async function POST(request: Request) {
     return invalidParam("CompetitionConfig");
   }
 
+  if (!color) {
+    return invalidParam("Color");
+  }
+
+  const colorInUse = await prisma.competition.findUnique({ where: { color } });
+  if (colorInUse) {
+    return conflict("Color");
+  }
+
   const competition = await prisma.competition.create({
-    data: { name, config, qualified, opponents },
+    data: { name, color, config, qualified, opponents },
     include: { teams: true },
   });
 

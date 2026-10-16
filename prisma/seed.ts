@@ -91,12 +91,14 @@ async function main() {
   const competitions = [
     {
       name: "2026 Masculinos",
+      color: "#0969da",
       config: CompetitionConfig.LEAGUE,
       qualified: 8,
       opponents: 4,
     },
     {
       name: "2026 Femininos",
+      color: "#d92f2f",
       config: CompetitionConfig.LEAGUE,
       qualified: 2,
       opponents: 3,
