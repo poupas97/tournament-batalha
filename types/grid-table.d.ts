@@ -11,7 +11,7 @@ type Props<T extends Record<string, unknown>> = {
   loading: boolean;
   data: T[] | undefined;
   emptyMessage?: string;
-  clickableRow?: (item: T) => void;
+  href?: (item: T) => string;
   create?: string;
   notChangeRoute?: boolean;
   title?: string;

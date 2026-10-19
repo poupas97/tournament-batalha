@@ -8,14 +8,10 @@ import {
   unauthorized,
 } from "@/lib/api";
 import { MATCH_EVENT_MAX_MINUTE } from "@/constants/validation";
-import {
-  CompetitionStatus,
-  MatchEventType,
-  MatchStatus,
-} from "@/generated/prisma";
+import { CompetitionStatus, MatchEventType } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
-import { isKnockoutRound } from "@/lib/competition/rounds";
 import { MatchEventBEResponse } from "@/types/match-event";
+import { isMatchFinished } from "@/lib/match";
 import {
   isEventAllowedStatuses,
   isMatchEventTypeAllowed,
@@ -91,6 +87,10 @@ export async function POST(request: Request) {
     return invalidParam("Match");
   }
 
+  if (isMatchFinished(match.status)) {
+    return invalidParam("MatchStatus");
+  }
+
   if (match.competition.status === CompetitionStatus.FINISHED) {
     return invalidParam("CompetitionStatus");
   }
@@ -103,13 +103,13 @@ export async function POST(request: Request) {
     return invalidParam("MatchStatus");
   }
 
-  if (
-    match.status === MatchStatus.RT_END &&
-    !isKnockoutRound(match.round) &&
-    !isCard
-  ) {
-    return invalidParam("MatchStatus");
-  }
+  // if (
+  //   match.status === MatchStatus.RT_END &&
+  //   !isKnockoutRound(match.round) &&
+  //   !isCard
+  // ) {
+  //   return invalidParam("MatchStatus");
+  // }
 
   if (teamId !== match.homeTeamId && teamId !== match.awayTeamId) {
     return invalidParam("Team");

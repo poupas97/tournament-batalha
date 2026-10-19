@@ -5,7 +5,7 @@ import HintTooltip from "@/components/HintTooltip";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
 import { Button, Grid, Stack, Typography } from "@mui/material";
-import get from "lodash/get";
+import _get from "lodash/get";
 import { FormEvent, useState, type ReactNode } from "react";
 
 type FormInputType =
@@ -138,14 +138,14 @@ export default function Form<T extends Record<string, unknown>>({
             {field.options ? (
               <FormSelect
                 name={String(field.key)}
-                value={String(get(values, field.key) ?? "")}
+                value={String(_get(values, field.key) ?? "")}
                 options={field.options}
                 onChange={(value) => handleChange(field.key, value)}
               />
             ) : field.type === "checkbox" ? (
               <FormCheckbox
                 name={String(field.key)}
-                checked={Boolean(get(values, field.key))}
+                checked={Boolean(_get(values, field.key))}
                 onChange={(checked) => handleChange(field.key, checked)}
               />
             ) : (
@@ -154,10 +154,10 @@ export default function Form<T extends Record<string, unknown>>({
                 type={getInputType(field.type)}
                 value={
                   field.type === "date"
-                    ? formatDateInputValue(get(values, field.key))
+                    ? formatDateInputValue(_get(values, field.key))
                     : field.type === "datetime-local"
-                      ? formatDateTimeLocalValue(get(values, field.key))
-                      : String(get(values, field.key) ?? "")
+                      ? formatDateTimeLocalValue(_get(values, field.key))
+                      : String(_get(values, field.key) ?? "")
                 }
                 placeholder={field.placeholder}
                 onChange={(value) => handleChange(field.key, value)}

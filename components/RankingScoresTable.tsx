@@ -1,5 +1,3 @@
-"use client";
-
 import DataTable from "@/components/DataTable";
 import { CompetitionStatsBEResponse } from "@/types/competition";
 import { Paper, Typography } from "@mui/material";

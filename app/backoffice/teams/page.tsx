@@ -3,7 +3,6 @@
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import { useRouter } from "next/navigation";
 
 type TeamSummary = {
   id: number;
@@ -16,8 +15,6 @@ type TeamSummary = {
 };
 
 export default function BackofficeTeamsPage() {
-  const router = useRouter();
-
   const { data, loading, error } = useGetState<TeamSummary[]>(
     "/api/backoffice/teams",
   );
@@ -34,7 +31,7 @@ export default function BackofficeTeamsPage() {
         error={error}
         data={data}
         create="/backoffice/teams/create"
-        clickableRow={(it) => router.push(`/backoffice/teams/${it.id}`)}
+        href={(it) => `/backoffice/teams/${it.id}`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "competition.name", header: "Competição" },

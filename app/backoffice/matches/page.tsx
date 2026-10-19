@@ -3,7 +3,6 @@
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import { useRouter } from "next/navigation";
 
 type MatchSummary = {
   id: number;
@@ -15,8 +14,6 @@ type MatchSummary = {
 };
 
 export default function BackofficeMatchesPage() {
-  const router = useRouter();
-
   const { data, loading, error } = useGetState<MatchSummary[]>(
     "/api/backoffice/matches",
   );
@@ -33,7 +30,7 @@ export default function BackofficeMatchesPage() {
         error={error}
         data={data}
         create="/backoffice/matches/create"
-        clickableRow={(it) => router.push(`/backoffice/matches/${it.id}`)}
+        href={(it) => `/backoffice/matches/${it.id}`}
         columns={[
           { key: "competition.name", header: "Competição" },
           { key: "date", header: "Data", format: "datetime" },

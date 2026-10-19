@@ -25,7 +25,6 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function CompetitionShuffle({
   competition,
@@ -95,8 +94,6 @@ function MatchCard({
   isBackoffice: boolean;
   isKnockoutMatch?: boolean;
 }) {
-  const router = useRouter();
-
   const { homeGoals, awayGoals } = getMatchScore(match);
   const showScore = isMatchFinished(match.status);
   const statusColor = getMatchStatusColor(match.status);
@@ -104,15 +101,12 @@ function MatchCard({
   return (
     <Grid
       size={{ xs: 12, sm: isKnockoutMatch ? 12 : 4 }}
-      sx={{ alignContent: "center" }}
+      component={Link}
+      href={`${isBackoffice ? "/backoffice" : ""}/matches/${match.id}`}
+      sx={{ alignContent: "center", textDecoration: "auto" }}
     >
       <Paper
         elevation={0}
-        onClick={() => {
-          router.push(
-            `${isBackoffice ? "/backoffice" : ""}/matches/${match.id}`,
-          );
-        }}
         sx={{
           p: 2,
           cursor: "pointer",

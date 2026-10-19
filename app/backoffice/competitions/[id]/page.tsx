@@ -18,11 +18,10 @@ import {
   ICompetitionFormValues,
 } from "@/types/competition";
 import { Button } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function ViewCompetitionPage() {
   const params = useParams();
-  const router = useRouter();
   const competitionId = params?.id;
   const { openModal, closeModal } = useModal();
 
@@ -168,7 +167,7 @@ export default function ViewCompetitionPage() {
         loading={loading}
         error={error}
         data={data?.teams}
-        clickableRow={(it) => router.push(`/backoffice/teams/${it.id}`)}
+        href={(it) => `/backoffice/teams/${it.id}`}
         notChangeRoute
         title={`Equipas (${data?.teams.length || 0})`}
         columns={[

@@ -1,3 +1,5 @@
+"use client";
+
 import { formattedValue } from "@/lib/formattedValue";
 import { DataTableProps } from "@/types/grid-table";
 import {
@@ -8,13 +10,16 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import get from "lodash/get";
+import _get from "lodash/get";
+import { useRouter } from "next/navigation";
 
 export default function DataTable<T>({
   columns,
   data,
-  clickableRow,
+  href,
 }: DataTableProps<T>) {
+  const router = useRouter();
+
   return (
     <TableContainer>
       <Table>
@@ -37,9 +42,17 @@ export default function DataTable<T>({
         </TableHead>
         <TableBody>
           {data.map((item, index) => (
-            <TableRow key={index} onClick={() => clickableRow?.(item)}>
+            <TableRow
+              key={index}
+              onClick={() => {
+                const hasHref = href?.(item);
+                if (hasHref) router.push(hasHref);
+              }}
+              hover={Boolean(href)}
+              sx={href ? { cursor: "pointer" } : undefined}
+            >
               {columns.map((it) => {
-                const value = get(item, it.key, "");
+                const value = _get(item, it.key, "");
 
                 return (
                   <TableCell key={it.key} style={{ padding: "0.75rem" }}>

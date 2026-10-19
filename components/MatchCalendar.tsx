@@ -17,16 +17,14 @@ import {
 } from "@/lib/date";
 import { getContrastText } from "@/lib/match";
 import { WEEK_DAYS } from "@/constants/competition";
+import Link from "next/link";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
-  onMatchClick: (match: MatchBEResponse) => void;
+  href: (match: MatchBEResponse) => string;
 };
 
-export default function MatchCalendar({
-  data,
-  onMatchClick,
-}: MatchCalendarProps) {
+export default function MatchCalendar({ data, href }: MatchCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const todayDate = new Date();
@@ -185,8 +183,8 @@ export default function MatchCalendar({
                 <Stack spacing={1}>
                   {dayMatches.map((match) => (
                     <Box
-                      key={match.id}
-                      onClick={() => onMatchClick(match)}
+                      component={Link}
+                      href={href(match)}
                       sx={{
                         borderRadius: 1,
                         bgcolor: match.competition?.color,
@@ -194,6 +192,7 @@ export default function MatchCalendar({
                         cursor: "pointer",
                         overflow: "hidden",
                         justifyItems: "center",
+                        textDecoration: "auto",
                       }}
                     >
                       <Typography variant="body1" align="center">
@@ -246,8 +245,8 @@ export default function MatchCalendar({
               <Stack spacing={0.75}>
                 {getDayMatches(day).map((match) => (
                   <Box
-                    key={match.id}
-                    onClick={() => onMatchClick(match)}
+                    component={Link}
+                    href={href(match)}
                     sx={{
                       display: "flex",
                       alignItems: "center",
@@ -257,7 +256,7 @@ export default function MatchCalendar({
                       bgcolor: match.competition?.color,
                       color: getContrastText(match.competition?.color),
                       cursor: "pointer",
-                      "&:hover": { filter: "brightness(0.9)" },
+                      textDecoration: "auto",
                     }}
                   >
                     <Typography

@@ -4,11 +4,8 @@ import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import { AuditLog } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
-import { useRouter } from "next/navigation";
 
 export default function BackofficeAuditLogPage() {
-  const router = useRouter();
-
   const { data, loading, error } = useGetState<AuditLog[]>(
     "/api/backoffice/audit-log",
   );
@@ -24,7 +21,7 @@ export default function BackofficeAuditLogPage() {
         loading={loading}
         error={error}
         data={data}
-        clickableRow={(it) => router.push(`/backoffice/audit-log/${it.id}`)}
+        href={(it) => `/backoffice/audit-log/${it.id}`}
         columns={[
           { key: "id", header: "ID" },
           { key: "action", header: "Ação" },

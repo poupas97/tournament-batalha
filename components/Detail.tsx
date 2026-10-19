@@ -1,7 +1,5 @@
-"use client";
-
 import HintTooltip from "@/components/HintTooltip";
-import get from "lodash/get";
+import _get from "lodash/get";
 import { Grid, Typography } from "@mui/material";
 import { formattedValue } from "@/lib/formattedValue";
 
@@ -47,7 +45,7 @@ export default function Detail<T extends Record<string, unknown>>({
   return (
     <Grid container spacing={2}>
       {fields.map((it) => {
-        const value = get(data, it.key, "");
+        const value = _get(data, it.key, "");
         const hint = typeof it.hint === "function" ? it.hint(data) : it.hint;
 
         return (

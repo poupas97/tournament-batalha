@@ -1,5 +1,3 @@
-"use client";
-
 import Detail from "@/components/Detail";
 import { TeamBEResponse } from "@/types/team";
 import GridTable from "./GridTable";

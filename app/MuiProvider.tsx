@@ -67,10 +67,6 @@ const components = {
         minWidth: 0,
         gap: theme.spacing(4),
         padding: theme.spacing(4),
-
-        [theme.breakpoints.down("sm")]: {
-          padding: theme.spacing(2),
-        },
       },
     },
   },

@@ -19,11 +19,10 @@ import {
 } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
 import { Typography } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function ViewCompetitionPage() {
   const params = useParams();
-  const router = useRouter();
   const competitionId = params?.id;
 
   const {
@@ -102,7 +101,7 @@ export default function ViewCompetitionPage() {
                 loading={false}
                 error={undefined}
                 data={competitionData?.teams}
-                clickableRow={(it) => router.push(`/teams/${it.id}`)}
+                href={(it) => `/teams/${it.id}`}
                 notChangeRoute
                 title={`Equipas (${competitionData?.teams.length || 0})`}
                 columns={[

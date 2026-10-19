@@ -4,11 +4,8 @@ import MatchCalendar from "@/components/MatchCalendar";
 import useGetState from "@/hooks/useGetState";
 import { MatchBEResponse } from "@/types/match";
 import { Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const router = useRouter();
-
   const { data, loading, error } =
     useGetState<MatchBEResponse[]>("/api/matches");
 
@@ -22,10 +19,7 @@ export default function Home() {
         </Typography>
       )}
 
-      <MatchCalendar
-        data={data}
-        onMatchClick={(it) => router.push(`/matches/${it.id}`)}
-      />
+      <MatchCalendar data={data} href={(it) => `/matches/${it.id}`} />
     </>
   );
 }

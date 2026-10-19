@@ -4,7 +4,6 @@ import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import { CompetitionConfig } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
-import { useRouter } from "next/navigation";
 
 type CompetitionSummary = {
   id: number;
@@ -20,8 +19,6 @@ type CompetitionSummary = {
 };
 
 export default function BackofficeCompetitionsPage() {
-  const router = useRouter();
-
   const { data, loading, error } = useGetState<CompetitionSummary[]>(
     "/api/backoffice/competitions",
   );
@@ -38,7 +35,7 @@ export default function BackofficeCompetitionsPage() {
         error={error}
         data={data}
         create="/backoffice/competitions/create"
-        clickableRow={(it) => router.push(`/backoffice/competitions/${it.id}`)}
+        href={(it) => `/backoffice/competitions/${it.id}`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "config", header: "Configuração" },

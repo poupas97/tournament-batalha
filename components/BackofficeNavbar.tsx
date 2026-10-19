@@ -1,9 +1,10 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Box, Button } from "@mui/material";
 import { NAVBAR_BORDER_WIDTH_PX, NAVBAR_Z_INDEX } from "@/constants/layout";
+import Link from "next/link";
 
 const navItems = [
   { href: "/backoffice", label: "Dashboard" },
@@ -19,7 +20,6 @@ type BackofficeNavbarProps = {
 };
 
 export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
-  const router = useRouter();
   const pathname = usePathname();
 
   if (pathname === "/backoffice/login") {
@@ -67,8 +67,9 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
             return (
               <Button
                 key={item.href}
+                component={Link}
+                href={item.href}
                 size="small"
-                onClick={() => router.push(item.href)}
                 variant={active ? "contained" : "text"}
                 aria-current={active ? "page" : undefined}
               >

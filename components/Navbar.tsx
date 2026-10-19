@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { NAVBAR_BORDER_WIDTH_PX, NAVBAR_Z_INDEX } from "@/constants/layout";
+import Link from "next/link";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -13,7 +14,6 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <Box
@@ -50,8 +50,9 @@ export default function Navbar() {
           return (
             <Button
               key={item.href}
+              component={Link}
+              href={item.href}
               size="small"
-              onClick={() => router.push(item.href)}
               variant={active ? "contained" : "text"}
               aria-current={active ? "page" : undefined}
             >

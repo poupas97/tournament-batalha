@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
-import merge from "lodash/merge";
+import _merge from "lodash/merge";
 
 export default function useGetState<T>(url: string | undefined) {
   const [state, setState] = useState<{
@@ -46,7 +46,7 @@ export default function useGetState<T>(url: string | undefined) {
       data:
         typeof data === "function"
           ? data(current.data)
-          : merge({}, current.data, data),
+          : _merge({}, current.data, data),
     }));
   };
 

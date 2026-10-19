@@ -1,6 +1,5 @@
 import GridTable from "@/components/GridTable";
 import { MatchBEResponse } from "@/types/match";
-import { useRouter } from "next/navigation";
 
 interface MatchesGridTableProps {
   data: MatchBEResponse[] | undefined;
@@ -17,14 +16,12 @@ export default function MatchesGridTable({
   emptyMessage,
   title,
 }: MatchesGridTableProps) {
-  const router = useRouter();
-
   return (
     <GridTable
       loading={loading}
       error={error}
       data={data}
-      clickableRow={(it) => router.push(`/matches/${it.id}`)}
+      href={(it) => `/matches/${it.id}`}
       title={title}
       emptyMessage={emptyMessage}
       columns={[

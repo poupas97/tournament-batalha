@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
-import { CompetitionStatus, MatchStatus } from "@/generated/prisma";
+import { CompetitionStatus } from "@/generated/prisma";
 import {
   deletedResponse,
   getParamId,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { notifyRemoveMatchEvent } from "@/lib/socket";
 import { isEventAllowedStatuses } from "@/lib/matchEvents";
+import { isMatchFinished } from "@/lib/match";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -67,6 +68,10 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   if (!matchEvent) {
     return noFound("Match event");
+  }
+
+  if (isMatchFinished(matchEvent.match.status)) {
+    return invalidParam("MatchStatus");
   }
 
   if (matchEvent.match.competition.status === CompetitionStatus.FINISHED) {

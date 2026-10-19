@@ -5,8 +5,9 @@ import DataTable from "./DataTable";
 import DataGrid from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import get from "lodash/get";
+import _get from "lodash/get";
 import { Box, Button, ButtonGroup, TextField, Typography } from "@mui/material";
+import Link from "next/link";
 import GridViewIcon from "@mui/icons-material/GridView";
 import TableRowsIcon from "@mui/icons-material/TableRows";
 
@@ -30,7 +31,7 @@ function GridTableContent<T>({
   const normalizedSearch = search.trim().toLocaleLowerCase();
   const filteredData = data?.filter((item) =>
     rest.columns.some((column) =>
-      String(get(item, column.key, ""))
+      String(_get(item, column.key, ""))
         .toLocaleLowerCase()
         .includes(normalizedSearch),
     ),
@@ -66,7 +67,7 @@ function GridTableContent<T>({
       >
         <Box sx={{ flex: 1, alignContent: "center" }}>
           {create && (
-            <Button variant="outlined" onClick={() => router.push(create)}>
+            <Button component={Link} href={create} variant="outlined">
               + Adicionar
             </Button>
           )}

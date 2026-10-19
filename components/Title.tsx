@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Box, Button, IconButton, Typography } from "@mui/material";
+import Link from "next/link";
 
 type TitleProps = {
   label: string;
@@ -42,9 +43,10 @@ export default function Title({ label, description, back, edit }: TitleProps) {
 
       {edit ? (
         <Button
+          component={Link}
+          href={edit}
           size="small"
           variant="outlined"
-          onClick={() => router.push(edit)}
         >
           Editar
         </Button>

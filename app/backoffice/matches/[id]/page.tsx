@@ -7,7 +7,7 @@ import { useModal } from "@/components/ModalProvider";
 import Title from "@/components/Title";
 import { MatchEventType, MatchStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
-import { canTransition, getMatchScore } from "@/lib/match";
+import { canTransition, getMatchScore, isMatchFinished } from "@/lib/match";
 import { getAvailableMatchEventTypes } from "@/lib/matchEvents";
 import {
   getCompetitionQualifiedHint,
@@ -22,7 +22,7 @@ import {
 } from "@/types/match-event";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import MatchEventsTable from "@/components/MatchEventsTable";
 
 export default function ViewMatchPage() {
@@ -69,6 +69,8 @@ export default function ViewMatchPage() {
   const handleAddEvent =
     (key: "playerId" | "staffId", id: number, teamId: number) =>
     async (values: IMatchEventFormValues) => {
+      if (!data || isMatchFinished(data.status)) return;
+
       const response = await fetch("/api/backoffice/match-events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,6 +94,8 @@ export default function ViewMatchPage() {
     };
 
   const addStaffMatchEvent = (staffId: number, teamId: number) => () => {
+    if (!data || isMatchFinished(data.status)) return;
+
     openModal({
       title: "Adicionar evento",
       content: (
@@ -116,6 +120,8 @@ export default function ViewMatchPage() {
   };
 
   const onRemoveMatchEvent = async (matchEvent: MatchEventBEResponse) => {
+    if (!data || isMatchFinished(data.status)) return;
+
     const response = await fetch(
       `/api/backoffice/match-events/${matchEvent.id}`,
       {
@@ -143,6 +149,8 @@ export default function ViewMatchPage() {
   };
 
   const addPlayerMatchEvent = (playerId: number, teamId: number) => () => {
+    if (!data || isMatchFinished(data.status)) return;
+
     openModal({
       title: "Adicionar evento",
       content: (
@@ -222,32 +230,28 @@ export default function ViewMatchPage() {
 
       <Typography variant="h6">Mudar o estado do jogo</Typography>
       {data && (
-        <Box
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: 1,
-          }}
-        >
+        <Grid container spacing={2}>
           {Object.values(MatchStatus)
             .filter((status) => canTransition(data, status))
             .map((status) => (
-              <Button
-                key={status}
-                variant="contained"
-                disabled={
-                  updatingStatus || !data.homeTeamId || !data.awayTeamId
-                }
-                onClick={() => handleChangeStatus(status)}
-              >
-                {status}
-              </Button>
+              <Grid key={status} size={2}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  disabled={
+                    updatingStatus || !data.homeTeamId || !data.awayTeamId
+                  }
+                  onClick={() => handleChangeStatus(status)}
+                >
+                  {status}
+                </Button>
+              </Grid>
             ))}
-        </Box>
+        </Grid>
       )}
 
-      {data && (
-        <Box style={{ display: "flex", gap: 2 }}>
+      {data && !isMatchFinished(data.status) && (
+        <Box style={{ display: "flex", gap: "2rem" }}>
           <MatchEventGrid
             team={data.homeTeam}
             addPlayerMatchEvent={addPlayerMatchEvent}
@@ -261,7 +265,14 @@ export default function ViewMatchPage() {
         </Box>
       )}
 
-      <MatchEventsTable data={data} onRemoveMatchEvent={onRemoveMatchEvent} />
+      <MatchEventsTable
+        data={data}
+        onRemoveMatchEvent={
+          data && !isMatchFinished(data.status)
+            ? onRemoveMatchEvent
+            : undefined
+        }
+      />
     </>
   );
 }

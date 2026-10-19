@@ -1,33 +1,37 @@
 import { formattedValue } from "@/lib/formattedValue";
 import { DataGridProps } from "@/types/grid-table";
 import { Grid, Paper, Typography } from "@mui/material";
-import get from "lodash/get";
+import _get from "lodash/get";
+import Link from "next/link";
 
-export default function GridView<T>({
-  columns,
-  data,
-  clickableRow,
-}: DataGridProps<T>) {
+export default function DataGrid<T>({ columns, data, href }: DataGridProps<T>) {
   return (
     <Grid container spacing={2}>
       {data.map((item, index) => (
-        <Grid size={{ xs: 12, sm: 4 }} key={index}>
+        <Grid
+          key={index}
+          size={{ xs: 12, sm: 4 }}
+          {...{
+            component: href ? Link : undefined,
+            href: href?.(item),
+          }}
+          sx={{ textDecoration: "auto" }}
+        >
           <Paper
             elevation={0}
-            onClick={() => clickableRow?.(item)}
             sx={{
               p: 2,
-              cursor: clickableRow ? "pointer" : "default",
+              cursor: href ? "pointer" : "default",
               height: "100%",
 
-              "&:hover": clickableRow
+              "&:hover": href
                 ? { borderColor: "primary.main", boxShadow: 2 }
                 : undefined,
             }}
           >
             <Grid container spacing={2}>
               {columns.map((column) => {
-                const value = get(item, column.key, "");
+                const value = _get(item, column.key, "");
 
                 const displayValue =
                   column.render?.(item) ?? formattedValue(value, column.format);

@@ -3,7 +3,6 @@
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import { useRouter } from "next/navigation";
 
 type TeamSummary = {
   id: number;
@@ -16,8 +15,6 @@ type TeamSummary = {
 };
 
 export default function TeamsPage() {
-  const router = useRouter();
-
   const { data, loading, error } = useGetState<TeamSummary[]>("/api/teams");
 
   return (
@@ -28,7 +25,7 @@ export default function TeamsPage() {
         loading={loading}
         error={error}
         data={data}
-        clickableRow={(it) => router.push(`/teams/${it.id}`)}
+        href={(it) => `/teams/${it.id}`}
         columns={[
           { key: "name", header: "Nome" },
           { key: "competition.name", header: "Competição" },
