@@ -16,7 +16,7 @@ export default function HintTooltip({ label, hint }: HintTooltipProps) {
         size="small"
         sx={{ width: 20, height: 20, p: 0 }}
       >
-        <HelpOutlinedIcon sx={{ fontSize: 16 }} />
+        <HelpOutlinedIcon fontSize="inherit" />
       </IconButton>
     </Tooltip>
   );

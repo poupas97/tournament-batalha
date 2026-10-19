@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
 } from "@mui/material";
@@ -15,39 +16,41 @@ export default function DataTable<T>({
   clickableRow,
 }: DataTableProps<T>) {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TableCell
-              key={column.key}
-              style={{
-                textAlign: "left",
-                padding: "1rem",
-                borderBottom: "0.05rem solid",
-                borderBottomColor: "divider.",
-              }}
-            >
-              {column.header}
-            </TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data.map((item, index) => (
-          <TableRow key={index} onClick={() => clickableRow?.(item)}>
-            {columns.map((it) => {
-              const value = get(item, it.key, "");
-
-              return (
-                <TableCell key={it.key} style={{ padding: "0.75rem" }}>
-                  {it.render?.(item) ?? formattedValue(value, it.format)}
-                </TableCell>
-              );
-            })}
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <TableCell
+                key={column.key}
+                style={{
+                  textAlign: "left",
+                  padding: "1rem",
+                  borderBottom: "0.05rem solid",
+                  borderBottomColor: "divider.",
+                }}
+              >
+                {column.header}
+              </TableCell>
+            ))}
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {data.map((item, index) => (
+            <TableRow key={index} onClick={() => clickableRow?.(item)}>
+              {columns.map((it) => {
+                const value = get(item, it.key, "");
+
+                return (
+                  <TableCell key={it.key} style={{ padding: "0.75rem" }}>
+                    {it.render?.(item) ?? formattedValue(value, it.format)}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

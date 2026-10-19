@@ -33,39 +33,32 @@ export default function Navbar() {
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
+          justifyContent: "flex-start",
+          flexWrap: "wrap",
+          gap: 1,
+          width: "100%",
           px: 3,
           py: 2,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            flexWrap: "wrap",
-          }}
-        >
-          {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === item.href
-                : pathname.startsWith(item.href);
+        {navItems.map((item) => {
+          const active =
+            item.href === "/"
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
 
-            return (
-              <Button
-                key={item.href}
-                size="small"
-                onClick={() => router.push(item.href)}
-                variant={active ? "contained" : "text"}
-                aria-current={active ? "page" : undefined}
-              >
-                {item.label}
-              </Button>
-            );
-          })}
-        </Box>
+          return (
+            <Button
+              key={item.href}
+              size="small"
+              onClick={() => router.push(item.href)}
+              variant={active ? "contained" : "text"}
+              aria-current={active ? "page" : undefined}
+            >
+              {item.label}
+            </Button>
+          );
+        })}
       </Box>
     </Box>
   );

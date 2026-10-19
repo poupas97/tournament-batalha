@@ -16,7 +16,7 @@ export default function ColorSwatch({ color }: ColorSwatchProps) {
         flexShrink: 0,
         borderRadius: 1,
         backgroundColor: color,
-        border: "1px solid",
+        border: "0.05rem solid",
         borderColor: "divider",
       }}
     />

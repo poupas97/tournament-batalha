@@ -59,7 +59,9 @@ function GridTableContent<T>({
         sx={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           gap: 2,
+          flexWrap: "wrap",
         }}
       >
         <Box sx={{ flex: 1, alignContent: "center" }}>
@@ -71,14 +73,30 @@ function GridTableContent<T>({
           {title && <Typography variant="h6">{title}</Typography>}
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+        <Box
+          sx={(theme) => ({
+            display: "flex",
+            flexDirection: "row",
+            gap: 2,
+            minWidth: 0,
+            [theme.breakpoints.down("sm")]: {
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          })}
+        >
           <TextField
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Pesquisar..."
             size="small"
+            sx={{ flex: 1, minWidth: 0 }}
           />
-          <ButtonGroup aria-label="Selecionar visualização">
+          <ButtonGroup
+            aria-label="Selecionar visualização"
+            sx={{ flexShrink: 0 }}
+          >
             <Button
               variant={view === "grid" ? "contained" : "outlined"}
               onClick={() => onSetView("grid")}

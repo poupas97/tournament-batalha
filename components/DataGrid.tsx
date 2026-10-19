@@ -11,7 +11,7 @@ export default function GridView<T>({
   return (
     <Grid container spacing={2}>
       {data.map((item, index) => (
-        <Grid size={4} key={index}>
+        <Grid size={{ xs: 12, sm: 4 }} key={index}>
           <Paper
             elevation={0}
             onClick={() => clickableRow?.(item)}

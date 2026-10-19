@@ -44,3 +44,5 @@ export const KNOCKOUT_BRACKET_SEEDS: Record<number, number[]> = {
 export const KNOCKOUT_ROUNDS = new Set(
   Object.values(KNOCKOUT_STAGES_BY_QUALIFIED).flat(),
 );
+
+export const WEEK_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];

@@ -12,17 +12,7 @@ export default function FrontOfficeLayout({
   return (
     <>
       <Navbar />
-      <main
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "2rem",
-          gap: "2rem",
-          flex: 1,
-        }}
-      >
-        {children}
-      </main>
+      <main>{children}</main>
       <Footer />
     </>
   );

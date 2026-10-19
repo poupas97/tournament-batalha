@@ -51,7 +51,7 @@ export default function Detail<T extends Record<string, unknown>>({
         const hint = typeof it.hint === "function" ? it.hint(data) : it.hint;
 
         return (
-          <Grid size={2} key={it.key}>
+          <Grid size={{ xs: 6, sm: 2 }} key={it.key}>
             <Typography variant="caption" color="text.secondary">
               {it.label}
               {hint && <HintTooltip label={it.label} hint={hint} />}

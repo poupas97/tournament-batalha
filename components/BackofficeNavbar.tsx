@@ -36,6 +36,12 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
         borderBottom: `${NAVBAR_BORDER_WIDTH_PX}px solid`,
         borderBottomColor: "divider",
         bgcolor: "background.paper",
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 1,
+        px: 3,
+        py: 2,
       }}
     >
       <Box
@@ -44,51 +50,42 @@ export default function BackofficeNavbar({ isAdmin }: BackofficeNavbarProps) {
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-          px: 3,
-          py: 2,
+          flexWrap: "wrap",
+          gap: 1,
+          flex: 1,
+          minWidth: 0,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            flexWrap: "wrap",
-          }}
-        >
-          {navItems
-            .filter((item) => isAdmin || !item.adminOnly)
-            .map((item) => {
-              const active =
-                item.href === "/backoffice"
-                  ? pathname === item.href
-                  : pathname.startsWith(item.href);
+        {navItems
+          .filter((item) => isAdmin || !item.adminOnly)
+          .map((item) => {
+            const active =
+              item.href === "/backoffice"
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
 
-              return (
-                <Button
-                  key={item.href}
-                  size="small"
-                  onClick={() => router.push(item.href)}
-                  variant={active ? "contained" : "text"}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {item.label}
-                </Button>
-              );
-            })}
-        </Box>
-
-        <Button
-          onClick={() => signOut({ callbackUrl: "/backoffice/login" })}
-          color="error"
-          variant="contained"
-          size="small"
-        >
-          Sair
-        </Button>
+            return (
+              <Button
+                key={item.href}
+                size="small"
+                onClick={() => router.push(item.href)}
+                variant={active ? "contained" : "text"}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+              </Button>
+            );
+          })}
       </Box>
+
+      <Button
+        onClick={() => signOut({ callbackUrl: "/backoffice/login" })}
+        color="error"
+        variant="contained"
+        size="small"
+      >
+        Sair
+      </Button>
     </Box>
   );
 }

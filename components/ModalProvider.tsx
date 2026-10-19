@@ -7,15 +7,12 @@ import {
   useContext,
   useMemo,
   useState,
-  type CSSProperties,
   type ReactNode,
 } from "react";
 
 type ModalOptions = {
   title: string;
   content: ReactNode;
-  width?: CSSProperties["width"];
-  footer?: ReactNode;
 };
 
 type ModalContextValue = {

@@ -22,7 +22,7 @@ import {
 } from "@/types/match-event";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import MatchEventsTable from "@/components/MatchEventsTable";
 
 export default function ViewMatchPage() {
@@ -222,11 +222,11 @@ export default function ViewMatchPage() {
 
       <Typography variant="h6">Mudar o estado do jogo</Typography>
       {data && (
-        <div
+        <Box
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "1rem",
+            gap: 1,
           }}
         >
           {Object.values(MatchStatus)
@@ -243,11 +243,11 @@ export default function ViewMatchPage() {
                 {status}
               </Button>
             ))}
-        </div>
+        </Box>
       )}
 
       {data && (
-        <div style={{ display: "flex", gap: "2rem" }}>
+        <Box style={{ display: "flex", gap: 2 }}>
           <MatchEventGrid
             team={data.homeTeam}
             addPlayerMatchEvent={addPlayerMatchEvent}
@@ -258,7 +258,7 @@ export default function ViewMatchPage() {
             addPlayerMatchEvent={addPlayerMatchEvent}
             addStaffMatchEvent={addStaffMatchEvent}
           />
-        </div>
+        </Box>
       )}
 
       <MatchEventsTable data={data} onRemoveMatchEvent={onRemoveMatchEvent} />

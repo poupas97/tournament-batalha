@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import "./globals.css";
 import type { Metadata } from "next";
 import MuiProvider from "./MuiProvider";
 
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-PT">
-      <body style={{ display: "flex", flexDirection: "column" }}>
+      <body>
         <MuiProvider>{children}</MuiProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
-import { useEffect, useId, type ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
 type SideModalProps = {
@@ -19,55 +19,47 @@ export default function SideModal({
 }: SideModalProps) {
   const titleId = useId();
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) {
-    return null;
-  }
-
   return (
     <Drawer
       anchor="right"
       open={isOpen}
       onClose={onClose}
-      slotProps={{ paper: { sx: { width: "33vw" } } }}
+      slotProps={{
+        paper: {
+          role: "dialog",
+          "aria-modal": true,
+          "aria-labelledby": titleId,
+          sx: {
+            width: { xs: "100vw", sm: "33vw" },
+            display: "flex",
+            flexDirection: "column",
+            overflowX: "hidden",
+          },
+        },
+      }}
     >
       <Box
-        style={{
+        sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          gap: "1rem",
-          padding: "1rem",
-          borderBottom: "1px solid",
-          borderBottomColor: "divider",
+          gap: 2,
+          p: 2,
+          borderBottom: 1,
+          borderColor: "divider",
         }}
       >
-        <Typography variant="h6">{title}</Typography>
+        <Typography id={titleId} variant="h6">
+          {title}
+        </Typography>
         <IconButton size="small" onClick={onClose} aria-label="Fechar">
           <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "1rem" }}>
+      <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", p: 2 }}>
         {children}
-      </div>
+      </Box>
     </Drawer>
   );
 }

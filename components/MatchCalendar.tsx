@@ -8,6 +8,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { MatchBEResponse } from "@/types/match";
 import {
   formatMonth,
+  formatCalendarDay,
   formatTime,
   getCalendarDays,
   getLocalDateKey,
@@ -15,21 +16,12 @@ import {
   isSameMonth,
 } from "@/lib/date";
 import { getContrastText } from "@/lib/match";
+import { WEEK_DAYS } from "@/constants/competition";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
   onMatchClick: (match: MatchBEResponse) => void;
 };
-
-const WEEK_DAYS = [
-  "segunda",
-  "terça",
-  "quarta",
-  "quinta",
-  "sexta",
-  "sábado",
-  "domingo",
-];
 
 export default function MatchCalendar({
   data,
@@ -107,7 +99,13 @@ export default function MatchCalendar({
       </Stack>
 
       {/* CALENDAR */}
-      <Box sx={{ width: "100%" }}>
+      <Box
+        sx={(theme) => ({
+          width: "100%",
+          display: "block",
+          [theme.breakpoints.down("sm")]: { display: "none" },
+        })}
+      >
         {/* WEEK DAYS */}
         <Grid
           container
@@ -144,7 +142,7 @@ export default function MatchCalendar({
             return (
               <Grid
                 key={day.toISOString()}
-                size={{ xs: 12 / 7 }}
+                size={12 / 7}
                 sx={{
                   padding: 1,
                   minWidth: 0,
@@ -196,8 +194,6 @@ export default function MatchCalendar({
                         cursor: "pointer",
                         overflow: "hidden",
                         justifyItems: "center",
-
-                        "&:hover": { filter: "brightness(0.9)" },
                       }}
                     >
                       <Typography variant="body1" align="center">
@@ -225,6 +221,89 @@ export default function MatchCalendar({
           })}
         </Grid>
       </Box>
+
+      <Stack
+        spacing={1.5}
+        sx={(theme) => ({
+          display: "none",
+          p: 1,
+          [theme.breakpoints.down("sm")]: { display: "flex" },
+        })}
+      >
+        {calendarDays
+          .filter(
+            (day) => isSameMonth(day, currentDate) && getDayMatches(day).length,
+          )
+          .map((day) => (
+            <Box key={day.toISOString()}>
+              <Typography
+                variant="subtitle2"
+                color={isSameDay(day, todayDate) ? "primary" : "text.secondary"}
+                sx={{ mb: 0.75, textTransform: "capitalize" }}
+              >
+                {formatCalendarDay(day)}
+              </Typography>
+              <Stack spacing={0.75}>
+                {getDayMatches(day).map((match) => (
+                  <Box
+                    key={match.id}
+                    onClick={() => onMatchClick(match)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      p: 1,
+                      borderRadius: 1,
+                      bgcolor: match.competition?.color,
+                      color: getContrastText(match.competition?.color),
+                      cursor: "pointer",
+                      "&:hover": { filter: "brightness(0.9)" },
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ flex: 1, minWidth: 0 }}
+                      noWrap
+                    >
+                      {match.homeTeam?.name ?? "A definir"}
+                    </Typography>
+                    <Stack
+                      spacing={0}
+                      sx={{ flexShrink: 0, alignItems: "center" }}
+                    >
+                      <Typography
+                        variant="caption"
+                        sx={{ whiteSpace: "nowrap" }}
+                      >
+                        {formatTime(match.date)}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ whiteSpace: "nowrap" }}
+                      >
+                        {match.round}
+                      </Typography>
+                    </Stack>
+                    <Typography
+                      variant="body2"
+                      sx={{ flex: 1, minWidth: 0, textAlign: "right" }}
+                      noWrap
+                    >
+                      {match.awayTeam?.name ?? "A definir"}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+          ))}
+        {!calendarDays.some(
+          (day) => isSameMonth(day, currentDate) && getDayMatches(day).length,
+        ) && (
+          <Typography color="text.secondary" align="center" sx={{ py: 3 }}>
+            Não há jogos neste mês.
+          </Typography>
+        )}
+      </Stack>
     </Paper>
   );
 }

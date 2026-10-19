@@ -18,17 +18,7 @@ export default async function BackofficeLayout({
   return (
     <ModalProvider>
       <BackofficeNavbar isAdmin={isAdmin} />
-      <main
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "2rem",
-          gap: "2rem",
-          flex: 1,
-        }}
-      >
-        {children}
-      </main>
+      <main>{children}</main>
       <Footer />
     </ModalProvider>
   );

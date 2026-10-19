@@ -7,7 +7,7 @@ export default function Footer() {
       sx={{
         py: 2,
         px: 3,
-        borderTop: "3px solid",
+        borderTop: "0.25rem solid",
         borderColor: "divider",
         textAlign: "center",
         bgcolor: "background.paper",

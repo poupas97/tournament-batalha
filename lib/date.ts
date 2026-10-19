@@ -18,6 +18,12 @@ const monthFormatter = new Intl.DateTimeFormat("pt-PT", {
   year: "numeric",
 });
 
+const calendarDayFormatter = new Intl.DateTimeFormat("pt-PT", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+
 export function formatDateTime(date: Date | string | undefined) {
   if (!date) return undefined;
 
@@ -75,10 +81,7 @@ export function getCalendarDays(date: Date) {
 }
 
 export function isSameDay(first: Date, second: Date) {
-  return (
-    isSameMonth(first, second) &&
-    first.getDate() === second.getDate()
-  );
+  return isSameMonth(first, second) && first.getDate() === second.getDate();
 }
 
 export function isSameMonth(first: Date, second: Date) {
@@ -98,6 +101,10 @@ export function getLocalDateKey(date: Date) {
 
 export function formatMonth(date: Date) {
   return monthFormatter.format(date);
+}
+
+export function formatCalendarDay(date: Date) {
+  return calendarDayFormatter.format(date);
 }
 
 export function formatTime(date: Date | string) {
