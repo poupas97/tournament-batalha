@@ -7,7 +7,6 @@ export default function BackofficePage() {
         label="Backoffice"
         description="Aceda às áreas de gestão de competições, equipas, jogos e utilizadores"
       />
-      test 4
     </>
   );
 }
