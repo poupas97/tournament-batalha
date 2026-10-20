@@ -1,12 +1,13 @@
 "use client";
 
 import FormCheckbox from "@/components/FormCheckbox";
+import FormPhoto from "@/components/FormPhoto";
 import HintTooltip from "@/components/HintTooltip";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import _get from "lodash/get";
-import { FormEvent, useState, type ReactNode } from "react";
+import { type FormEvent, useState, type ReactNode } from "react";
 
 type FormInputType =
   | "text"
@@ -17,7 +18,7 @@ type FormInputType =
   | "datetime-local"
   | "color";
 
-type FormFieldType = FormInputType | "select" | "checkbox";
+type FormFieldType = FormInputType | "select" | "checkbox" | "photo";
 
 type FormField<T extends Record<string, unknown>> = {
   key: keyof T;
@@ -77,7 +78,9 @@ function formatDateInputValue(value: unknown) {
 }
 
 function getInputType(type: FormFieldType | undefined): FormInputType {
-  return type === "select" || type === "checkbox" ? "text" : (type ?? "text");
+  return type === "select" || type === "checkbox" || type === "photo"
+    ? "text"
+    : (type ?? "text");
 }
 
 export default function Form<T extends Record<string, unknown>>({
@@ -89,7 +92,7 @@ export default function Form<T extends Record<string, unknown>>({
 }: FormProps<T>) {
   const [values, setValues] = useState<T | undefined>(initialValues);
 
-  function handleChange(key: keyof T, value: string | boolean) {
+  function handleChange(key: keyof T, value: string | boolean | null) {
     setValues((current) => ({
       ...(current || ({} as T)),
       [key]: value as T[keyof T],
@@ -147,6 +150,12 @@ export default function Form<T extends Record<string, unknown>>({
                 name={String(field.key)}
                 checked={Boolean(_get(values, field.key))}
                 onChange={(checked) => handleChange(field.key, checked)}
+              />
+            ) : field.type === "photo" ? (
+              <FormPhoto
+                label={field.label}
+                value={String(_get(values, field.key) ?? "")}
+                onChange={(photo) => handleChange(field.key, photo)}
               />
             ) : (
               <FormInput

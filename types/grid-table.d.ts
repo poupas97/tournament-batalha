@@ -1,7 +1,7 @@
 export type GridTableColumn<T> = {
   key: string;
   header: string;
-  format?: "date" | "datetime" | "boolean" | "color";
+  format?: "date" | "datetime" | "boolean" | "color" | "photo";
   render?: (item: T) => React.ReactNode;
 };
 

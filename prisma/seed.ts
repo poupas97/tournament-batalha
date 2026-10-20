@@ -76,6 +76,19 @@ export const LAST_NAMES = [
   "Moreira",
 ];
 
+const TEAM_NAMES = [
+  "Amarense",
+  "Núcleo SCP Batalha",
+  "Rebolaria",
+  "Quinta do Sobrado",
+  "UDBatalha",
+  "São Mamede",
+  "Reguendo de Fetal",
+  "Santo Tirso",
+  "Vila Nova",
+  "Vila Meã",
+];
+
 async function main() {
   console.log("🌱 Seeding database...");
 
@@ -105,6 +118,14 @@ async function main() {
       qualified: 2,
       opponents: 3,
     },
+    {
+      name: "2026 Masters",
+      color: "#2da44e",
+      startDate: new Date(),
+      config: CompetitionConfig.LEAGUE,
+      qualified: 4,
+      opponents: 5,
+    },
   ];
 
   for (const competitionData of competitions) {
@@ -112,20 +133,7 @@ async function main() {
       data: competitionData,
     });
 
-    const teamNames = [
-      "Amarense",
-      "Núcleo",
-      "Rebolaria",
-      "Quinta do Sobrado",
-      "UDB",
-      "São Mamede",
-      "Reguendo de Fetal",
-      "Santo Tirso",
-      "Vila Nova",
-      "Vila Meã",
-    ];
-
-    for (const teamName of teamNames) {
+    for (const teamName of TEAM_NAMES) {
       const team = await prisma.team.create({
         data: {
           name: teamName,

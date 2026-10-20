@@ -17,6 +17,7 @@ export default function RankingScoresTable({
           data={rankingScores || []}
           columns={[
             { key: "position", header: "º" },
+            { key: "playerPhoto", header: "Foto", format: "photo" },
             { key: "playerName", header: "Nome" },
             { key: "teamName", header: "Equipa" },
             { key: "goals", header: "Golos" },

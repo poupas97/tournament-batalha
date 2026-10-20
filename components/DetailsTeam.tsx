@@ -42,6 +42,7 @@ export default function DetailsTeam({
         notChangeRoute
         title={`Jogadores (${team?.players.length || 0})`}
         columns={[
+          { key: "photo", header: "Foto", format: "photo" },
           { key: "name", header: "Nome" },
           { key: "number", header: "Nº" },
         ]}
@@ -53,7 +54,10 @@ export default function DetailsTeam({
         data={team?.staffs || []}
         notChangeRoute
         title={`Staffs (${team?.staffs.length || 0})`}
-        columns={[{ key: "name", header: "Nome" }]}
+        columns={[
+          { key: "photo", header: "Foto", format: "photo" },
+          { key: "name", header: "Nome" },
+        ]}
       />
     </>
   );

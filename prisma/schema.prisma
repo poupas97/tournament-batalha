@@ -35,6 +35,7 @@ model Player {
   id        Int      @id @default(autoincrement())
   name      String
   number    Int
+  photo     String?
   teamId    Int
   team      Team     @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())
@@ -45,6 +46,7 @@ model Player {
 model Staff {
   id        Int      @id @default(autoincrement())
   name      String
+  photo     String?
   teamId    Int
   team      Team     @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())

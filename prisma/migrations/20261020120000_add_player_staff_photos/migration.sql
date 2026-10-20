@@ -1,0 +1,2 @@
+ALTER TABLE "Player" ADD COLUMN "photo" TEXT;
+ALTER TABLE "Staff" ADD COLUMN "photo" TEXT;

@@ -8,6 +8,7 @@ export const rankingScoresQuery = async (
     SELECT
         p.id AS "playerId",
         p.name AS "playerName",
+        p.photo AS "playerPhoto",
         t.name AS "teamName",
         COUNT(*)::int AS goals,
         COUNT(DISTINCT me."matchId")::int AS matches,
@@ -27,6 +28,7 @@ export const rankingScoresQuery = async (
     GROUP BY
         p.id,
         p.name,
+        p.photo,
         t.name
     ORDER BY
         goals DESC,

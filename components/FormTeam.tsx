@@ -11,10 +11,7 @@ import {
 import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
 import { Button, Typography } from "@mui/material";
-import {
-  PLAYER_NUMBER_MAX,
-  PLAYER_NUMBER_MIN,
-} from "@/constants/validation";
+import { PLAYER_NUMBER_MAX, PLAYER_NUMBER_MIN } from "@/constants/validation";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
@@ -42,6 +39,7 @@ export default function FormTeam({
   function handleAddPlayer(values: IPlayerFormValues) {
     const name = values.name.trim();
     const number = Number(values.number);
+    const photo = values.photo;
 
     if (
       !name ||
@@ -53,7 +51,10 @@ export default function FormTeam({
       return;
     }
 
-    setPlayers((current) => [...current, { id: Date.now(), name, number }]);
+    setPlayers((current) => [
+      ...current,
+      { id: Date.now(), name, number, photo },
+    ]);
     closeModal();
   }
 
@@ -83,6 +84,7 @@ export default function FormTeam({
         <Form<IPlayerFormValues>
           initialValues={player}
           fields={[
+            { key: "photo", label: "Foto", type: "photo" },
             { key: "name", label: "Nome" },
             { key: "number", label: "Nº", type: "number" },
           ]}
@@ -95,13 +97,14 @@ export default function FormTeam({
 
   function handleAddStaff(values: IStaffFormValues) {
     const name = values.name.trim();
+    const photo = values.photo;
 
     if (!name) {
       alert("Por favor, preencha todos os campos do staff");
       return;
     }
 
-    setStaffs((current) => [...current, { id: Date.now(), name }]);
+    setStaffs((current) => [...current, { id: Date.now(), name, photo }]);
     closeModal();
   }
 
@@ -130,7 +133,10 @@ export default function FormTeam({
       content: (
         <Form<IStaffFormValues>
           initialValues={staff}
-          fields={[{ key: "name", label: "Nome" }]}
+          fields={[
+            { key: "photo", label: "Foto", type: "photo" },
+            { key: "name", label: "Nome" },
+          ]}
           onSubmit={staff ? handleEditStaff : handleAddStaff}
           vertical
         />
@@ -168,6 +174,7 @@ export default function FormTeam({
       <DataTable
         data={players}
         columns={[
+          { key: "photo", header: "Foto", format: "photo" },
           { key: "name", header: "Nome" },
           { key: "number", header: "Nº" },
           {
@@ -201,6 +208,7 @@ export default function FormTeam({
       <DataTable
         data={staffs}
         columns={[
+          { key: "photo", header: "Foto", format: "photo" },
           { key: "name", header: "Nome" },
           {
             key: "actions",

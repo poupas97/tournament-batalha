@@ -5,12 +5,14 @@ import { MatchBEResponse } from "./match";
 export type IStaffFormValues = {
   id: number;
   name: string;
+  photo?: string | null;
 };
 
 export type IPlayerFormValues = {
   id: number;
   name: string;
   number: number;
+  photo?: string | null;
 };
 
 export type ITeamFormValues = {

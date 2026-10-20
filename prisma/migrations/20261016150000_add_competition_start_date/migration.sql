@@ -1,5 +1,5 @@
 ALTER TABLE "Competition"
-ADD COLUMN "startDate" DATE;
+ADD COLUMN "startDate" TIMESTAMP(3);
 
 UPDATE "Competition"
 SET "startDate" = "createdAt"::date;

@@ -1,11 +1,16 @@
 import ColorSwatch from "@/components/ColorSwatch";
+import PhotoAvatar from "@/components/PhotoAvatar";
 import { formatDate, formatDateTime } from "@/lib/date";
 
 export function formattedValue<T>(
   value: unknown,
-  format?: "date" | "datetime" | "boolean" | "json" | "color",
+  format?: "date" | "datetime" | "boolean" | "json" | "color" | "photo",
 ) {
   switch (format) {
+    case "photo": {
+      return <PhotoAvatar photo={typeof value === "string" ? value : null} alt="Foto" size={32} />;
+    }
+
     case "color":
       return typeof value === "string" ? <ColorSwatch color={value} /> : "";
 

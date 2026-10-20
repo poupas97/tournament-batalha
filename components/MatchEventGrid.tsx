@@ -1,6 +1,7 @@
 "use client";
 
 import { MatchBEResponse } from "@/types/match";
+import PhotoAvatar from "@/components/PhotoAvatar";
 import { Box, Grid, Typography } from "@mui/material";
 
 type MatchEventGridProps = {
@@ -28,9 +29,19 @@ export default function MatchEventGrid({
               backgroundColor: "lightblue",
               borderRadius: 1,
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
             }}
           >
-            {it.number} - {it.name}
+            <PhotoAvatar
+              photo={it.photo}
+              alt={`Foto de ${it.name}`}
+              size={50}
+            />
+            <span>
+              {it.number} - {it.name}
+            </span>
           </Grid>
         ))}
 
@@ -44,9 +55,17 @@ export default function MatchEventGrid({
               backgroundColor: "lightgreen",
               borderRadius: 1,
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
             }}
           >
-            {it.name}
+            <PhotoAvatar
+              photo={it.photo}
+              alt={`Foto de ${it.name}`}
+              size={50}
+            />
+            <span>{it.name}</span>
           </Grid>
         ))}
       </Grid>

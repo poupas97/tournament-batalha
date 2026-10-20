@@ -48,7 +48,9 @@ docker-compose up -d --build
 npm run prisma:generate
 ```
 
-4. Criar e aplicar migrações (cria as tabelas no Postgres)
+4. Para permitir fotos de jogadores e staff, configure um bucket Neon Object Storage com acesso `public_read` e credenciais com permissões `storage:write`. Defina `STORAGE_ENDPOINT_URL_S3`, `STORAGE_REGION`, `STORAGE_ACCESS_KEY_ID`, `STORAGE_SECRET_ACCESS_KEY` e `STORAGE_BUCKET` no ambiente do servidor. O endpoint é o endpoint S3 da branch Neon; nunca exponha as credenciais no cliente.
+
+5. Criar e aplicar migrações (cria as tabelas no Postgres)
 
 ```bash
 npm run prisma:migrate
