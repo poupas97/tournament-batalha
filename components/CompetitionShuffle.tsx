@@ -25,6 +25,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
+import TeamIdentity from "@/components/TeamIdentity";
 
 export default function CompetitionShuffle({
   competition,
@@ -132,39 +133,51 @@ function MatchCard({
             {formatDateTime(match.date)}
           </Typography>
         </Box>
-
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1,
+            gap: 2,
             mt: 2,
             mb: 2,
             flex: 1,
           }}
         >
-          <Typography
-            variant="body1"
-            sx={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              justifyContent: "center",
+            }}
           >
-            {match.homeTeam?.name ?? match.homePlaceholder ?? "-"}
-          </Typography>
+            <TeamIdentity
+              team={match.homeTeam}
+              placeholder={match.homePlaceholder}
+             
+              vertical
+            />
+          </Box>
 
           <Typography variant="body1" sx={{ flexShrink: 0 }}>
             {showScore ? `${homeGoals} - ${awayGoals}` : "vs"}
           </Typography>
 
-          <Typography
-            variant="body1"
+          <Box
             sx={{
               flex: 1,
               minWidth: 0,
-              textAlign: "right",
-              overflowWrap: "anywhere",
+              display: "flex",
+              justifyContent: "center",
             }}
           >
-            {match.awayTeam?.name ?? match.awayPlaceholder ?? "-"}
-          </Typography>
+            <TeamIdentity
+              team={match.awayTeam}
+              placeholder={match.awayPlaceholder}
+             
+              vertical
+            />
+          </Box>
         </Box>
 
         <Typography variant="body1" align="center" sx={{ color: statusColor }}>
@@ -235,7 +248,7 @@ function LeagueTable({
                         : `/teams/${team.team.id}`
                     }
                   >
-                    {team.team.name}
+                    <TeamIdentity team={team.team} />
                   </Link>
                 </TableCell>
                 <TableCell sx={{ textAlign: "center" }}>

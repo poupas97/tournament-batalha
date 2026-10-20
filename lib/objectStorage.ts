@@ -20,7 +20,7 @@ function encodePath(value: string) {
   return value.split("/").map(encodeURIComponent).join("/");
 }
 
-export async function storePersonPhoto(
+export async function uploadPhoto(
   key: string,
   bytesBase64: string,
 ): Promise<string> {
@@ -38,7 +38,7 @@ export async function storePersonPhoto(
   return `${url.origin}${url.pathname}`;
 }
 
-export async function deletePersonPhoto(key: string) {
+export async function deletePhoto(key: string) {
   await sendObjectStorageRequest("DELETE", key);
 }
 

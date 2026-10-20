@@ -2,12 +2,14 @@ import HintTooltip from "@/components/HintTooltip";
 import _get from "lodash/get";
 import { Grid, Typography } from "@mui/material";
 import { formattedValue } from "@/lib/formattedValue";
+import type { ReactNode } from "react";
 
 type DetailField<T extends Record<string, unknown>> = {
   key: string;
   label: string;
   hint?: string | ((data: T) => string);
-  format?: "date" | "datetime" | "boolean" | "json" | "color";
+  format?: "date" | "datetime" | "boolean" | "json" | "color" | "photo";
+  render?: (data: T) => ReactNode;
 };
 
 type DetailProps<T extends Record<string, unknown>> = {
@@ -55,9 +57,13 @@ export default function Detail<T extends Record<string, unknown>>({
               {hint && <HintTooltip label={it.label} hint={hint} />}
             </Typography>
 
-            <Typography variant="body1">
-              {formattedValue(value, it.format)}
-            </Typography>
+            {it.render ? (
+              it.render(data)
+            ) : (
+              <Typography variant="body1">
+                {formattedValue(value, it.format)}
+              </Typography>
+            )}
           </Grid>
         );
       })}

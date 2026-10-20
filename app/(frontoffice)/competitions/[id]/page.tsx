@@ -18,6 +18,7 @@ import {
   CompetitionStatsBEResponse,
 } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
+import TeamIdentity from "@/components/TeamIdentity";
 import { Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 
@@ -105,7 +106,11 @@ export default function ViewCompetitionPage() {
                 notChangeRoute
                 title={`Equipas (${competitionData?.teams.length || 0})`}
                 columns={[
-                  { key: "name", header: "Nome" },
+                  {
+                    key: "name",
+                    header: "Equipa",
+                    render: (team) => <TeamIdentity team={team} />,
+                  },
                   { key: "_count.players", header: "Jogadores" },
                   { key: "_count.staffs", header: "Staffs" },
                 ]}

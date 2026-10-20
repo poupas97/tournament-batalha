@@ -57,8 +57,8 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
         <img
           src={preview}
           alt={`Pré-visualização: ${label}`}
-          width={150}
-          height={150}
+          width={100}
+          height={100}
           style={{ objectFit: "cover", borderRadius: "50%" }}
         />
       ) : (
@@ -66,8 +66,8 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
           role="img"
           aria-label={`Sem foto: ${label}`}
           sx={{
-            width: 150,
-            height: 150,
+            width: 100,
+            height: 100,
             bgcolor: "action.hover",
             color: "text.secondary",
           }}
@@ -79,8 +79,8 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
         spacing={1}
         sx={{ flex: 1, alignItems: "center", justifyContent: "center" }}
       >
-        <Button component="label" variant="outlined" fullWidth>
-          {preview ? "Alterar" : "Adicionar (opcional)"}
+        <Button component="label" variant="outlined">
+          {preview ? "Alterar" : "Adicionar"}
           <input
             hidden
             type="file"
@@ -92,7 +92,6 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
           <Button
             type="button"
             color="error"
-            fullWidth
             onClick={() => {
               setPreview(null);
               onChange(null);

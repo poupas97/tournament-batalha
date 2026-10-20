@@ -4,7 +4,9 @@ import { MAX_NAME_LENGTH } from "@/constants/validation";
 import { CompetitionStatus } from "@/generated/prisma";
 import { sanitizeText } from "@/lib/sanitize";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
-import { deletePersonPhoto, uploadPersonPhoto } from "@/lib/personPhotoService";
+import { isValidPhotoValue } from "@/lib/photo";
+import { getRandomSuffix } from "@/lib/random";
+import { deletePhoto, uploadPhoto } from "@/lib/objectStorage";
 import { RouteContext } from "@/types/api";
 import {
   getParamId,
@@ -62,6 +64,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const name = sanitizeText(body?.name);
   const players = sanitizePlayers(body?.players);
   const staffs = sanitizeStaffs(body?.staffs);
+  const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
@@ -73,6 +76,10 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (staffs === null) {
     return invalidParam("Staffs");
+  }
+
+  if (!isValidPhotoValue(photo)) {
+    return invalidParam("Photo");
   }
 
   const existing = await prisma.team.findUnique({
@@ -132,15 +139,12 @@ export async function PUT(request: Request, context: RouteContext) {
               });
 
           if (player.photo && !isPhotoUrl(player.photo)) {
-            const uploaded = await uploadPersonPhoto(
-              "player",
-              saved.id,
-              player.photo,
-              (key) => uploadedKeys.push(key),
-            );
+            const key = `player/${saved.id}/${getRandomSuffix()}`;
+            uploadedKeys.push(key);
+            const savedPhoto = await uploadPhoto(key, player.photo);
             saved = await tx.player.update({
               where: { id: saved.id },
-              data: { photo: uploaded.url },
+              data: { photo: savedPhoto },
             });
           }
 
@@ -171,16 +175,13 @@ export async function PUT(request: Request, context: RouteContext) {
               });
 
           if (staff.photo && !isPhotoUrl(staff.photo)) {
-            const uploaded = await uploadPersonPhoto(
-              "staff",
-              saved.id,
-              staff.photo,
-              (key) => uploadedKeys.push(key),
-            );
+            const key = `staff/${saved.id}/${getRandomSuffix()}`;
+            uploadedKeys.push(key);
+            const savedPhoto = await uploadPhoto(key, staff.photo);
 
             saved = await tx.staff.update({
               where: { id: saved.id },
-              data: { photo: uploaded.url },
+              data: { photo: savedPhoto },
             });
           }
 
@@ -198,21 +199,34 @@ export async function PUT(request: Request, context: RouteContext) {
 
         const updatedTeam = await tx.team.update({
           where: { id: teamId },
-          data: { name },
+          data: { name, photo: isPhotoUrl(photo) ? photo : null },
           include: {
             players: { orderBy: { createdAt: "asc" } },
             staffs: { orderBy: { createdAt: "asc" } },
           },
         });
 
-        return updatedTeam;
+        if (!photo || isPhotoUrl(photo)) return updatedTeam;
+
+        const key = `team/${updatedTeam.id}/${getRandomSuffix()}`;
+        uploadedKeys.push(key);
+        const savedPhoto = await uploadPhoto(key, photo);
+
+        return tx.team.update({
+          where: { id: teamId },
+          data: { photo: savedPhoto },
+          include: {
+            players: { orderBy: { createdAt: "asc" } },
+            staffs: { orderBy: { createdAt: "asc" } },
+          },
+        });
       },
       { timeout: 60_000 },
     );
 
     return updatedResponse(teamUpdated);
   } catch {
-    await Promise.allSettled(uploadedKeys.map(deletePersonPhoto));
+    await Promise.allSettled(uploadedKeys.map(deletePhoto));
 
     return NextResponse.json(
       { error: "Não foi possível atualizar a equipa e guardar as fotos" },

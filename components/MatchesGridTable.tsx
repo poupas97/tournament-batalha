@@ -1,5 +1,6 @@
 import GridTable from "@/components/GridTable";
 import { MatchBEResponse } from "@/types/match";
+import TeamIdentity from "@/components/TeamIdentity";
 
 interface MatchesGridTableProps {
   data: MatchBEResponse[] | undefined;
@@ -27,8 +28,16 @@ export default function MatchesGridTable({
       columns={[
         { key: "competition.name", header: "Competição" },
         { key: "round", header: "Ronda" },
-        { key: "homeTeam.name", header: "Equipa da Casa" },
-        { key: "awayTeam.name", header: "Equipa Visitante" },
+        {
+          key: "homeTeam.name",
+          header: "Equipa da Casa",
+          render: (match) => <TeamIdentity team={match.homeTeam} />,
+        },
+        {
+          key: "awayTeam.name",
+          header: "Equipa Visitante",
+          render: (match) => <TeamIdentity team={match.awayTeam} />,
+        },
         { key: "date", header: "Data", format: "datetime" },
       ]}
     />

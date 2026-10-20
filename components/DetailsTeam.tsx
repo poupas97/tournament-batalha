@@ -21,6 +21,7 @@ export default function DetailsTeam({
         error={error}
         data={team}
         fields={[
+          { key: "photo", label: "Logo", format: "photo" },
           { key: "name", label: "Nome" },
           { key: "competition.name", label: "Competição" },
         ]}

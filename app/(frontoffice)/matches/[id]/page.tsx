@@ -24,7 +24,8 @@ import {
 } from "@/types/socket";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import PhotoAvatar from "@/components/PhotoAvatar";
 import MatchEventsTable from "@/components/MatchEventsTable";
 import { getMatchScore } from "@/lib/match";
 
@@ -133,9 +134,81 @@ export default function ViewMatchPage() {
       />
 
       {data?.homeTeam?.name && data?.awayTeam?.name && (
-        <Typography variant="h5" align="center">
-          {`${data.homeTeam.name} ${homeGoals} - ${awayGoals} ${data.awayTeam.name}`}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            width: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row-reverse" },
+              alignItems: "center",
+              justifyContent: { xs: "center", sm: "flex-end" },
+              gap: 1,
+            }}
+          >
+            <PhotoAvatar
+              photo={data.homeTeam.photo}
+              alt={`Logo de ${data.homeTeam.name}`}
+              size={48}
+              variant="rounded"
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                flex: { xs: "0 0 auto", sm: 1 },
+                minWidth: 0,
+                width: { xs: "100%", sm: "auto" },
+                textAlign: { xs: "center", sm: "right" },
+                overflowWrap: "anywhere",
+              }}
+            >
+              {data.homeTeam.name}
+            </Typography>
+          </Box>
+          <Box sx={{ flexShrink: 0 }}>
+            <Typography variant="h5">
+              {homeGoals} - {awayGoals}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "center",
+              justifyContent: { xs: "center", sm: "flex-start" },
+              gap: 1,
+            }}
+          >
+            <PhotoAvatar
+              photo={data.awayTeam.photo}
+              alt={`Logo de ${data.awayTeam.name}`}
+              size={48}
+              variant="rounded"
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                flex: { xs: "0 0 auto", sm: 1 },
+                minWidth: 0,
+                width: { xs: "100%", sm: "auto" },
+                textAlign: { xs: "center", sm: "left" },
+                overflowWrap: "anywhere",
+              }}
+            >
+              {data.awayTeam.name}
+            </Typography>
+          </Box>
+        </Box>
       )}
 
       <MatchEventsTable data={data} />

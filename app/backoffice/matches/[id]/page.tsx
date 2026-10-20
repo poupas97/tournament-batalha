@@ -24,6 +24,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import MatchEventsTable from "@/components/MatchEventsTable";
+import PhotoAvatar from "@/components/PhotoAvatar";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -223,9 +224,79 @@ export default function ViewMatchPage() {
       />
 
       {data?.homeTeam?.name && data?.awayTeam?.name && (
-        <Typography variant="h5" align="center">
-          {`${data.homeTeam.name} ${homeGoals} - ${awayGoals} ${data.awayTeam.name}`}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            width: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "row-reverse",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 1,
+            }}
+          >
+            <PhotoAvatar
+              photo={data.homeTeam.photo}
+              alt={`Logo de ${data.homeTeam.name}`}
+              size={48}
+              variant="rounded"
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                textAlign: "right",
+                overflowWrap: "anywhere",
+              }}
+            >
+              {data.homeTeam.name}
+            </Typography>
+          </Box>
+          <Box sx={{ flexShrink: 0 }}>
+            <Typography variant="h5">
+              {homeGoals} - {awayGoals}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: 1,
+            }}
+          >
+            <PhotoAvatar
+              photo={data.awayTeam.photo}
+              alt={`Logo de ${data.awayTeam.name}`}
+              size={48}
+              variant="rounded"
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                textAlign: "left",
+                overflowWrap: "anywhere",
+              }}
+            >
+              {data.awayTeam.name}
+            </Typography>
+          </Box>
+        </Box>
       )}
 
       <Typography variant="h6">Mudar o estado do jogo</Typography>
@@ -268,9 +339,7 @@ export default function ViewMatchPage() {
       <MatchEventsTable
         data={data}
         onRemoveMatchEvent={
-          data && !isMatchFinished(data.status)
-            ? onRemoveMatchEvent
-            : undefined
+          data && !isMatchFinished(data.status) ? onRemoveMatchEvent : undefined
         }
       />
     </>

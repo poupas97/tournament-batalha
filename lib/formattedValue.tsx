@@ -8,7 +8,13 @@ export function formattedValue<T>(
 ) {
   switch (format) {
     case "photo": {
-      return <PhotoAvatar photo={typeof value === "string" ? value : null} alt="Foto" size={32} />;
+      return (
+        <PhotoAvatar
+          photo={typeof value === "string" ? value : null}
+          alt="Foto"
+          size={32}
+        />
+      );
     }
 
     case "color":

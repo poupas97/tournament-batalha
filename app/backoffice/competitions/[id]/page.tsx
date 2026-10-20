@@ -18,6 +18,7 @@ import {
   ICompetitionFormValues,
 } from "@/types/competition";
 import { Button } from "@mui/material";
+import TeamIdentity from "@/components/TeamIdentity";
 import { useParams } from "next/navigation";
 
 export default function ViewCompetitionPage() {
@@ -171,7 +172,11 @@ export default function ViewCompetitionPage() {
         notChangeRoute
         title={`Equipas (${data?.teams.length || 0})`}
         columns={[
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Equipa",
+            render: (team) => <TeamIdentity team={team} />,
+          },
           { key: "_count.players", header: "Jogadores" },
           { key: "_count.staffs", header: "Staffs" },
         ]}

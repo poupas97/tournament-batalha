@@ -18,6 +18,7 @@ import {
 import { getContrastText } from "@/lib/match";
 import { WEEK_DAYS } from "@/constants/competition";
 import Link from "next/link";
+import TeamIdentity from "@/components/TeamIdentity";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
@@ -195,15 +196,21 @@ export default function MatchCalendar({ data, href }: MatchCalendarProps) {
                         textDecoration: "auto",
                       }}
                     >
-                      <Typography variant="body1" align="center">
-                        {match.homeTeam?.name ?? "A definir"}
-                      </Typography>
+                      <TeamIdentity
+                        team={match.homeTeam}
+                        placeholder="A definir"
+                        size="small"
+                        vertical
+                      />
 
                       <Typography variant="body2">vs</Typography>
 
-                      <Typography variant="body1" align="center">
-                        {match.awayTeam?.name ?? "A definir"}
-                      </Typography>
+                      <TeamIdentity
+                        team={match.awayTeam}
+                        placeholder="A definir"
+                        size="small"
+                        vertical
+                      />
 
                       <Typography variant="body2" sx={{ mt: 2 }}>
                         {match.round}
@@ -259,13 +266,14 @@ export default function MatchCalendar({ data, href }: MatchCalendarProps) {
                       textDecoration: "auto",
                     }}
                   >
-                    <Typography
-                      variant="body2"
-                      sx={{ flex: 1, minWidth: 0 }}
-                      noWrap
-                    >
-                      {match.homeTeam?.name ?? "A definir"}
-                    </Typography>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <TeamIdentity
+                        team={match.homeTeam}
+                        placeholder="A definir"
+                        size="small"
+                        vertical
+                      />
+                    </Box>
                     <Stack
                       spacing={0}
                       sx={{ flexShrink: 0, alignItems: "center" }}
@@ -283,13 +291,14 @@ export default function MatchCalendar({ data, href }: MatchCalendarProps) {
                         {match.round}
                       </Typography>
                     </Stack>
-                    <Typography
-                      variant="body2"
-                      sx={{ flex: 1, minWidth: 0, textAlign: "right" }}
-                      noWrap
-                    >
-                      {match.awayTeam?.name ?? "A definir"}
-                    </Typography>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <TeamIdentity
+                        team={match.awayTeam}
+                        placeholder="A definir"
+                        size="small"
+                        vertical
+                      />
+                    </Box>
                   </Box>
                 ))}
               </Stack>

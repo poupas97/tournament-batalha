@@ -72,6 +72,7 @@ type CompetitionStatsBEResponse = {
         playerPhoto: string | null;
         goals: number;
         teamName: string;
+        teamPhoto: string | null;
         matches: number;
       }[]
     | undefined;

@@ -3,19 +3,11 @@
 import GridTable from "@/components/GridTable";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-
-type TeamSummary = {
-  id: number;
-  name: string;
-  createdAt: string;
-  _count: {
-    players: number;
-    staffs: number;
-  };
-};
+import TeamIdentity from "@/components/TeamIdentity";
+import { TeamBEResponse } from "@/types/team";
 
 export default function TeamsPage() {
-  const { data, loading, error } = useGetState<TeamSummary[]>("/api/teams");
+  const { data, loading, error } = useGetState<TeamBEResponse[]>("/api/teams");
 
   return (
     <>
@@ -27,7 +19,11 @@ export default function TeamsPage() {
         data={data}
         href={(it) => `/teams/${it.id}`}
         columns={[
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Equipa",
+            render: (team) => <TeamIdentity team={team} />,
+          },
           { key: "competition.name", header: "Competição" },
           { key: "_count.players", header: "Jogadores" },
           { key: "_count.staffs", header: "Staffs" },

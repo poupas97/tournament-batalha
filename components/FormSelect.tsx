@@ -1,6 +1,7 @@
 "use client";
 
 import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 
 type FormSelectProps = {
   name: string;
@@ -23,14 +24,13 @@ export default function FormSelect({
       onChange={(event) => onChange(event.target.value)}
       fullWidth
       size="small"
-      slotProps={{ select: { native: true } }}
     >
-      <option value="">Selecione...</option>
+      <MenuItem value="">Selecione...</MenuItem>
 
       {options.map((option) => (
-        <option key={option.value} value={option.value}>
+        <MenuItem key={option.value} value={option.value}>
           {option.label}
-        </option>
+        </MenuItem>
       ))}
     </TextField>
   );

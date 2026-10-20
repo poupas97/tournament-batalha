@@ -4,7 +4,9 @@ import { MAX_NAME_LENGTH } from "@/constants/validation";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { CompetitionStatus } from "@/generated/prisma";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
-import { deletePersonPhoto, uploadPersonPhoto } from "@/lib/personPhotoService";
+import { isValidPhotoValue } from "@/lib/photo";
+import { getRandomSuffix } from "@/lib/random";
+import { deletePhoto, uploadPhoto } from "@/lib/objectStorage";
 import {
   createdResponse,
   getResponse,
@@ -43,6 +45,7 @@ export async function POST(request: Request) {
   const competitionId = sanitizeNumber(body?.competitionId);
   const players = sanitizePlayers(body?.players);
   const staffs = sanitizeStaffs(body?.staffs);
+  const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
@@ -58,6 +61,10 @@ export async function POST(request: Request) {
 
   if (staffs === null) {
     return invalidParam("Staffs");
+  }
+
+  if (!isValidPhotoValue(photo)) {
+    return invalidParam("Photo");
   }
 
   const competition = await prisma.competition.findUnique({
@@ -81,6 +88,7 @@ export async function POST(request: Request) {
         const createdTeam = await tx.team.create({
           data: {
             name,
+            photo: isPhotoUrl(photo) ? photo : null,
             competitionId,
             players: players?.length
               ? {
@@ -106,6 +114,18 @@ export async function POST(request: Request) {
           },
         });
 
+        let savedTeamPhoto = createdTeam.photo;
+        if (photo && !isPhotoUrl(photo)) {
+          const key = `team/${createdTeam.id}/${getRandomSuffix()}`;
+          uploadedKeys.push(key);
+          const savedPhoto = await uploadPhoto(key, photo);
+          await tx.team.update({
+            where: { id: createdTeam.id },
+            data: { photo: savedPhoto },
+          });
+          savedTeamPhoto = savedPhoto;
+        }
+
         const savedPlayers = [];
 
         for (const [index, player] of createdTeam.players.entries()) {
@@ -116,17 +136,14 @@ export async function POST(request: Request) {
             continue;
           }
 
-          const uploaded = await uploadPersonPhoto(
-            "player",
-            player.id,
-            photo,
-            (key) => uploadedKeys.push(key),
-          );
+          const key = `player/${player.id}/${getRandomSuffix()}`;
+          uploadedKeys.push(key);
+          const savedPhoto = await uploadPhoto(key, photo);
 
           savedPlayers.push(
             await tx.player.update({
               where: { id: player.id },
-              data: { photo: uploaded.url },
+              data: { photo: savedPhoto },
             }),
           );
         }
@@ -140,29 +157,31 @@ export async function POST(request: Request) {
             continue;
           }
 
-          const uploaded = await uploadPersonPhoto(
-            "staff",
-            staff.id,
-            photo,
-            (key) => uploadedKeys.push(key),
-          );
+          const key = `staff/${staff.id}/${getRandomSuffix()}`;
+          uploadedKeys.push(key);
+          const savedPhoto = await uploadPhoto(key, photo);
 
           savedStaffs.push(
             await tx.staff.update({
               where: { id: staff.id },
-              data: { photo: uploaded.url },
+              data: { photo: savedPhoto },
             }),
           );
         }
 
-        return { ...createdTeam, players: savedPlayers, staffs: savedStaffs };
+        return {
+          ...createdTeam,
+          photo: savedTeamPhoto,
+          players: savedPlayers,
+          staffs: savedStaffs,
+        };
       },
       { timeout: 60_000 },
     );
 
     return createdResponse(team);
   } catch {
-    await Promise.allSettled(uploadedKeys.map(deletePersonPhoto));
+    await Promise.allSettled(uploadedKeys.map(deletePhoto));
 
     return NextResponse.json(
       { error: "Não foi possível criar a equipa e guardar as fotos" },

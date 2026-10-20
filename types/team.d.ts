@@ -17,6 +17,7 @@ export type IPlayerFormValues = {
 
 export type ITeamFormValues = {
   name: string;
+  photo?: string | null;
   players: IPlayerFormValues[];
   staffs: IStaffFormValues[];
   competitionId: Competition["id"];
@@ -25,10 +26,15 @@ export type ITeamFormValues = {
 export type TeamBEResponse = {
   id: number;
   name: string;
+  photo?: string | null;
   players: Player[];
   staffs: Staff[];
   competitionId: Competition["id"];
   competition: CompetitionBEResponse;
   awayMatches?: MatchBEResponse[];
   homeMatches?: MatchBEResponse[];
+  _count?: {
+    players: number;
+    staffs: number;
+  };
 };

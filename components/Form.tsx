@@ -113,7 +113,11 @@ export default function Form<T extends Record<string, unknown>>({
     <Stack component="form" onSubmit={handleSubmit} spacing={4}>
       <Grid container spacing={2}>
         {fields.map((field) => (
-          <Grid size={vertical ? 12 : 2} key={String(field.key)} spacing={0.75}>
+          <Grid
+            key={String(field.key)}
+            spacing={1}
+            size={vertical ? 12 : field.type === "photo" ? 4 : 2}
+          >
             <Typography
               component="span"
               variant="body2"

@@ -1,8 +1,10 @@
 "use client";
 
 import { MatchBEResponse } from "@/types/match";
-import PhotoAvatar from "@/components/PhotoAvatar";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import TeamIdentity from "@/components/TeamIdentity";
+import PlayerIdentity from "@/components/PlayerIdentity";
+import StaffIdentity from "@/components/StaffIdentity";
 
 type MatchEventGridProps = {
   team: MatchBEResponse["homeTeam"] | MatchBEResponse["awayTeam"];
@@ -17,11 +19,11 @@ export default function MatchEventGrid({
 }: MatchEventGridProps) {
   return (
     <Box sx={{ flex: 1 }}>
-      <Typography variant="h6">Elementos equipa: {team?.name}</Typography>
+      <TeamIdentity team={team} size="large" />
       <Grid container spacing={1}>
         {team?.players.map((it) => (
           <Grid
-            size={4}
+            size={{ xs: 12, sm: 6 }}
             key={it.id}
             onClick={addPlayerMatchEvent(it.id, team.id)}
             sx={{
@@ -31,23 +33,17 @@ export default function MatchEventGrid({
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: 2,
+              gap: 1,
+              minWidth: 0,
             }}
           >
-            <PhotoAvatar
-              photo={it.photo}
-              alt={`Foto de ${it.name}`}
-              size={50}
-            />
-            <span>
-              {it.number} - {it.name}
-            </span>
+            <PlayerIdentity player={it} size="large" />
           </Grid>
         ))}
 
         {team?.staffs.map((it) => (
           <Grid
-            size={4}
+            size={{ xs: 12, sm: 6 }}
             key={it.id}
             onClick={addStaffMatchEvent(it.id, team.id)}
             sx={{
@@ -57,15 +53,11 @@ export default function MatchEventGrid({
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: 2,
+              gap: 1,
+              minWidth: 0,
             }}
           >
-            <PhotoAvatar
-              photo={it.photo}
-              alt={`Foto de ${it.name}`}
-              size={50}
-            />
-            <span>{it.name}</span>
+            <StaffIdentity staff={it} size="large" />
           </Grid>
         ))}
       </Grid>

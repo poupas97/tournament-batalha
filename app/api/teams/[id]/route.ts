@@ -15,15 +15,15 @@ export async function GET(request: Request, context: RouteContext) {
       awayMatches: {
         include: {
           competition: { select: { name: true } },
-          awayTeam: { select: { name: true } },
-          homeTeam: { select: { name: true } },
+          awayTeam: { select: { name: true, photo: true } },
+          homeTeam: { select: { name: true, photo: true } },
         },
       },
       homeMatches: {
         include: {
           competition: { select: { name: true } },
-          awayTeam: { select: { name: true } },
-          homeTeam: { select: { name: true } },
+          awayTeam: { select: { name: true, photo: true } },
+          homeTeam: { select: { name: true, photo: true } },
         },
       },
       players: {

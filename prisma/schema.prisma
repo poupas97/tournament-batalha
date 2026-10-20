@@ -20,6 +20,7 @@ model User {
 model Team {
   id            Int      @id @default(autoincrement())
   name          String
+  photo         String?
   createdAt     DateTime @default(now())
   players       Player[]
   staffs        Staff[]

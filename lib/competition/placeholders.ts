@@ -73,8 +73,8 @@ function createKnockoutPlaceholders(
         const previousMatch = index * 2 + 1;
 
         return {
-          home: `Venc ${previousStage} ${previousMatch}`,
-          away: `Venc ${previousStage} ${previousMatch + 1}`,
+          home: `Vencedor ${previousStage} ${previousMatch}`,
+          away: `Vencedor ${previousStage} ${previousMatch + 1}`,
         };
       }),
     );
@@ -122,6 +122,6 @@ function createGroupQualificationSources(
 
 function createLeagueQualificationSources(qualified: number) {
   return (KNOCKOUT_BRACKET_SEEDS[qualified] ?? []).map(
-    (seed) => `${seed}.º class`,
+    (seed) => `${seed}.º classificado`,
   );
 }

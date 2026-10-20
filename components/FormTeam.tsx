@@ -12,6 +12,8 @@ import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
 import { Button, Typography } from "@mui/material";
 import { PLAYER_NUMBER_MAX, PLAYER_NUMBER_MIN } from "@/constants/validation";
+import PlayerIdentity from "@/components/PlayerIdentity";
+import StaffIdentity from "@/components/StaffIdentity";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
@@ -148,6 +150,7 @@ export default function FormTeam({
     <Form<ITeamFormValues>
       initialValues={initialValues}
       fields={[
+        { key: "photo", label: "Logo", type: "photo" },
         { key: "name", label: "Nome" },
         {
           key: "competitionId",
@@ -174,8 +177,11 @@ export default function FormTeam({
       <DataTable
         data={players}
         columns={[
-          { key: "photo", header: "Foto", format: "photo" },
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Jogador",
+            render: (it) => <PlayerIdentity player={it} />,
+          },
           { key: "number", header: "Nº" },
           {
             key: "actions",
@@ -208,8 +214,11 @@ export default function FormTeam({
       <DataTable
         data={staffs}
         columns={[
-          { key: "photo", header: "Foto", format: "photo" },
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Staff",
+            render: (it) => <StaffIdentity staff={it} />,
+          },
           {
             key: "actions",
             header: "Ações",
