@@ -23,7 +23,7 @@ export default function ViewTeamPage() {
         edit={`/backoffice/teams/${teamId}/edit`}
       />
 
-      <DetailsTeam team={data} loading={loading} error={error} />
+      <DetailsTeam team={data} loading={loading} error={error} isBackoffice />
     </>
   );
 }

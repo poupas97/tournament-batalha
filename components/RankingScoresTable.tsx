@@ -18,20 +18,33 @@ export default function RankingScoresTable({
       <Paper>
         <DataTable
           data={rankingScores || []}
+          href={(it) => `/players/${it.playerId}`}
           columns={[
             { key: "position", header: "º" },
             {
               key: "playerName",
               header: "Jogador",
               render: (it) => (
-                <PlayerIdentity player={it as unknown as Player} />
+                <PlayerIdentity
+                  //TODO: add numer on query
+                  player={{ id: it.playerId, name: it.playerName, number: 0 }}
+                />
               ),
             },
             {
               key: "teamName",
               header: "Equipa",
               render: (it) => (
-                <TeamIdentity team={it as unknown as Team} />
+                <TeamIdentity
+                  //TODO: add id on query
+                  team={
+                    {
+                      id: 0,
+                      name: it.teamName,
+                      photo: it.playerPhoto,
+                    } as unknown as Team
+                  }
+                />
               ),
             },
             { key: "goals", header: "Golos" },

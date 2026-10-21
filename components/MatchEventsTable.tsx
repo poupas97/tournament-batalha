@@ -5,6 +5,7 @@ import { MatchEventBEResponse } from "@/types/match-event";
 import PhotoAvatar from "@/components/PhotoAvatar";
 import PlayerIdentity from "@/components/PlayerIdentity";
 import StaffIdentity from "@/components/StaffIdentity";
+import Link from "next/link";
 import {
   Box,
   Button,
@@ -20,11 +21,13 @@ import {
 type MatchEventsTableProps = {
   data: MatchBEResponse | undefined;
   onRemoveMatchEvent?: (matchEvent: MatchEventBEResponse) => void;
+  isBackoffice?: boolean;
 };
 
 export default function MatchEventsTable({
   data,
   onRemoveMatchEvent,
+  isBackoffice,
 }: MatchEventsTableProps) {
   return (
     <>
@@ -59,11 +62,12 @@ export default function MatchEventsTable({
                   <TableCell width="30%">
                     {isHomeEvent ? (
                       it.player ? (
-                        <PlayerIdentity
-                          player={it.player}
-                         
-                          imageAtEnd
-                        />
+                        <Link
+                          href={`${isBackoffice ? "/backoffice" : ""}/players/${it.player.id}`}
+                          style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                          <PlayerIdentity player={it.player} imageAtEnd />
+                        </Link>
                       ) : it.staff ? (
                         <StaffIdentity staff={it.staff} imageAtEnd />
                       ) : null
@@ -77,7 +81,12 @@ export default function MatchEventsTable({
                   <TableCell width="30%" align="right">
                     {!isHomeEvent ? (
                       it.player ? (
-                        <PlayerIdentity player={it.player} />
+                        <Link
+                          href={`${isBackoffice ? "/backoffice" : ""}/players/${it.player.id}`}
+                          style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                          <PlayerIdentity player={it.player} />
+                        </Link>
                       ) : it.staff ? (
                         <StaffIdentity staff={it.staff} />
                       ) : null

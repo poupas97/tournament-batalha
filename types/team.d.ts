@@ -1,4 +1,10 @@
-import { Competition, Player, Staff } from "@/generated/prisma";
+import {
+  Competition,
+  MatchEvent,
+  Player,
+  Staff,
+  Team,
+} from "@/generated/prisma";
 import { CompetitionBEResponse } from "./competition";
 import { MatchBEResponse } from "./match";
 
@@ -13,6 +19,13 @@ export type IPlayerFormValues = {
   name: string;
   number: number;
   photo?: string | null;
+};
+
+export type IPlayerEditValues = {
+  name: string;
+  number: number;
+  photo?: string | null;
+  teamId: number;
 };
 
 export type ITeamFormValues = {
@@ -37,4 +50,20 @@ export type TeamBEResponse = {
     players: number;
     staffs: number;
   };
+};
+
+export type PlayerEventBEResponse = MatchEvent & {
+  match: {
+    id: number;
+    date: string;
+    round: string;
+    competition: Pick<Competition, "name">;
+    homeTeam: Pick<Team, "name"> | null;
+    awayTeam: Pick<Team, "name"> | null;
+  };
+};
+
+export type PlayerBEResponse = Player & {
+  team: Team & { competition: Competition };
+  events: PlayerEventBEResponse[];
 };

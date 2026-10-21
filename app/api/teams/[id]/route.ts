@@ -27,10 +27,10 @@ export async function GET(request: Request, context: RouteContext) {
         },
       },
       players: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { name: "asc" },
       },
       staffs: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { name: "asc" },
       },
       _count: {
         select: { players: true, staffs: true },

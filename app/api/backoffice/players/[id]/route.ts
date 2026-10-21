@@ -1,8 +1,6 @@
 import prisma from "@/lib/prisma";
-import {
-  MAX_NAME_LENGTH,
-  PLAYER_NUMBER_MAX,
-} from "@/constants/validation";
+import { NextResponse } from "next/server";
+import { MAX_NAME_LENGTH, PLAYER_NUMBER_MAX } from "@/constants/validation";
 import {
   deletedResponse,
   getParamId,
@@ -16,6 +14,9 @@ import {
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { CompetitionStatus } from "@/generated/prisma";
 import { RouteContext } from "@/types/api";
+import { isPhotoUrl, isValidPhotoValue } from "@/lib/photo";
+import { getRandomSuffix } from "@/lib/random";
+import { deletePhoto, uploadPhoto } from "@/lib/objectStorage";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -30,7 +31,21 @@ export async function GET(request: Request, context: RouteContext) {
 
   const player = await prisma.player.findUnique({
     where: { id: playerId },
-    include: { team: true },
+    include: {
+      team: { include: { competition: true } },
+      events: {
+        orderBy: { minute: "asc" },
+        include: {
+          match: {
+            include: {
+              competition: { select: { name: true } },
+              homeTeam: { select: { name: true } },
+              awayTeam: { select: { name: true } },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!player) {
@@ -55,6 +70,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const name = sanitizeText(body?.name);
   const number = sanitizeNumber(body?.number);
   const teamId = sanitizeNumber(body?.teamId);
+  const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
@@ -66,6 +82,10 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (!teamId) {
     return invalidParam("Team");
+  }
+
+  if (!isValidPhotoValue(photo)) {
+    return invalidParam("Photo");
   }
 
   const [player, team] = await Promise.all([
@@ -97,22 +117,30 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("CompetitionStatus");
   }
 
-  const existing = await prisma.player.findUnique({
-    where: { id: playerId },
-    select: { id: true },
-  });
+  const uploadedKeys: string[] = [];
+  try {
+    let savedPhoto = photo;
+    if (photo && !isPhotoUrl(photo)) {
+      const key = `player/${playerId}/${getRandomSuffix()}`;
+      uploadedKeys.push(key);
+      savedPhoto = await uploadPhoto(key, photo);
+    }
 
-  if (!existing) {
-    return noFound("Player");
+    const updatedPlayer = await prisma.player.update({
+      where: { id: playerId },
+      data: { name, number, teamId, photo: savedPhoto },
+      include: { team: { include: { competition: true } } },
+    });
+
+    return updatedResponse(updatedPlayer);
+  } catch {
+    await Promise.allSettled(uploadedKeys.map(deletePhoto));
+
+    return NextResponse.json(
+      { error: "Não foi possível atualizar o jogador e guardar a foto" },
+      { status: 502 },
+    );
   }
-
-  const updatedPlayer = await prisma.player.update({
-    where: { id: playerId },
-    data: { name, number, teamId },
-    include: { team: true },
-  });
-
-  return updatedResponse(updatedPlayer);
 }
 
 export async function DELETE(request: Request, context: RouteContext) {

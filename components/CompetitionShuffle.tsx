@@ -154,7 +154,6 @@ function MatchCard({
             <TeamIdentity
               team={match.homeTeam}
               placeholder={match.homePlaceholder}
-             
               vertical
             />
           </Box>
@@ -174,7 +173,6 @@ function MatchCard({
             <TeamIdentity
               team={match.awayTeam}
               placeholder={match.awayPlaceholder}
-             
               vertical
             />
           </Box>

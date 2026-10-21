@@ -34,10 +34,10 @@ export async function GET(request: Request, context: RouteContext) {
     include: {
       competition: true,
       players: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { name: "asc" },
       },
       staffs: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { name: "asc" },
       },
     },
   });

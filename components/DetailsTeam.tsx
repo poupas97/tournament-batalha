@@ -7,12 +7,14 @@ type DetailsTeamProps = {
   loading: boolean;
   error: string | undefined;
   team: TeamBEResponse | undefined;
+  isBackoffice?: boolean;
 };
 
 export default function DetailsTeam({
   loading,
   error,
   team,
+  isBackoffice,
 }: DetailsTeamProps) {
   return (
     <>
@@ -40,6 +42,7 @@ export default function DetailsTeam({
         loading={loading}
         error={error}
         data={team?.players || []}
+        href={(it) => `${isBackoffice ? "/backoffice" : ""}/players/${it.id}`}
         notChangeRoute
         title={`Jogadores (${team?.players.length || 0})`}
         columns={[

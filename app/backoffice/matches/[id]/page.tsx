@@ -341,6 +341,7 @@ export default function ViewMatchPage() {
         onRemoveMatchEvent={
           data && !isMatchFinished(data.status) ? onRemoveMatchEvent : undefined
         }
+        isBackoffice
       />
     </>
   );
