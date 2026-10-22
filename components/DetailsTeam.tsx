@@ -2,6 +2,8 @@ import Detail from "@/components/Detail";
 import { TeamBEResponse } from "@/types/team";
 import GridTable from "./GridTable";
 import MatchesGridTable from "./MatchesGridTable";
+import PlayerIdentity from "./PlayerIdentity";
+import StaffIdentity from "./StaffIdentity";
 
 type DetailsTeamProps = {
   loading: boolean;
@@ -46,8 +48,11 @@ export default function DetailsTeam({
         notChangeRoute
         title={`Jogadores (${team?.players.length || 0})`}
         columns={[
-          { key: "photo", header: "Foto", format: "photo" },
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Nome",
+            render: (it) => <PlayerIdentity player={it} showNumber={false} />,
+          },
           { key: "number", header: "Nº" },
         ]}
       />
@@ -59,8 +64,11 @@ export default function DetailsTeam({
         notChangeRoute
         title={`Staffs (${team?.staffs.length || 0})`}
         columns={[
-          { key: "photo", header: "Foto", format: "photo" },
-          { key: "name", header: "Nome" },
+          {
+            key: "name",
+            header: "Nome",
+            render: (it) => <StaffIdentity staff={it} />,
+          },
         ]}
       />
     </>

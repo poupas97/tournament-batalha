@@ -14,6 +14,20 @@ export function sanitizeName(value: unknown) {
   return name.length > 0 && name.length <= MAX_NAME_LENGTH ? name : undefined;
 }
 
+export function normalizeEmail(value: unknown, maxLength: number) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const email = value.trim().toLowerCase();
+
+  if (email.length > maxLength || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return undefined;
+  }
+
+  return email;
+}
+
 export function sanitizeColor(value: unknown) {
   return typeof value === "string" && /^#[\da-fA-F]{6}$/.test(value)
     ? value.toLowerCase()

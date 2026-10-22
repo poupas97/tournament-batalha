@@ -12,7 +12,7 @@ export function formattedValue<T>(
         <PhotoAvatar
           photo={typeof value === "string" ? value : null}
           alt="Foto"
-          size={32}
+          size="medium"
         />
       );
     }

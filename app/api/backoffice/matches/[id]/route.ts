@@ -141,17 +141,34 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Competition");
   }
 
-  if (homeTeamId && awayTeamId) {
-    if (homeTeamId === awayTeamId) {
-      return invalidParam("Teams");
-    }
+  const targetCompetition = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { id: true },
+  });
 
+  if (!targetCompetition) {
+    return invalidParam("Competition");
+  }
+
+  const assignedTeamIds = [
+    homeTeamId ?? existing.homeTeamId,
+    awayTeamId ?? existing.awayTeamId,
+  ].filter((teamId): teamId is number => teamId !== null);
+
+  if (
+    assignedTeamIds.length === 2 &&
+    assignedTeamIds[0] === assignedTeamIds[1]
+  ) {
+    return invalidParam("Teams");
+  }
+
+  if (assignedTeamIds.length > 0) {
     const teams = await prisma.team.findMany({
-      where: { id: { in: [homeTeamId, awayTeamId] }, competitionId },
+      where: { id: { in: assignedTeamIds }, competitionId },
       select: { id: true },
     });
 
-    if (teams.length !== 2) {
+    if (teams.length !== assignedTeamIds.length) {
       return invalidParam("Teams");
     }
   }

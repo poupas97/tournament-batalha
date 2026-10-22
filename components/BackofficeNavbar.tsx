@@ -11,6 +11,7 @@ const navItems = [
   { href: "/backoffice/competitions", label: "Competições" },
   { href: "/backoffice/teams", label: "Equipas" },
   { href: "/backoffice/matches", label: "Jogos" },
+  { href: "/backoffice/help", label: "Ajuda" },
   { href: "/backoffice/users", label: "Utilizadores", adminOnly: true },
   { href: "/backoffice/audit-log", label: "Auditoria", adminOnly: true },
 ];

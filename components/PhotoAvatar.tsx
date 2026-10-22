@@ -5,37 +5,36 @@ import { getPhotoPreviewSource } from "@/lib/photo";
 type PhotoAvatarProps = {
   photo: string | null | undefined;
   alt: string;
-  size: number;
-  variant?: "circular" | "rounded";
+  size?: "small" | "medium" | "large";
 };
+
+const sizes = {
+  small: 24,
+  medium: 32,
+  large: 48,
+} as const;
 
 export default function PhotoAvatar({
   photo,
   alt,
-  size,
-  variant = "circular",
+  size = "medium",
 }: PhotoAvatarProps) {
   const src = getPhotoPreviewSource(photo);
+  const dimension = sizes[size];
 
   return (
     <Avatar
       src={src ?? undefined}
       alt={alt}
-      variant={variant}
+      variant="circular"
       sx={{
-        width: size,
-        height: size,
+        width: dimension,
+        height: dimension,
         bgcolor: "action.hover",
         color: "text.secondary",
-        ...(variant === "rounded" && {
-          "& .MuiAvatar-img": {
-            objectFit: "contain",
-            bgcolor: "white",
-          },
-        }),
       }}
     >
-      <ImageIcon sx={{ fontSize: size * 0.6 }} />
+      <ImageIcon sx={{ fontSize: dimension * 0.6 }} />
     </Avatar>
   );
 }

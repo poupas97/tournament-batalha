@@ -1,12 +1,12 @@
 import prisma from "@/lib/prisma";
-import {
-  MAX_EMAIL_LENGTH,
-  MAX_NAME_LENGTH,
-} from "@/constants/validation";
+import { MAX_EMAIL_LENGTH } from "@/constants/validation";
 import { PASSWORD_HASH_ROUNDS } from "@/constants/auth";
-import { sanitizeText } from "@/lib/sanitize";
+import { normalizeEmail, sanitizeName } from "@/lib/sanitize";
+import { isValidPassword } from "@/lib/authValidation";
+import { isUniqueConstraintError } from "@/lib/prismaErrors";
 import bcrypt from "bcryptjs";
 import {
+  conflict,
   createdResponse,
   getResponse,
   invalidParam,
@@ -41,21 +41,51 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = sanitizeText(body?.name);
-  const email = sanitizeText(body?.email);
-  const password = await bcrypt.hash(body?.password, PASSWORD_HASH_ROUNDS);
+  const name = sanitizeName(body?.name);
+  const email = normalizeEmail(body?.email, MAX_EMAIL_LENGTH);
+  const rawPassword: unknown = body?.password;
 
-  if (!name || name.length > MAX_NAME_LENGTH) {
+  if (!name) {
     return invalidParam("Name");
   }
 
-  if (!email || email.length > MAX_EMAIL_LENGTH) {
+  if (!email) {
     return invalidParam("Email");
   }
 
-  const user = await prisma.user.create({
-    data: { name, email, password },
+  if (!isValidPassword(rawPassword)) {
+    return invalidParam("Password");
+  }
+
+  const emailInUse = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
   });
 
-  return createdResponse(user);
+  if (emailInUse) {
+    return conflict("Email");
+  }
+
+  const password = await bcrypt.hash(rawPassword, PASSWORD_HASH_ROUNDS);
+
+  try {
+    const user = await prisma.user.create({
+      data: { name, email, password },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    return createdResponse(user);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return conflict("Email");
+    }
+
+    throw error;
+  }
 }

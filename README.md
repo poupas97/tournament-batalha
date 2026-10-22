@@ -12,19 +12,22 @@ Pré-requisitos
 Arquivos relevantes
 
 - `docker-compose.yml` — define um serviço Postgres local
-- `.env` — contém `DATABASE_URL` usado pelo Prisma
+- `.env.local` — contém `DATABASE_URL` usado localmente pelo Prisma
+- `.env.prd` — ficheiro que o `prisma.config.ts` carrega quando `NODE_ENV=production`
 - `prisma/schema.prisma` — modelo de dados
 - `prisma.config.ts` — configura o datasource (usa `DATABASE_URL`)
 - `prisma/seed.ts` — script para popular dados iniciais
 
 Configuração e execução (passo a passo)
 
-1. Copie/edite o `.env` (já existe com valor padrão para Docker):
+1. Crie ou edite `.env.local` na raiz do projeto para a configuração local:
 
 ```bash
-# .env (exemplo)
+# .env.local
 DATABASE_URL=postgresql://prisma:prisma@localhost:5432/app_gestao?schema=public
 ```
+
+O `prisma.config.ts` carrega `.env.local` quando `NODE_ENV` não é `production` e `.env.prd` quando `NODE_ENV=production`. Em produção, configure também as variáveis de ambiente da aplicação na plataforma onde esta é executada.
 
 2. Inicie o Postgres com Docker Compose
 
@@ -77,8 +80,7 @@ Conectar no DBeaver
 
 Observações importantes
 
-- Eu removi o `dev.db` (SQLite) e atualizei o `prisma/schema.prisma` para `provider = "postgresql"` e `prisma.config.ts` para ler `DATABASE_URL`.
-- Se preferir voltar a SQLite (teste rápido), substitua `provider` por `sqlite` e a `datasource.url` por `file:./dev.db` no `prisma.config.ts`, depois rode `npm run prisma:migrate`.
+- A configuração atual usa PostgreSQL (`provider = "postgresql"`) e o adaptador PostgreSQL em `lib/prisma.ts`. O ficheiro `dev.db` que está no repositório é um artefacto antigo de SQLite e não é usado por esta configuração.
 
 Comandos úteis
 
@@ -100,7 +102,7 @@ Problemas comuns
 
 - `docker`/`docker compose` não encontrado: instale o Docker Desktop.
 - Porta 5432 ocupada: ajuste `docker-compose.yml` ou pare o serviço que usa a porta.
-- `prisma migrate` reclama do `DATABASE_URL`: confirme `.env` e reinicie o terminal (ou rode `export DATABASE_URL=...`).
+- `prisma migrate` reclama do `DATABASE_URL`: confirme `.env.local` (ou `.env.prd` se `NODE_ENV=production`) e reinicie o terminal; também pode definir `DATABASE_URL` no ambiente do processo.
 
 Próximos passos opcionais
 

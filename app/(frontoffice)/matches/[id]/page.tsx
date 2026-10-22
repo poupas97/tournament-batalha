@@ -157,8 +157,7 @@ export default function ViewMatchPage() {
             <PhotoAvatar
               photo={data.homeTeam.photo}
               alt={`Logo de ${data.homeTeam.name}`}
-              size={48}
-              variant="rounded"
+              size="large"
             />
             <Typography
               variant="h6"
@@ -192,8 +191,7 @@ export default function ViewMatchPage() {
             <PhotoAvatar
               photo={data.awayTeam.photo}
               alt={`Logo de ${data.awayTeam.name}`}
-              size={48}
-              variant="rounded"
+              size="large"
             />
             <Typography
               variant="h6"

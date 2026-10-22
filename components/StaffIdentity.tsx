@@ -25,8 +25,7 @@ export default function StaffIdentity({
       <PhotoAvatar
         photo={staff.photo}
         alt={`Foto de ${staff.name}`}
-        size={{ small: 24, medium: 32, large: 40 }[size]}
-        variant="rounded"
+        size={size}
       />
       <Typography
         variant="body2"

@@ -6,11 +6,13 @@ import { Stack, Typography } from "@mui/material";
 export default function PlayerIdentity({
   player,
   size = "medium",
-  imageAtEnd = false,
+  imageAtEnd,
+  showNumber,
 }: {
   player: Player | IPlayerFormValues | undefined;
   size?: "small" | "medium" | "large";
   imageAtEnd?: boolean;
+  showNumber?: boolean;
 }) {
   if (!player?.name) {
     return <Typography variant="body2"> - </Typography>;
@@ -25,8 +27,7 @@ export default function PlayerIdentity({
       <PhotoAvatar
         photo={player.photo}
         alt={`Foto de ${player.name}`}
-        size={{ small: 24, medium: 32, large: 40 }[size]}
-        variant="rounded"
+        size={size}
       />
       <Typography
         variant="body2"
@@ -35,8 +36,8 @@ export default function PlayerIdentity({
         sx={{ minWidth: 0, textAlign: "left" }}
       >
         {imageAtEnd
-          ? `${player.name} - ${player.number}`
-          : `${player.number} - ${player.name}`}
+          ? `${player.name}${showNumber ? ` - ${player.number}` : ""}`
+          : `${showNumber ? `${player.number} - ` : ""}${player.name}`}
       </Typography>
     </Stack>
   );

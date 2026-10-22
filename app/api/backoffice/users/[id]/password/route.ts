@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { PASSWORD_HASH_ROUNDS } from "@/constants/auth";
+import { isValidPassword } from "@/lib/authValidation";
 import bcrypt from "bcryptjs";
 import { RouteContext } from "@/types/api";
 import {
@@ -27,7 +28,12 @@ export async function PUT(request: Request, context: RouteContext) {
   const password = body?.password;
   const confirm = body?.confirm;
 
-  if (!actual || !password || !confirm || password !== confirm) {
+  if (
+    typeof actual !== "string" ||
+    !isValidPassword(password) ||
+    typeof confirm !== "string" ||
+    password !== confirm
+  ) {
     return invalidParam("Password");
   }
 

@@ -1,12 +1,11 @@
 import prisma from "@/lib/prisma";
 import { MINIMUM_ADMIN_COUNT } from "@/constants/auth";
-import {
-  MAX_EMAIL_LENGTH,
-  MAX_NAME_LENGTH,
-} from "@/constants/validation";
-import { sanitizeEnum, sanitizeText } from "@/lib/sanitize";
+import { MAX_EMAIL_LENGTH } from "@/constants/validation";
+import { sanitizeEnum, sanitizeName, normalizeEmail } from "@/lib/sanitize";
+import { isUniqueConstraintError } from "@/lib/prismaErrors";
 import { RouteContext } from "@/types/api";
 import {
+  conflict,
   deletedResponse,
   getParamId,
   getResponse,
@@ -59,15 +58,15 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const body = await request.json().catch(() => null);
-  const name = sanitizeText(body?.name);
-  const email = sanitizeText(body?.email);
+  const name = sanitizeName(body?.name);
+  const email = normalizeEmail(body?.email, MAX_EMAIL_LENGTH);
   const role = sanitizeEnum(body?.role, UserRole);
 
-  if (!name || name.length > MAX_NAME_LENGTH) {
+  if (!name) {
     return invalidParam("Name");
   }
 
-  if (!email || email.length > MAX_EMAIL_LENGTH) {
+  if (!email) {
     return invalidParam("Email");
   }
 
@@ -75,38 +74,54 @@ export async function PUT(request: Request, context: RouteContext) {
     return invalidParam("Role");
   }
 
-  const updatedUser = await prisma.$transaction(async (tx) => {
-    const existing = await tx.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true },
-    });
+  let updatedUser: {
+    id: number;
+    name: string;
+    email: string;
+    role: UserRole;
+    createdAt: Date;
+  } | null;
 
-    if (!existing) {
-      return null;
-    }
-
-    if (existing.role === UserRole.ADMIN && role !== UserRole.ADMIN) {
-      const adminCount = await tx.user.count({
-        where: { role: UserRole.ADMIN },
+  try {
+    updatedUser = await prisma.$transaction(async (tx) => {
+      const existing = await tx.user.findUnique({
+        where: { id: userId },
+        select: { id: true, role: true },
       });
 
-      if (adminCount <= MINIMUM_ADMIN_COUNT) {
+      if (!existing) {
         return null;
       }
+
+      if (existing.role === UserRole.ADMIN && role !== UserRole.ADMIN) {
+        const adminCount = await tx.user.count({
+          where: { role: UserRole.ADMIN },
+        });
+
+        if (adminCount <= MINIMUM_ADMIN_COUNT) {
+          return null;
+        }
+      }
+
+      return tx.user.update({
+        where: { id: userId },
+        data: { name, email, role },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+    });
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return conflict("Email");
     }
 
-    return tx.user.update({
-      where: { id: userId },
-      data: { name, email, role },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-  });
+    throw error;
+  }
 
   if (!updatedUser) {
     if (
