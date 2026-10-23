@@ -19,7 +19,7 @@ export default function Home() {
         </Typography>
       )}
 
-      <MatchCalendar data={data} href={(it) => `/matches/${it.id}`} />
+      <MatchCalendar data={data} />
     </>
   );
 }

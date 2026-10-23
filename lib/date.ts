@@ -13,15 +13,21 @@ const timeFormatter = new Intl.DateTimeFormat("pt-PT", {
   minute: "2-digit",
 });
 
-const monthFormatter = new Intl.DateTimeFormat("pt-PT", {
-  month: "long",
-  year: "numeric",
+const weekDayAndDateFormatter = new Intl.DateTimeFormat("pt-PT", {
+  weekday: "short",
+  day: "numeric",
 });
 
-const calendarDayFormatter = new Intl.DateTimeFormat("pt-PT", {
-  weekday: "long",
+const dayNumberFormatter = new Intl.DateTimeFormat("pt-PT", {
   day: "numeric",
-  month: "long",
+});
+
+const shortMonthFormatter = new Intl.DateTimeFormat("pt-PT", {
+  month: "short",
+});
+
+const yearFormatter = new Intl.DateTimeFormat("pt-PT", {
+  year: "numeric",
 });
 
 export function formatDateTime(date: Date | string | undefined) {
@@ -36,58 +42,24 @@ export function formatDate(date: Date | string | undefined) {
   return dateFormatter.format(new Date(date));
 }
 
-export function startOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
+export function getWeekDays(date: Date) {
+  const start = new Date(date);
+  const day = start.getDay();
+  start.setDate(start.getDate() + (day === 0 ? -6 : 1 - day));
+  start.setHours(0, 0, 0, 0);
 
-function endOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-}
-
-function startOfCalendar(date: Date) {
-  const monthStart = startOfMonth(date);
-  const day = monthStart.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  const result = new Date(monthStart);
-
-  result.setDate(monthStart.getDate() + diff);
-
-  return result;
-}
-
-function endOfCalendar(date: Date) {
-  const monthEnd = endOfMonth(date);
-  const day = monthEnd.getDay();
-  const diff = day === 0 ? 0 : 7 - day;
-  const result = new Date(monthEnd);
-
-  result.setDate(monthEnd.getDate() + diff);
-
-  return result;
-}
-
-export function getCalendarDays(date: Date) {
-  const start = startOfCalendar(date);
-  const end = endOfCalendar(date);
-  const days: Date[] = [];
-  const current = new Date(start);
-
-  while (current <= end) {
-    days.push(new Date(current));
-    current.setDate(current.getDate() + 1);
-  }
-
-  return days;
+  return Array.from({ length: 7 }, (_, index) => {
+    const current = new Date(start);
+    current.setDate(start.getDate() + index);
+    return current;
+  });
 }
 
 export function isSameDay(first: Date, second: Date) {
-  return isSameMonth(first, second) && first.getDate() === second.getDate();
-}
-
-export function isSameMonth(first: Date, second: Date) {
   return (
     first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth()
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
   );
 }
 
@@ -99,12 +71,27 @@ export function getLocalDateKey(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export function formatMonth(date: Date) {
-  return monthFormatter.format(date);
+export function formatWeekRange(first: Date, last: Date) {
+  const firstDay = dayNumberFormatter.format(first);
+  const lastDay = dayNumberFormatter.format(last);
+  const firstMonth = shortMonthFormatter.format(first);
+  const lastMonth = shortMonthFormatter.format(last);
+  const year = yearFormatter.format(last);
+  const firstYear = yearFormatter.format(first);
+
+  if (first.getMonth() === last.getMonth()) {
+    return `${firstDay}–${lastDay} ${lastMonth} ${year}`;
+  }
+
+  if (firstYear !== year) {
+    return `${firstDay} ${firstMonth} ${firstYear} – ${lastDay} ${lastMonth} ${year}`;
+  }
+
+  return `${firstDay} ${firstMonth} – ${lastDay} ${lastMonth} ${year}`;
 }
 
-export function formatCalendarDay(date: Date) {
-  return calendarDayFormatter.format(date);
+export function formatWeekDayAndDate(date: Date) {
+  return weekDayAndDateFormatter.format(date);
 }
 
 export function formatTime(date: Date | string) {

@@ -15,7 +15,18 @@ export default function TeamIdentity({
   vertical?: boolean;
 }) {
   if (!team?.name) {
-    return <Typography variant="body2">{placeholder || " - "}</Typography>;
+    return (
+      <Typography
+        variant="body2"
+        sx={{
+          minWidth: 0,
+          textAlign: vertical ? "center" : "left",
+          overflowWrap: "anywhere",
+        }}
+      >
+        {placeholder || " - "}
+      </Typography>
+    );
   }
 
   return (
@@ -36,6 +47,7 @@ export default function TeamIdentity({
       <Typography
         variant="body2"
         color="inherit"
+        noWrap
         sx={{
           minWidth: 0,
           textAlign: vertical ? "center" : "left",
