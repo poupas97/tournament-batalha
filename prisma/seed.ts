@@ -1,6 +1,17 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, CompetitionConfig } from "../generated/prisma";
 
+const productionSeedConfirmation = "I_UNDERSTAND_THIS_WILL_DELETE_DATA";
+
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.CONFIRM_PRODUCTION_SEED !== productionSeedConfirmation
+) {
+  throw new Error(
+    `Production seed blocked because it deletes existing data. To continue, set CONFIRM_PRODUCTION_SEED=${productionSeedConfirmation}.`,
+  );
+}
+
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {

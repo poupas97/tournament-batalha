@@ -66,7 +66,11 @@ export default function MatchEventsTable({
                           href={`${isBackoffice ? "/backoffice" : ""}/players/${it.player.id}`}
                           style={{ color: "inherit", textDecoration: "none" }}
                         >
-                          <PlayerIdentity player={it.player} imageAtEnd />
+                          <PlayerIdentity
+                            player={it.player}
+                            imageAtEnd
+                            showNumber
+                          />
                         </Link>
                       ) : it.staff ? (
                         <StaffIdentity staff={it.staff} imageAtEnd />
@@ -85,7 +89,7 @@ export default function MatchEventsTable({
                           href={`${isBackoffice ? "/backoffice" : ""}/players/${it.player.id}`}
                           style={{ color: "inherit", textDecoration: "none" }}
                         >
-                          <PlayerIdentity player={it.player} />
+                          <PlayerIdentity player={it.player} showNumber />
                         </Link>
                       ) : it.staff ? (
                         <StaffIdentity staff={it.staff} />

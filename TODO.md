@@ -8,8 +8,5 @@
 2. nao marcar jogos todos seguidos
    - como há varias competicoes, ou podem haver, os jogos evitam de ser marcados todos seguidos, tentar com que haja um certo balanceamento entre jogos da mesma competicao, e entre competicoes
 
-3. **Proteger o seed contra execução acidental em produção.**
-   `prisma/seed.ts` apaga jogos, eventos, jogadores, staff, equipas e competições, e existe um comando `db:seed:prd` que o executa em produção. Exigir uma proteção explícita antes de permitir essa limpeza.
-
-4. **Completar o registo de auditoria.**
+3. **Completar o registo de auditoria.**
    Atualmente há auditoria em algumas alterações de jogos, mas não nas alterações de equipas, jogadores, competições, utilizadores e eventos; registar as operações para que o histórico administrativo seja completo.

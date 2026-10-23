@@ -69,6 +69,14 @@ npm run dev
 
 A aplicação estará em `http://localhost:3000`.
 
+Seed em produção
+
+O seed de produção apaga os jogos, eventos, jogadores, staff, equipas e competições existentes antes de inserir os dados de exemplo. Por segurança, `npm run db:seed:prd` é bloqueado por predefinição. Só o execute depois de confirmar que pretende substituir esses dados:
+
+```bash
+CONFIRM_PRODUCTION_SEED=I_UNDERSTAND_THIS_WILL_DELETE_DATA npm run db:seed:prd
+```
+
 Conectar no DBeaver
 
 - Tipo de base: PostgreSQL

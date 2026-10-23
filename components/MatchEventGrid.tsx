@@ -1,8 +1,7 @@
 "use client";
 
 import { MatchBEResponse } from "@/types/match";
-import { Box, Grid } from "@mui/material";
-import TeamIdentity from "@/components/TeamIdentity";
+import { Box, Grid, Typography } from "@mui/material";
 import PlayerIdentity from "@/components/PlayerIdentity";
 import StaffIdentity from "@/components/StaffIdentity";
 
@@ -18,13 +17,14 @@ export default function MatchEventGrid({
   addStaffMatchEvent,
 }: MatchEventGridProps) {
   return (
-    <Box sx={{ flex: 1 }}>
-      <TeamIdentity team={team} size="large" />
+    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+      <Typography variant="h6">Elementos equipa: {team?.name}</Typography>
+
       <Grid container spacing={1}>
         {team?.players.map((it) => (
           <Grid
-            size={{ xs: 12, sm: 6 }}
-            key={it.id}
+            key={`player-${it.id}`}
+            size={4}
             onClick={addPlayerMatchEvent(it.id, team.id)}
             sx={{
               p: 1,
@@ -37,14 +37,14 @@ export default function MatchEventGrid({
               minWidth: 0,
             }}
           >
-            <PlayerIdentity player={it} size="large" />
+            <PlayerIdentity player={it} size="large" showNumber />
           </Grid>
         ))}
 
         {team?.staffs.map((it) => (
           <Grid
-            size={{ xs: 12, sm: 6 }}
-            key={it.id}
+            key={`staff-${it.id}`}
+            size={4}
             onClick={addStaffMatchEvent(it.id, team.id)}
             sx={{
               p: 1,

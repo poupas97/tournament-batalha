@@ -27,9 +27,13 @@ import TeamIdentity from "@/components/TeamIdentity";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
+  isBackoffice?: boolean;
 };
 
-export default function MatchCalendar({ data }: MatchCalendarProps) {
+export default function MatchCalendar({
+  data,
+  isBackoffice,
+}: MatchCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const todayDate = new Date();
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -143,7 +147,7 @@ export default function MatchCalendar({ data }: MatchCalendarProps) {
                       <Box
                         key={it.id}
                         component={Link}
-                        href={`/match/${it.id}`}
+                        href={`${isBackoffice ? "/backoffice" : ""}/matches/${it.id}`}
                         sx={{
                           display: "block",
                           p: 1,
@@ -219,7 +223,7 @@ export default function MatchCalendar({ data }: MatchCalendarProps) {
                     <Box
                       key={it.id}
                       component={Link}
-                      href={`/match/${it.id}`}
+                      href={`${isBackoffice ? "/backoffice" : ""}/matches/${it.id}`}
                       sx={{
                         display: "flex",
                         alignItems: "center",
