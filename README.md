@@ -69,6 +69,12 @@ npm run dev
 
 A aplicação estará em `http://localhost:3000`.
 
+Potes das equipas
+
+Antes de sortear uma competição, atribua a cada equipa um pote no formulário da equipa. O valor tem de ser um número inteiro positivo: use `1` para as equipas mais fortes e números seguintes para os restantes níveis. Equipas no mesmo pote são distribuídas por grupos diferentes de forma equilibrada. No formato `LEAGUE`, os potes são intercalados na ordem usada para gerar os emparelhamentos e ajudam a espaçar equipas do mesmo nível; não alteram o conjunto de adversários. Se cada equipa tiver de defrontar todas as outras, isso continua a acontecer.
+
+O pote pode ser alterado enquanto a competição estiver em `DRAFT`. Depois do sorteio, a edição das equipas fica bloqueada.
+
 Seed em produção
 
 O seed de produção apaga os jogos, eventos, jogadores, staff, equipas e competições existentes antes de inserir os dados de exemplo. Por segurança, `npm run db:seed:prd` é bloqueado por predefinição. Só o execute depois de confirmar que pretende substituir esses dados:

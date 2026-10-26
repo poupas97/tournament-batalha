@@ -27,6 +27,7 @@ export default function DetailsTeam({
         fields={[
           { key: "photo", label: "Logo", format: "photo" },
           { key: "name", label: "Nome" },
+          { key: "pot", label: "Pote" },
           { key: "competition.name", label: "Competição" },
         ]}
       />

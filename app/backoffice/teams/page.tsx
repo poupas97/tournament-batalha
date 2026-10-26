@@ -30,6 +30,7 @@ export default function BackofficeTeamsPage() {
             header: "Equipa",
             render: (team) => <TeamIdentity team={team} />,
           },
+          { key: "pot", header: "Pote" },
           { key: "competition.name", header: "Competição" },
           { key: "_count.players", header: "Jogadores" },
           { key: "_count.staffs", header: "Staffs" },

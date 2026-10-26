@@ -16,11 +16,7 @@ export function canCreateLeague(numberOfTeams: number, opponents: number) {
 }
 
 export function canCreateGroups(numberOfTeams: number, teamsPerGroup: number) {
-  if (
-    numberOfTeams < 2 ||
-    teamsPerGroup < 2 ||
-    teamsPerGroup > numberOfTeams
-  ) {
+  if (numberOfTeams < 2 || teamsPerGroup < 2 || teamsPerGroup > numberOfTeams) {
     return false;
   }
 
@@ -69,7 +65,7 @@ export function createLeagueMatches(
   opponents: number,
   startDate: Date,
 ): Prisma.MatchCreateManyInput[] {
-  const shuffledTeams = shuffleTeams(teams);
+  const shuffledTeams = getSeededTeamOrder(teams);
   const rounds =
     shuffledTeams.length % 2 === 0
       ? createLeagueRounds(shuffledTeams).slice(0, opponents)
@@ -134,20 +130,71 @@ export function createKnockoutMatches(
 }
 
 function createGroups(teams: Team[], teamsPerGroup: number): Team[][] {
-  const shuffled = shuffleTeams(teams);
-  const totalGroups = Math.ceil(shuffled.length / teamsPerGroup);
-  const baseSize = Math.floor(shuffled.length / totalGroups);
-  const groups: Team[][] = [];
-  let remainder = shuffled.length % totalGroups;
-  let index = 0;
+  const totalGroups = Math.ceil(teams.length / teamsPerGroup);
+  const baseSize = Math.floor(teams.length / totalGroups);
+  const remainder = teams.length % totalGroups;
+  const groups = Array.from({ length: totalGroups }, () => [] as Team[]);
+  const capacities = groups.map(
+    (_, index) => baseSize + (index < remainder ? 1 : 0),
+  );
+  const pots = new Map<number, Team[]>();
 
-  for (let i = 0; i < totalGroups; i++) {
-    const size = baseSize + (remainder-- > 0 ? 1 : 0);
-    groups.push(shuffled.slice(index, index + size));
-    index += size;
+  for (const team of teams) {
+    const pot = pots.get(team.pot) ?? [];
+    pot.push(team);
+    pots.set(team.pot, pot);
+  }
+
+  const sortedPots = [...pots.entries()].sort(([potA], [potB]) => potA - potB);
+  let direction = 1;
+  let startGroup = 0;
+
+  for (const [, potTeams] of sortedPots) {
+    const shuffledPot = shuffleTeams(potTeams);
+    let groupIndex = startGroup;
+
+    for (const team of shuffledPot) {
+      let checked = 0;
+      while (
+        groups[groupIndex].length >= capacities[groupIndex] &&
+        checked < totalGroups
+      ) {
+        groupIndex = (groupIndex + direction + totalGroups) % totalGroups;
+        checked++;
+      }
+      groups[groupIndex].push(team);
+      groupIndex = (groupIndex + direction + totalGroups) % totalGroups;
+    }
+
+    startGroup = (groupIndex + totalGroups) % totalGroups;
+    direction *= -1;
   }
 
   return groups;
+}
+
+function getSeededTeamOrder(teams: Team[]) {
+  const pots = new Map<number, Team[]>();
+
+  for (const team of teams) {
+    const pot = pots.get(team.pot) ?? [];
+    pot.push(team);
+    pots.set(team.pot, pot);
+  }
+
+  const shuffledPots = [...pots.entries()]
+    .sort(([potA], [potB]) => potA - potB)
+    .map(([, pot]) => shuffleTeams(pot));
+  const ordered: Team[] = [];
+  const maxPotSize = Math.max(...shuffledPots.map((pot) => pot.length));
+
+  for (let index = 0; index < maxPotSize; index++) {
+    for (const pot of shuffledPots) {
+      if (pot[index]) ordered.push(pot[index]);
+    }
+  }
+
+  return ordered;
 }
 
 function getScheduleStart(startDate: Date) {
@@ -171,9 +218,7 @@ function getScheduleStartAfterInterval(date: Date) {
 
 function getMatchDate(index: number, scheduleStart: Date) {
   const start = new Date(scheduleStart);
-  let matchDaysToAdd = Math.floor(
-    index / COMPETITION_SCHEDULE.matchesPerDay,
-  );
+  let matchDaysToAdd = Math.floor(index / COMPETITION_SCHEDULE.matchesPerDay);
   const positionInDay = index % COMPETITION_SCHEDULE.matchesPerDay;
 
   while (start.getDay() === 0) {

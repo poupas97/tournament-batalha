@@ -100,6 +100,7 @@ export default function BackofficeHelpPage() {
             items={[
               "Crie a competição e escolha o formato, a data de início, o número de qualificados e os oponentes ou o tamanho dos grupos.",
               "Adicione todas as equipas, jogadores e membros do staff enquanto a competição está em rascunho.",
+              "Ao criar cada equipa, atribua-lhe um pote: 1 corresponde às equipas mais fortes. Use o mesmo número para equipas de nível semelhante.",
               "Reveja os dados e faça o sorteio. O sistema gera as jornadas, os grupos quando aplicável e os jogos da fase eliminatória.",
               "Consulte o sorteio e o calendário. Se necessário, ajuste os jogos ainda agendados antes de iniciar a competição.",
               "Inicie a competição e atualize o estado de cada jogo à medida que decorre.",
@@ -151,6 +152,7 @@ export default function BackofficeHelpPage() {
               "O número de camisola tem de estar entre 1 e 99. Ao editar o plantel no formulário da equipa, não pode repetir números dentro da mesma equipa.",
               "Os jogadores e os membros do staff pertencem à equipa e seguem as regras de edição da competição: só podem ser alterados enquanto esta estiver em DRAFT.",
               "As fotografias são opcionais. Para as guardar, o servidor tem de estar configurado com armazenamento de objetos; consulte o README ou o administrador técnico se o envio falhar.",
+              "O pote é um número inteiro positivo. Atribua o pote 1 às equipas mais fortes e potes seguintes às restantes; equipas do mesmo pote são distribuídas por grupos diferentes de forma equilibrada. Na LEAGUE, os potes ajudam a espaçar os emparelhamentos gerados, mas não alteram quem cada equipa defronta: se todas as equipas forem oponentes, todas jogarão entre si.",
               "Se uma equipa não aparecer no sorteio, confirme que foi associada à competição certa antes de gerar os jogos.",
             ]}
           />

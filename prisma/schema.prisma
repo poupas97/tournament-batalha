@@ -21,6 +21,7 @@ model Team {
   id            Int      @id @default(autoincrement())
   name          String
   photo         String?
+  pot           Int      @default(1)
   createdAt     DateTime @default(now())
   players       Player[]
   staffs        Staff[]

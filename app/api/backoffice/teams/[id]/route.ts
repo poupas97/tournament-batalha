@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { MAX_NAME_LENGTH } from "@/constants/validation";
 import { CompetitionStatus } from "@/generated/prisma";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
 import { isValidPhotoValue } from "@/lib/photo";
 import { getRandomSuffix } from "@/lib/random";
@@ -62,12 +62,17 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body?.name);
+  const pot = sanitizeNumber(body?.pot ?? 1);
   const players = sanitizePlayers(body?.players);
   const staffs = sanitizeStaffs(body?.staffs);
   const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
+  }
+
+  if (!pot) {
+    return invalidParam("Pot");
   }
 
   if (players === null) {
@@ -199,7 +204,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
         const updatedTeam = await tx.team.update({
           where: { id: teamId },
-          data: { name, photo: isPhotoUrl(photo) ? photo : null },
+          data: { name, pot, photo: isPhotoUrl(photo) ? photo : null },
           include: {
             players: { orderBy: { createdAt: "asc" } },
             staffs: { orderBy: { createdAt: "asc" } },

@@ -42,6 +42,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const name = sanitizeText(body?.name);
+  const pot = sanitizeNumber(body?.pot ?? 1);
   const competitionId = sanitizeNumber(body?.competitionId);
   const players = sanitizePlayers(body?.players);
   const staffs = sanitizeStaffs(body?.staffs);
@@ -49,6 +50,10 @@ export async function POST(request: Request) {
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return invalidParam("Name");
+  }
+
+  if (!pot) {
+    return invalidParam("Pot");
   }
 
   if (!competitionId) {
@@ -88,6 +93,7 @@ export async function POST(request: Request) {
         const createdTeam = await tx.team.create({
           data: {
             name,
+            pot,
             photo: isPhotoUrl(photo) ? photo : null,
             competitionId,
             players: players?.length

@@ -153,6 +153,12 @@ export default function FormTeam({
         { key: "photo", label: "Logo", type: "photo" },
         { key: "name", label: "Nome" },
         {
+          key: "pot",
+          label: "Pote",
+          type: "number",
+          hint: "Use 1 para as equipas mais fortes",
+        },
+        {
           key: "competitionId",
           label: "Competição",
           type: "select",

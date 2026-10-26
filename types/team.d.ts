@@ -31,6 +31,7 @@ export type IPlayerEditValues = {
 export type ITeamFormValues = {
   name: string;
   photo?: string | null;
+  pot: number;
   players: IPlayerFormValues[];
   staffs: IStaffFormValues[];
   competitionId: Competition["id"];
@@ -40,6 +41,7 @@ export type TeamBEResponse = {
   id: number;
   name: string;
   photo?: string | null;
+  pot: number;
   players: Player[];
   staffs: Staff[];
   competitionId: Competition["id"];
