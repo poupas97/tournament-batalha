@@ -23,15 +23,7 @@ export default function EditMatchPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar jogos" }));
-      alert(error.error ?? "Erro ao guardar jogos");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

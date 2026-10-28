@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { MAX_NAME_LENGTH } from "@/constants/validation";
+import {
+  MAX_NAME_LENGTH,
+  TEAM_POT_MAX,
+  TEAM_POT_MIN,
+} from "@/constants/validation";
 import { CompetitionStatus } from "@/generated/prisma";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
@@ -68,23 +72,23 @@ export async function PUT(request: Request, context: RouteContext) {
   const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
-  if (!pot) {
-    return invalidParam("Pot");
+  if (!pot || pot < TEAM_POT_MIN || pot > TEAM_POT_MAX) {
+    return invalidParam("Pot", "pot");
   }
 
   if (players === null) {
-    return invalidParam("Players");
+    return invalidParam("Players", "players");
   }
 
   if (staffs === null) {
-    return invalidParam("Staffs");
+    return invalidParam("Staffs", "staffs");
   }
 
   if (!isValidPhotoValue(photo)) {
-    return invalidParam("Photo");
+    return invalidParam("Photo", "photo");
   }
 
   const existing = await prisma.team.findUnique({
@@ -234,7 +238,10 @@ export async function PUT(request: Request, context: RouteContext) {
     await Promise.allSettled(uploadedKeys.map(deletePhoto));
 
     return NextResponse.json(
-      { error: "Não foi possível atualizar a equipa e guardar as fotos" },
+      {
+        error: "Não foi possível atualizar a equipa e guardar as fotos",
+        key: "photo",
+      },
       { status: 502 },
     );
   }

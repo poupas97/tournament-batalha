@@ -6,10 +6,11 @@ import { getCompetitionRoundOptions } from "@/lib/competition/rounds";
 import { CompetitionBEResponse } from "@/types/competition";
 import { IMatchFormValues, MatchBEResponse } from "@/types/match";
 import { TeamBEResponse } from "@/types/team";
+import type { FormSubmitResult } from "@/types/form";
 
 type FormMatchProps = {
   initialValues?: MatchBEResponse;
-  handleSubmit: (values: IMatchFormValues) => Promise<void>;
+  handleSubmit: (values: IMatchFormValues) => Promise<FormSubmitResult>;
 };
 
 export default function FormMatch({

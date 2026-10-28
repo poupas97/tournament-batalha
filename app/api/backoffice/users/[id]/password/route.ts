@@ -28,13 +28,16 @@ export async function PUT(request: Request, context: RouteContext) {
   const password = body?.password;
   const confirm = body?.confirm;
 
-  if (
-    typeof actual !== "string" ||
-    !isValidPassword(password) ||
-    typeof confirm !== "string" ||
-    password !== confirm
-  ) {
-    return invalidParam("Password");
+  if (typeof actual !== "string") {
+    return invalidParam("CurrentPassword", "actual");
+  }
+
+  if (!isValidPassword(password)) {
+    return invalidParam("Password", "password");
+  }
+
+  if (typeof confirm !== "string" || password !== confirm) {
+    return invalidParam("PasswordConfirmation", "confirm");
   }
 
   const existing = await prisma.user.findUnique({
@@ -48,7 +51,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const valid = await bcrypt.compare(actual, existing.password);
 
   if (!valid) {
-    return invalidParam("Password");
+    return invalidParam("CurrentPassword", "actual");
   }
 
   const hashedPassword = await bcrypt.hash(password, PASSWORD_HASH_ROUNDS);

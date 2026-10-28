@@ -44,17 +44,22 @@ export async function POST(request: Request) {
   const name = sanitizeName(body?.name);
   const email = normalizeEmail(body?.email, MAX_EMAIL_LENGTH);
   const rawPassword: unknown = body?.password;
+  const confirm: unknown = body?.confirm;
 
   if (!name) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
   if (!email) {
-    return invalidParam("Email");
+    return invalidParam("Email", "email");
   }
 
   if (!isValidPassword(rawPassword)) {
-    return invalidParam("Password");
+    return invalidParam("Password", "password");
+  }
+
+  if (typeof confirm !== "string" || rawPassword !== confirm) {
+    return invalidParam("PasswordConfirmation", "confirm");
   }
 
   const emailInUse = await prisma.user.findUnique({
@@ -63,7 +68,7 @@ export async function POST(request: Request) {
   });
 
   if (emailInUse) {
-    return conflict("Email");
+    return conflict("Email", "email");
   }
 
   const password = await bcrypt.hash(rawPassword, PASSWORD_HASH_ROUNDS);
@@ -83,7 +88,7 @@ export async function POST(request: Request) {
     return createdResponse(user);
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      return conflict("Email");
+      return conflict("Email", "email");
     }
 
     throw error;

@@ -22,7 +22,7 @@ import {
 } from "@/types/match-event";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Typography } from "@mui/material";
 import MatchEventsTable from "@/components/MatchEventsTable";
 import PhotoAvatar from "@/components/PhotoAvatar";
 
@@ -34,6 +34,7 @@ export default function ViewMatchPage() {
     `/api/backoffice/matches/${matchId}`,
   );
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   const { openModal, closeModal } = useModal();
 
@@ -41,6 +42,7 @@ export default function ViewMatchPage() {
     if (updatingStatus) return;
 
     setUpdatingStatus(true);
+    setActionError("");
 
     try {
       const response = await fetch(
@@ -57,11 +59,17 @@ export default function ViewMatchPage() {
         .catch(() => null)) as MatchBEResponse | null;
 
       if (!response.ok || !responseData) {
-        alert("Erro ao guardar o status");
+        setActionError("Erro ao guardar o estado do jogo.");
         return;
       }
 
       setData(responseData);
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Erro ao guardar o estado do jogo.",
+      );
     } finally {
       setUpdatingStatus(false);
     }
@@ -78,12 +86,9 @@ export default function ViewMatchPage() {
         body: JSON.stringify({ ...values, teamId, matchId, [key]: id }),
       });
 
-      const responseData = await response.json().catch(() => null);
+      if (!response.ok) return { response };
 
-      if (!response?.ok || responseData?.error) {
-        alert(responseData?.error ?? "Erro ao guardar evento");
-        return;
-      }
+      const responseData = await response.json();
 
       setData((prev) =>
         prev
@@ -91,7 +96,7 @@ export default function ViewMatchPage() {
           : prev,
       );
 
-      closeModal();
+      return { response, onSuccess: closeModal };
     };
 
   const addStaffMatchEvent = (staffId: number, teamId: number) => () => {
@@ -132,10 +137,7 @@ export default function ViewMatchPage() {
     );
 
     if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao remover evento" }));
-      alert(error.error ?? "Erro ao remover evento");
+      setActionError("Não foi possível remover o evento.");
       return;
     }
 
@@ -189,6 +191,11 @@ export default function ViewMatchPage() {
             : undefined
         }
       />
+      {actionError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {actionError}
+        </Alert>
+      )}
 
       <Detail<MatchBEResponse>
         loading={loading}
@@ -303,7 +310,7 @@ export default function ViewMatchPage() {
           {Object.values(MatchStatus)
             .filter((status) => canTransition(data, status))
             .map((status) => (
-              <Grid key={status} size={2}>
+              <Grid key={status} size={{ xs: 12, sm: 6, md: 2 }}>
                 <Button
                   fullWidth
                   variant="contained"
@@ -312,7 +319,7 @@ export default function ViewMatchPage() {
                   }
                   onClick={() => handleChangeStatus(status)}
                 >
-                  {status}
+                  {updatingStatus ? "A guardar…" : status}
                 </Button>
               </Grid>
             ))}

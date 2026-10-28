@@ -97,11 +97,11 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   if (!opponents) {
-    return invalidParam("Opponents");
+    return invalidParam("Opponents", "opponents");
   }
 
   if (!qualified) {
-    return invalidParam("Qualified");
+    return invalidParam("Qualified", "qualified");
   }
 
   const existingMatches = await prisma.match.count({
@@ -121,18 +121,18 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   if (qualified > teams.length) {
-    return invalidParam("Qualified");
+    return invalidParam("Qualified", "qualified");
   }
 
   if (!canCreateKnockout(qualified)) {
-    return invalidParam("Qualified");
+    return invalidParam("Qualified", "qualified");
   }
 
   let initialMatches: Prisma.MatchCreateManyInput[];
 
   if (config === CompetitionConfig.LEAGUE) {
     if (!canCreateLeague(teams.length, opponents)) {
-      return invalidParam("Opponents");
+      return invalidParam("Opponents", "opponents");
     }
 
     initialMatches = createLeagueMatches(
@@ -143,7 +143,7 @@ export async function POST(request: Request, context: RouteContext) {
     );
   } else {
     if (!canCreateGroups(teams.length, opponents)) {
-      return invalidParam("Opponents");
+      return invalidParam("Opponents", "opponents");
     }
 
     initialMatches = createGroupMatches(
@@ -162,7 +162,7 @@ export async function POST(request: Request, context: RouteContext) {
   );
 
   if (!knockoutMatches.length) {
-    return invalidParam("Qualified");
+    return invalidParam("Qualified", "qualified");
   }
 
   const matches = [...initialMatches, ...knockoutMatches];

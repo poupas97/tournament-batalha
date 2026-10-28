@@ -1,6 +1,15 @@
 "use client";
 
 import Title from "@/components/Title";
+import {
+  MATCH_EVENT_MAX_MINUTE,
+  MATCH_EVENT_MIN_MINUTE,
+  MAX_NAME_LENGTH,
+  PLAYER_NUMBER_MAX,
+  PLAYER_NUMBER_MIN,
+  TEAM_POT_MAX,
+  TEAM_POT_MIN,
+} from "@/constants/validation";
 import type { ReactNode } from "react";
 import {
   Box,
@@ -123,7 +132,7 @@ export default function BackofficeHelpPage() {
           </Typography>
           <GuideList
             items={[
-              "O nome e a data de início identificam a competição. A data serve de referência para o calendário gerado. O nome pode ter até 100 caracteres.",
+              `O nome e a data de início identificam a competição. A data serve de referência para o calendário gerado. O nome pode ter até ${MAX_NAME_LENGTH} caracteres.`,
               "Cada competição tem de ter uma cor única. Ativo controla se aparece nas páginas públicas; não altera o estado da competição.",
               "LEAGUE: cada equipa defronta o número de adversários diferentes indicado em Oponentes. O valor tem de ser pelo menos 1 e inferior ao total de equipas; com um número ímpar de equipas, Oponentes tem de ser par.",
               "GROUP: Oponentes indica o tamanho máximo de cada grupo e tem de ser pelo menos 2. O sorteio distribui as equipas por grupos equilibrados e não cria grupos com apenas uma equipa.",
@@ -148,11 +157,11 @@ export default function BackofficeHelpPage() {
           </Typography>
           <GuideList
             items={[
-              "O nome da equipa, dos jogadores e dos membros do staff pode ter até 100 caracteres.",
-              "O número de camisola tem de estar entre 1 e 99. Ao editar o plantel no formulário da equipa, não pode repetir números dentro da mesma equipa.",
+              `O nome da equipa, dos jogadores e dos membros do staff pode ter até ${MAX_NAME_LENGTH} caracteres.`,
+              `O número de camisola tem de estar entre ${PLAYER_NUMBER_MIN} e ${PLAYER_NUMBER_MAX}. Ao editar o plantel no formulário da equipa, não pode repetir números dentro da mesma equipa.`,
               "Os jogadores e os membros do staff pertencem à equipa e seguem as regras de edição da competição: só podem ser alterados enquanto esta estiver em DRAFT.",
               "As fotografias são opcionais. Para as guardar, o servidor tem de estar configurado com armazenamento de objetos; consulte o README ou o administrador técnico se o envio falhar.",
-              "O pote é um número inteiro positivo. Atribua o pote 1 às equipas mais fortes e potes seguintes às restantes; equipas do mesmo pote são distribuídas por grupos diferentes de forma equilibrada. Na LEAGUE, os potes ajudam a espaçar os emparelhamentos gerados, mas não alteram quem cada equipa defronta: se todas as equipas forem oponentes, todas jogarão entre si.",
+              `O pote é um número inteiro entre ${TEAM_POT_MIN} e ${TEAM_POT_MAX}. Atribua um número baixo às equipas mais fortes e potes seguintes às restantes; equipas do mesmo pote são distribuídas por grupos diferentes de forma equilibrada. Na LEAGUE, os potes ajudam a espaçar os emparelhamentos gerados, mas não alteram quem cada equipa defronta: se todas as equipas forem oponentes, todas jogarão entre si.`,
               "Se uma equipa não aparecer no sorteio, confirme que foi associada à competição certa antes de gerar os jogos.",
             ]}
           />
@@ -195,7 +204,7 @@ export default function BackofficeHelpPage() {
               "Um jogo interrompido pode ser retomado a partir dos estados disponíveis ou cancelado. Jogos adiados, interrompidos ou cancelados não contam como concluídos; enquanto houver um destes jogos na fase regular, a eliminatória não avança.",
               "Registe golos, autogolos, golos de penálti e cartões na equipa e no jogador corretos. O resultado é calculado a partir destes eventos, não é introduzido manualmente.",
               "O autor do evento tem de pertencer à equipa selecionada. Pode escolher um jogador para qualquer evento; um membro do staff só pode receber cartões.",
-              "O minuto do evento tem de estar entre 1 e 50. Só é possível adicionar ou remover eventos nos estados RT_START, RT_HALF_TIME, RT_RESTART, ET_START, ET_HALF_TIME, ET_RESTART e PENALTIES_START. Depois de o jogo terminar, ficam bloqueados.",
+              `O minuto do evento tem de estar entre ${MATCH_EVENT_MIN_MINUTE} e ${MATCH_EVENT_MAX_MINUTE}. Só é possível adicionar ou remover eventos nos estados RT_START, RT_HALF_TIME, RT_RESTART, ET_START, ET_HALF_TIME, ET_RESTART e PENALTIES_START. Depois de o jogo terminar, ficam bloqueados.`,
               "Durante a série de penáltis, só se podem registar golos de penálti e cartões. Para terminar a série, uma equipa tem de ter mais golos de penálti do que a outra.",
               "Quando todos os jogos da fase regular estiverem concluídos, a classificação determina os qualificados e o sistema preenche os jogos da primeira eliminatória. Depois de cada ronda eliminatória concluída, os vencedores avançam automaticamente.",
               "Na fase regular, os jogos empatados podem terminar empatados. Cada jogo eliminatório tem de terminar com um vencedor para permitir a passagem à ronda seguinte.",

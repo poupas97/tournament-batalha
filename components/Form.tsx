@@ -5,83 +5,22 @@ import FormPhoto from "@/components/FormPhoto";
 import HintTooltip from "@/components/HintTooltip";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
-import { Button, Grid, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
 import _get from "lodash/get";
-import { type FormEvent, useState, type ReactNode } from "react";
-
-type FormInputType =
-  | "text"
-  | "number"
-  | "email"
-  | "password"
-  | "date"
-  | "datetime-local"
-  | "color";
-
-type FormFieldType = FormInputType | "select" | "checkbox" | "photo";
-
-type FormField<T extends Record<string, unknown>> = {
-  key: keyof T;
-  label: string;
-  hint?: string | ((data: T | undefined) => string);
-  type?: FormFieldType;
-  placeholder?: string;
-  options?: { value: number | string; label: string }[];
-};
-
-type FormProps<T extends Record<string, unknown>> = {
-  initialValues?: T;
-  fields: FormField<T>[];
-  onSubmit?: (values: T) => void;
-  children?: ReactNode;
-  vertical?: boolean;
-};
-
-function formatDateTimeLocalValue(value: unknown) {
-  if (!value) {
-    return "";
-  }
-
-  const date = value instanceof Date ? value : new Date(String(value));
-
-  if (Number.isNaN(date.getTime())) {
-    return String(value);
-  }
-
-  const pad = (part: number) => String(part).padStart(2, "0");
-
-  return (
-    [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join(
-      "-",
-    ) + `T${pad(date.getHours())}:${pad(date.getMinutes())}`
-  );
-}
-
-function formatDateInputValue(value: unknown) {
-  if (!value) {
-    return "";
-  }
-
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    return value.slice(0, 10);
-  }
-
-  const date = value instanceof Date ? value : new Date(String(value));
-
-  if (Number.isNaN(date.getTime())) {
-    return String(value);
-  }
-
-  const pad = (part: number) => String(part).padStart(2, "0");
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-function getInputType(type: FormFieldType | undefined): FormInputType {
-  return type === "select" || type === "checkbox" || type === "photo"
-    ? "text"
-    : (type ?? "text");
-}
+import { type FormEvent, useState } from "react";
+import {
+  formatDateInputValue,
+  formatDateTimeLocalValue,
+  getFormInputType,
+  submitForm,
+} from "@/lib/form";
+import type { FormProps } from "@/types/form";
 
 export default function Form<T extends Record<string, unknown>>({
   initialValues,
@@ -90,23 +29,42 @@ export default function Form<T extends Record<string, unknown>>({
   children,
   vertical,
 }: FormProps<T>) {
-  const [values, setValues] = useState<T | undefined>(initialValues);
+  const [values, setValues] = useState<T>(initialValues ?? ({} as T));
+  const [saving, setSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function handleChange(key: keyof T, value: string | boolean | null) {
-    setValues((current) => ({
-      ...(current || ({} as T)),
-      [key]: value as T[keyof T],
-    }));
+    setFieldErrors((current) => {
+      const next = { ...current };
+      delete next[String(key)];
+
+      return next;
+    });
+
+    setValues((current) => ({ ...current, [key]: value as T[keyof T] }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!values) {
+    if (saving) {
       return;
     }
 
-    onSubmit?.(values);
+    setSaving(true);
+    setFieldErrors({});
+
+    try {
+      const outcome = await submitForm(values, fields, onSubmit);
+
+      if (outcome.status === "field-error") {
+        setFieldErrors({ [outcome.key]: outcome.message });
+      } else if (outcome.status === "error") {
+        alert(outcome.message);
+      }
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -148,23 +106,27 @@ export default function Form<T extends Record<string, unknown>>({
                 value={String(_get(values, field.key) ?? "")}
                 options={field.options}
                 onChange={(value) => handleChange(field.key, value)}
+                error={Boolean(fieldErrors[String(field.key)])}
+                helperText={fieldErrors[String(field.key)]}
               />
             ) : field.type === "checkbox" ? (
               <FormCheckbox
                 name={String(field.key)}
                 checked={Boolean(_get(values, field.key))}
                 onChange={(checked) => handleChange(field.key, checked)}
+                fieldError={fieldErrors[String(field.key)]}
               />
             ) : field.type === "photo" ? (
               <FormPhoto
                 label={field.label}
                 value={String(_get(values, field.key) ?? "")}
                 onChange={(photo) => handleChange(field.key, photo)}
+                fieldError={fieldErrors[String(field.key)]}
               />
             ) : (
               <FormInput
                 name={String(field.key)}
-                type={getInputType(field.type)}
+                type={getFormInputType(field.type)}
                 value={
                   field.type === "date"
                     ? formatDateInputValue(_get(values, field.key))
@@ -174,6 +136,8 @@ export default function Form<T extends Record<string, unknown>>({
                 }
                 placeholder={field.placeholder}
                 onChange={(value) => handleChange(field.key, value)}
+                error={Boolean(fieldErrors[String(field.key)])}
+                helperText={fieldErrors[String(field.key)]}
               />
             )}
           </Grid>
@@ -185,9 +149,17 @@ export default function Form<T extends Record<string, unknown>>({
       <Button
         type="submit"
         variant="contained"
+        disabled={saving}
         sx={{ minHeight: 48, fontWeight: 700 }}
       >
-        Guardar
+        {saving ? (
+          <>
+            <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />A
+            guardar…
+          </>
+        ) : (
+          "Guardar"
+        )}
       </Button>
     </Stack>
   );

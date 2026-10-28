@@ -9,28 +9,13 @@ export default function CreateUserPage() {
   const router = useRouter();
 
   async function handleSubmit(values: IUserFormValues) {
-    const { password, confirm, ...rest } = values;
-
-    if (password !== confirm) {
-      alert("A password e a confirmação não coincidem");
-      return;
-    }
-
     const response = await fetch("/api/backoffice/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password, ...rest }),
+      body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao criar utilizador" }));
-      alert(error.error ?? "Erro ao criar utilizador");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

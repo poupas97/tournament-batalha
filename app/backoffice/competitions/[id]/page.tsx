@@ -17,14 +17,17 @@ import {
   CompetitionBEResponse,
   ICompetitionFormValues,
 } from "@/types/competition";
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import TeamIdentity from "@/components/TeamIdentity";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function ViewCompetitionPage() {
   const params = useParams();
   const competitionId = params?.id;
   const { openModal, closeModal } = useModal();
+  const [actionError, setActionError] = useState("");
+  const [actionPending, setActionPending] = useState(false);
 
   const { data, loading, error } = useGetState<CompetitionBEResponse>(
     competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
@@ -38,19 +41,14 @@ export default function ViewCompetitionPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       },
-    ).catch(() => null);
-
-    const responseData = await response?.json().catch(() => null);
-
-    if (!response?.ok || responseData?.error) {
-      alert(responseData?.error ?? "Erro ao fazer sorteio");
-      return;
-    }
-
-    closeModal();
-    alert("Sucesso");
-
-    window.location.reload();
+    );
+    return {
+      response,
+      onSuccess: () => {
+        closeModal();
+        window.location.reload();
+      },
+    };
   }
 
   async function changeCompetitionStatus(status: CompetitionStatus) {
@@ -62,14 +60,26 @@ export default function ViewCompetitionPage() {
         body: JSON.stringify({ status }),
       },
     );
-    const responseData = await response.json().catch(() => null);
-
-    if (!response.ok || responseData?.error) {
-      alert(responseData?.error ?? "Erro ao alterar estado");
-      return;
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.error ?? "Erro ao alterar estado");
     }
+  }
 
-    window.location.reload();
+  async function handleChangeStatus(status: CompetitionStatus) {
+    if (actionPending) return;
+    setActionPending(true);
+    setActionError("");
+    try {
+      await changeCompetitionStatus(status);
+      window.location.reload();
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "Erro ao alterar estado",
+      );
+    } finally {
+      setActionPending(false);
+    }
   }
 
   function openShuffleModal() {
@@ -146,17 +156,28 @@ export default function ViewCompetitionPage() {
         ]}
       />
 
+      {actionError && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {actionError}
+        </Alert>
+      )}
+
       {data?.status === CompetitionStatus.DRAFT && (
-        <Button size="small" onClick={openShuffleModal}>
+        <Button
+          size="small"
+          onClick={openShuffleModal}
+          disabled={actionPending}
+        >
           Fazer sorteio
         </Button>
       )}
       {data?.status === CompetitionStatus.DRAWN && (
         <Button
           size="small"
-          onClick={() => changeCompetitionStatus(CompetitionStatus.IN_PROGRESS)}
+          onClick={() => handleChangeStatus(CompetitionStatus.IN_PROGRESS)}
+          disabled={actionPending}
         >
-          Iniciar competição
+          {actionPending ? "A guardar…" : "Iniciar competição"}
         </Button>
       )}
       {(data?.status === CompetitionStatus.DRAWN ||

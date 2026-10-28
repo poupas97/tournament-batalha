@@ -20,7 +20,7 @@ export default function LoginPage() {
       return;
     }
 
-    alert("Credenciais inválidas");
+    throw new Error("Credenciais inválidas.");
   }
 
   return (

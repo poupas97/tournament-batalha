@@ -24,15 +24,7 @@ export default function EditPlayerPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const responseData = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar jogador" }));
-      alert(responseData.error ?? "Erro ao guardar jogador");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   const canEdit = data?.team.competition.status === CompetitionStatus.DRAFT;

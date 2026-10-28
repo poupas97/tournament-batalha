@@ -10,14 +10,14 @@ import {
 } from "@/types/team";
 import { useState } from "react";
 import { CompetitionBEResponse } from "@/types/competition";
-import { Button, Typography } from "@mui/material";
-import { PLAYER_NUMBER_MAX, PLAYER_NUMBER_MIN } from "@/constants/validation";
+import { Box, Button, Typography } from "@mui/material";
 import PlayerIdentity from "@/components/PlayerIdentity";
 import StaffIdentity from "@/components/StaffIdentity";
+import type { FormSubmitResult } from "@/types/form";
 
 type FormTeamProps = {
   initialValues?: ITeamFormValues;
-  handleSubmit: (values: ITeamFormValues) => Promise<void>;
+  handleSubmit: (values: ITeamFormValues) => Promise<FormSubmitResult>;
   competitions: CompetitionBEResponse[];
 };
 
@@ -34,24 +34,14 @@ export default function FormTeam({
     initialValues?.staffs || [],
   );
 
-  function onSubmit(values: ITeamFormValues) {
-    handleSubmit({ ...values, players, staffs });
+  async function onSubmit(values: ITeamFormValues) {
+    return handleSubmit({ ...values, players, staffs });
   }
 
   function handleAddPlayer(values: IPlayerFormValues) {
-    const name = values.name.trim();
+    const name = String(values.name ?? "").trim();
     const number = Number(values.number);
     const photo = values.photo;
-
-    if (
-      !name ||
-      !Number.isInteger(number) ||
-      number < PLAYER_NUMBER_MIN ||
-      number > PLAYER_NUMBER_MAX
-    ) {
-      alert("Por favor, preencha todos os campos do jogador");
-      return;
-    }
 
     setPlayers((current) => [
       ...current,
@@ -64,8 +54,7 @@ export default function FormTeam({
     const index = players.findIndex((it) => it.id === player.id);
 
     if (index === -1) {
-      alert("Jogador não encontrado");
-      return;
+      throw new Error("Jogador não encontrado.");
     }
 
     const next = [...players];
@@ -98,13 +87,8 @@ export default function FormTeam({
   };
 
   function handleAddStaff(values: IStaffFormValues) {
-    const name = values.name.trim();
+    const name = String(values.name ?? "").trim();
     const photo = values.photo;
-
-    if (!name) {
-      alert("Por favor, preencha todos os campos do staff");
-      return;
-    }
 
     setStaffs((current) => [...current, { id: Date.now(), name, photo }]);
     closeModal();
@@ -114,8 +98,7 @@ export default function FormTeam({
     const index = staffs.findIndex((it) => it.id === staff.id);
 
     if (index === -1) {
-      alert("Staff não encontrado");
-      return;
+      throw new Error("Staff não encontrado.");
     }
 
     const next = [...staffs];
@@ -167,8 +150,8 @@ export default function FormTeam({
       ]}
       onSubmit={onSubmit}
     >
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
@@ -178,7 +161,7 @@ export default function FormTeam({
         <Button variant="outlined" onClick={openPlayerModal()}>
           + Adicionar
         </Button>
-      </div>
+      </Box>
 
       <DataTable
         data={players}
@@ -204,8 +187,8 @@ export default function FormTeam({
         ]}
       />
 
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
@@ -215,7 +198,7 @@ export default function FormTeam({
         <Button variant="outlined" onClick={openStaffModal()}>
           + Adicionar
         </Button>
-      </div>
+      </Box>
 
       <DataTable
         data={staffs}

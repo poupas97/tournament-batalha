@@ -14,6 +14,8 @@ type FormInputProps = {
     | "color";
   value: string;
   placeholder?: string;
+  error?: boolean;
+  helperText?: string;
   onChange: (value: string) => void;
 };
 
@@ -22,6 +24,8 @@ export default function FormInput({
   type = "text",
   value,
   placeholder,
+  error,
+  helperText,
   onChange,
 }: FormInputProps) {
   return (
@@ -33,6 +37,8 @@ export default function FormInput({
       placeholder={placeholder}
       fullWidth
       size="small"
+      error={error}
+      helperText={helperText}
     />
   );
 }

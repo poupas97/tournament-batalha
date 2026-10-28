@@ -71,7 +71,7 @@ export async function PUT(request: Request, context: RouteContext) {
   const awayTeamId = sanitizeNumber(body?.awayTeamId);
 
   if (!date) {
-    return invalidParam("Date");
+    return invalidParam("Date", "date");
   }
 
   const existing = await prisma.match.findUnique({
@@ -134,11 +134,11 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   if (!round) {
-    return invalidParam("Round");
+    return invalidParam("Round", "round");
   }
 
   if (!competitionId) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
   const targetCompetition = await prisma.competition.findUnique({
@@ -147,7 +147,7 @@ export async function PUT(request: Request, context: RouteContext) {
   });
 
   if (!targetCompetition) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
   const assignedTeamIds = [
@@ -167,6 +167,15 @@ export async function PUT(request: Request, context: RouteContext) {
       where: { id: { in: assignedTeamIds }, competitionId },
       select: { id: true },
     });
+
+    const validTeamIds = new Set(teams.map((team) => team.id));
+    if (homeTeamId && !validTeamIds.has(homeTeamId)) {
+      return invalidParam("HomeTeam", "homeTeamId");
+    }
+
+    if (awayTeamId && !validTeamIds.has(awayTeamId)) {
+      return invalidParam("AwayTeam", "awayTeamId");
+    }
 
     if (teams.length !== assignedTeamIds.length) {
       return invalidParam("Teams");

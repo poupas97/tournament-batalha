@@ -71,7 +71,7 @@ A aplicação estará em `http://localhost:3000`.
 
 Potes das equipas
 
-Antes de sortear uma competição, atribua a cada equipa um pote no formulário da equipa. O valor tem de ser um número inteiro positivo: use `1` para as equipas mais fortes e números seguintes para os restantes níveis. Equipas no mesmo pote são distribuídas por grupos diferentes de forma equilibrada. No formato `LEAGUE`, os potes são intercalados na ordem usada para gerar os emparelhamentos e ajudam a espaçar equipas do mesmo nível; não alteram o conjunto de adversários. Se cada equipa tiver de defrontar todas as outras, isso continua a acontecer.
+Antes de sortear uma competição, atribua a cada equipa um pote no formulário da equipa. O valor tem de ser um número inteiro dentro dos limites mínimo e máximo permitidos: use o valor mínimo para as equipas mais fortes e números seguintes para os restantes níveis. Equipas no mesmo pote são distribuídas por grupos diferentes de forma equilibrada. No formato `LEAGUE`, os potes são intercalados na ordem usada para gerar os emparelhamentos e ajudam a espaçar equipas do mesmo nível; não alteram o conjunto de adversários. Se cada equipa tiver de defrontar todas as outras, isso continua a acontecer.
 
 O pote pode ser alterado enquanto a competição estiver em `DRAFT`. Depois do sorteio, a edição das equipas fica bloqueada.
 

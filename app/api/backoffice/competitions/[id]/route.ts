@@ -92,26 +92,26 @@ export async function PUT(request: Request, context: RouteContext) {
       : existing.active;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
   if (!config) {
-    return invalidParam("CompetitionConfig");
+    return invalidParam("CompetitionConfig", "config");
   }
 
   if (!startDate) {
-    return invalidParam("StartDate");
+    return invalidParam("StartDate", "startDate");
   }
 
   if (!color) {
-    return invalidParam("Color");
+    return invalidParam("Color", "color");
   }
 
   const colorInUse = await prisma.competition.findFirst({
     where: { color, id: { not: competitionId } },
   });
   if (colorInUse) {
-    return conflict("Color");
+    return conflict("Color", "color");
   }
 
   const competitionUpdated = await prisma.competition.update({

@@ -8,6 +8,8 @@ type FormSelectProps = {
   value: string;
   options: { value: number | string; label: string }[];
   onChange: (value: string) => void;
+  error?: boolean;
+  helperText?: string;
 };
 
 export default function FormSelect({
@@ -15,6 +17,8 @@ export default function FormSelect({
   value,
   options,
   onChange,
+  error,
+  helperText,
 }: FormSelectProps) {
   return (
     <TextField
@@ -24,6 +28,8 @@ export default function FormSelect({
       onChange={(event) => onChange(event.target.value)}
       fullWidth
       size="small"
+      error={error}
+      helperText={helperText}
     >
       <MenuItem value="">Selecione...</MenuItem>
 

@@ -15,15 +15,7 @@ export default function CreateMatchPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao criar jogos" }));
-      alert(error.error ?? "Erro ao criar jogos");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

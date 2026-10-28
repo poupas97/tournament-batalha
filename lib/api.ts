@@ -20,12 +20,18 @@ export function noFound(entity: string) {
   return NextResponse.json({ error: `Not found - ${entity}` }, { status: 404 });
 }
 
-export function invalidParam(entity: string) {
-  return NextResponse.json({ error: `Invalid - ${entity}` }, { status: 400 });
+export function invalidParam(entity: string, key?: string) {
+  return NextResponse.json(
+    { error: key ? "Invalid" : `Invalid - ${entity}`, key },
+    { status: 400 },
+  );
 }
 
-export function conflict(entity: string) {
-  return NextResponse.json({ error: `Conflict - ${entity}` }, { status: 409 });
+export function conflict(entity: string, key?: string) {
+  return NextResponse.json(
+    { error: key ? "Conflict" : `Conflict - ${entity}`, key },
+    { status: 409 },
+  );
 }
 
 export function getResponse<T>(entity: T) {

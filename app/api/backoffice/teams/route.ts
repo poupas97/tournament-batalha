@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { MAX_NAME_LENGTH } from "@/constants/validation";
+import {
+  MAX_NAME_LENGTH,
+  TEAM_POT_MAX,
+  TEAM_POT_MIN,
+} from "@/constants/validation";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { CompetitionStatus } from "@/generated/prisma";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
@@ -49,27 +53,27 @@ export async function POST(request: Request) {
   const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
-  if (!pot) {
-    return invalidParam("Pot");
+  if (!pot || pot < TEAM_POT_MIN || pot > TEAM_POT_MAX) {
+    return invalidParam("Pot", "pot");
   }
 
   if (!competitionId) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
   if (players === null) {
-    return invalidParam("Players");
+    return invalidParam("Players", "players");
   }
 
   if (staffs === null) {
-    return invalidParam("Staffs");
+    return invalidParam("Staffs", "staffs");
   }
 
   if (!isValidPhotoValue(photo)) {
-    return invalidParam("Photo");
+    return invalidParam("Photo", "photo");
   }
 
   const competition = await prisma.competition.findUnique({
@@ -78,7 +82,7 @@ export async function POST(request: Request) {
   });
 
   if (!competition) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
   if (competition.status !== CompetitionStatus.DRAFT) {
@@ -190,7 +194,10 @@ export async function POST(request: Request) {
     await Promise.allSettled(uploadedKeys.map(deletePhoto));
 
     return NextResponse.json(
-      { error: "Não foi possível criar a equipa e guardar as fotos" },
+      {
+        error: "Não foi possível criar a equipa e guardar as fotos",
+        key: "photo",
+      },
       { status: 502 },
     );
   }

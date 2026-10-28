@@ -28,38 +28,17 @@ export default function EditUserPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar utilizador" }));
-      alert(error.error ?? "Erro ao guardar utilizador");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   async function handleSubmitPassword(values: IUserPasswordFormValues) {
-    if (values.password !== values.confirm) {
-      alert("A nova password e a confirmação não coincidem");
-      return;
-    }
-
     const response = await fetch(`/api/backoffice/users/${userId}/password`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar password" }));
-      alert(error.error ?? "Erro ao guardar password");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

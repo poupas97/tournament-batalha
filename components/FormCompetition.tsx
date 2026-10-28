@@ -7,10 +7,11 @@ import {
   getCompetitionQualifiedHint,
 } from "@/lib/detailHints";
 import { ICompetitionFormValues } from "@/types/competition";
+import type { FormSubmitResult } from "@/types/form";
 
 type FormCompetitionProps = {
   initialValues?: ICompetitionFormValues;
-  onSubmit: (values: ICompetitionFormValues) => Promise<void>;
+  onSubmit: (values: ICompetitionFormValues) => Promise<FormSubmitResult>;
 };
 
 export default function FormCompetition({

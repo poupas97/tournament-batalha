@@ -29,15 +29,7 @@ export default function EditCompetitionPage() {
       },
     );
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar competição" }));
-      alert(error.error ?? "Erro ao guardar competição");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

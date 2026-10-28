@@ -7,7 +7,10 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { MATCH_EVENT_MAX_MINUTE } from "@/constants/validation";
+import {
+  MATCH_EVENT_MAX_MINUTE,
+  MATCH_EVENT_MIN_MINUTE,
+} from "@/constants/validation";
 import { CompetitionStatus, MatchEventType } from "@/generated/prisma";
 import { notifyAddMatchEvent } from "@/lib/socket";
 import { MatchEventBEResponse } from "@/types/match-event";
@@ -50,15 +53,19 @@ export async function POST(request: Request) {
   }
 
   if (!type) {
-    return invalidParam("Type");
+    return invalidParam("Type", "type");
   }
 
   if (!teamId) {
     return invalidParam("Team");
   }
 
-  if (!minute || minute > MATCH_EVENT_MAX_MINUTE) {
-    return invalidParam("Minute");
+  if (
+    !minute ||
+    minute < MATCH_EVENT_MIN_MINUTE ||
+    minute > MATCH_EVENT_MAX_MINUTE
+  ) {
+    return invalidParam("Minute", "minute");
   }
 
   if (Boolean(playerId) === Boolean(staffId)) {
@@ -69,7 +76,7 @@ export async function POST(request: Request) {
     type === MatchEventType.YELLOW_CARD || type === MatchEventType.RED_CARD;
 
   if (staffId && !isCard) {
-    return invalidParam("Type");
+    return invalidParam("Type", "type");
   }
 
   const match = await prisma.match.findUnique({

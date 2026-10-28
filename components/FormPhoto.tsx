@@ -1,24 +1,29 @@
 "use client";
 
 import ImageIcon from "@mui/icons-material/Image";
-import { Avatar, Button, Stack } from "@mui/material";
+import { Alert, Avatar, Button, Stack } from "@mui/material";
 import { type ChangeEvent, useEffect, useState } from "react";
 import {
   arrayBufferToBase64,
   getPhotoPreviewSource,
-  isPhotoMimeType,
-  MAX_PHOTO_BYTES,
   resizeImage,
 } from "@/lib/photo";
 
 type FormPhotoProps = {
   label: string;
   value?: string | null;
+  fieldError?: string;
   onChange: (photo: string | null) => void;
 };
 
-export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
+export default function FormPhoto({
+  label,
+  value,
+  fieldError,
+  onChange,
+}: FormPhotoProps) {
   const [preview, setPreview] = useState(() => getPhotoPreviewSource(value));
+  const [error, setError] = useState("");
 
   useEffect(
     () => () => {
@@ -30,16 +35,12 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (!file) return;
 
-    if (!isPhotoMimeType(file.type)) {
-      alert("Escolha uma imagem JPEG, PNG ou WebP");
+    if (!file) {
       return;
     }
-    if (file.size > MAX_PHOTO_BYTES) {
-      alert("A imagem deve ter no máximo 5 MB");
-      return;
-    }
+
+    setError("");
 
     try {
       const resizedImage = await resizeImage(file);
@@ -47,7 +48,7 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
       setPreview(URL.createObjectURL(resizedImage));
       onChange(arrayBufferToBase64(buffer));
     } catch {
-      alert("Não foi possível processar a imagem escolhida");
+      setError("Não foi possível processar a imagem escolhida.");
     }
   }
 
@@ -99,6 +100,11 @@ export default function FormPhoto({ label, value, onChange }: FormPhotoProps) {
           >
             Remover
           </Button>
+        )}
+        {(fieldError || error) && (
+          <Alert severity="error" sx={{ p: 0.5 }}>
+            {fieldError || error}
+          </Alert>
         )}
       </Stack>
     </Stack>

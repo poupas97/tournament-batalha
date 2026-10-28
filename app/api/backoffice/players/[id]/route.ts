@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { MAX_NAME_LENGTH, PLAYER_NUMBER_MAX } from "@/constants/validation";
+import {
+  MAX_NAME_LENGTH,
+  PLAYER_NUMBER_MAX,
+  PLAYER_NUMBER_MIN,
+} from "@/constants/validation";
 import {
   deletedResponse,
   getParamId,
@@ -73,11 +77,11 @@ export async function PUT(request: Request, context: RouteContext) {
   const photo = body?.photo === undefined ? null : body.photo;
 
   if (!name || name.length > MAX_NAME_LENGTH) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
-  if (!number || number > PLAYER_NUMBER_MAX) {
-    return invalidParam("Number");
+  if (!number || number < PLAYER_NUMBER_MIN || number > PLAYER_NUMBER_MAX) {
+    return invalidParam("Number", "number");
   }
 
   if (!teamId) {
@@ -85,7 +89,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   if (!isValidPhotoValue(photo)) {
-    return invalidParam("Photo");
+    return invalidParam("Photo", "photo");
   }
 
   const [player, team] = await Promise.all([
@@ -137,7 +141,10 @@ export async function PUT(request: Request, context: RouteContext) {
     await Promise.allSettled(uploadedKeys.map(deletePhoto));
 
     return NextResponse.json(
-      { error: "Não foi possível atualizar o jogador e guardar a foto" },
+      {
+        error: "Não foi possível atualizar o jogador e guardar a foto",
+        key: "photo",
+      },
       { status: 502 },
     );
   }

@@ -21,15 +21,7 @@ export default function CreateTeamPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao criar equipa" }));
-      alert(error.error ?? "Erro ao criar equipa");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

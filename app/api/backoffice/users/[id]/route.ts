@@ -63,15 +63,15 @@ export async function PUT(request: Request, context: RouteContext) {
   const role = sanitizeEnum(body?.role, UserRole);
 
   if (!name) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
   if (!email) {
-    return invalidParam("Email");
+    return invalidParam("Email", "email");
   }
 
   if (!role) {
-    return invalidParam("Role");
+    return invalidParam("Role", "role");
   }
 
   let updatedUser: {
@@ -117,7 +117,7 @@ export async function PUT(request: Request, context: RouteContext) {
     });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      return conflict("Email");
+      return conflict("Email", "email");
     }
 
     throw error;

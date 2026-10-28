@@ -5,3 +5,17 @@
 
 2. **Completar o registo de auditoria.**
    Atualmente há auditoria em algumas alterações de jogos, mas não nas alterações de equipas, jogadores, competições, utilizadores e eventos; registar as operações para que o histórico administrativo seja completo.
+
+3. **Melhorar o calendário e a página inicial.**
+   - Permitir filtrar jogos por competição e estado, e tornar claro o resultado e o estado de cada jogo no calendário.
+   - Na página inicial, mostrar estados de carregamento, erro e semana sem jogos; atualmente o calendário é apresentado sem receber esses estados.
+   - No backoffice, facilitar a consulta de jogos por data e competição quando há várias competições em paralelo.
+
+4. **Guiar melhor o fluxo de gestão da competição.**
+   - Mostrar os passos e o estado atual da competição, com indicações do que falta para avançar.
+   - Antes do sorteio, apresentar um resumo de confirmação com equipas, formato e consequências, dado que o sorteio só pode ser feito uma vez.
+   - Tornar as ações disponíveis em cada estado mais evidentes e explicar junto da ação quando está bloqueada.
+
+5. **Reforçar acessibilidade e uso em ecrãs pequenos.**
+   - Rever a navegação do backoffice em telemóveis, onde existem vários itens e o botão de saída na mesma barra.
+   - Garantir foco visível e operação por teclado em elementos clicáveis, como linhas de tabela e cartões de jogadores/staff usados para registar eventos.

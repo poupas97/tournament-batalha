@@ -15,15 +15,7 @@ export default function CreateCompetitionPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao criar competição" }));
-      alert(error.error ?? "Erro ao criar competição");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

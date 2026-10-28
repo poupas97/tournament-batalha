@@ -37,22 +37,26 @@ export async function POST(request: Request) {
   const awayTeamId = sanitizeNumber(body?.awayTeamId);
 
   if (!date) {
-    return invalidParam("Date");
+    return invalidParam("Date", "date");
   }
 
   if (!round) {
-    return invalidParam("Round");
+    return invalidParam("Round", "round");
   }
 
   if (!competitionId) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
-  if (
-    !homeTeamId ||
-    !awayTeamId ||
-    (homeTeamId && awayTeamId && homeTeamId === awayTeamId)
-  ) {
+  if (!homeTeamId) {
+    return invalidParam("HomeTeam", "homeTeamId");
+  }
+
+  if (!awayTeamId) {
+    return invalidParam("AwayTeam", "awayTeamId");
+  }
+
+  if (homeTeamId === awayTeamId) {
     return invalidParam("Teams");
   }
 
@@ -60,6 +64,15 @@ export async function POST(request: Request) {
     where: { id: { in: [homeTeamId, awayTeamId] }, competitionId },
     select: { id: true },
   });
+
+  const validTeamIds = new Set(teams.map((team) => team.id));
+  if (!validTeamIds.has(homeTeamId)) {
+    return invalidParam("HomeTeam", "homeTeamId");
+  }
+
+  if (!validTeamIds.has(awayTeamId)) {
+    return invalidParam("AwayTeam", "awayTeamId");
+  }
 
   if (teams.length !== 2) {
     return invalidParam("Teams");
@@ -71,7 +84,7 @@ export async function POST(request: Request) {
   });
 
   if (!competition) {
-    return invalidParam("Competition");
+    return invalidParam("Competition", "competitionId");
   }
 
   const match = await prisma.match.create({

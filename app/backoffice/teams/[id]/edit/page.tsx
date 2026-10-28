@@ -32,15 +32,7 @@ export default function EditTeamPage() {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Erro ao guardar equipa" }));
-      alert(error.error ?? "Erro ao guardar equipa");
-      return;
-    }
-
-    router.back();
+    return { response, onSuccess: () => router.back() };
   }
 
   return (

@@ -50,24 +50,24 @@ export async function POST(request: Request) {
   const opponents = sanitizeNumber(body?.opponents);
 
   if (!name || name.length > MAX_NAME_LENGTH) {
-    return invalidParam("Name");
+    return invalidParam("Name", "name");
   }
 
   if (!config) {
-    return invalidParam("CompetitionConfig");
+    return invalidParam("CompetitionConfig", "config");
   }
 
   if (!startDate) {
-    return invalidParam("StartDate");
+    return invalidParam("StartDate", "startDate");
   }
 
   if (!color) {
-    return invalidParam("Color");
+    return invalidParam("Color", "color");
   }
 
   const colorInUse = await prisma.competition.findUnique({ where: { color } });
   if (colorInUse) {
-    return conflict("Color");
+    return conflict("Color", "color");
   }
 
   const competition = await prisma.competition.create({
