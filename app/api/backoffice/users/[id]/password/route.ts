@@ -7,13 +7,13 @@ import {
   getParamId,
   invalidParam,
   noFound,
+  requireAdminToken,
   unauthorized,
   updatedResponse,
 } from "@/lib/api";
-import { requireCurrentAdminToken } from "@/lib/adminAuth";
 
 export async function PUT(request: Request, context: RouteContext) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -41,7 +41,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const existing = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: userId, deletedAt: null },
   });
 
   if (!existing) {

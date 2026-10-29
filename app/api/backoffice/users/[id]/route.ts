@@ -11,14 +11,15 @@ import {
   getResponse,
   invalidParam,
   noFound,
+  requireAdminToken,
   unauthorized,
   updatedResponse,
 } from "@/lib/api";
-import { UserRole } from "@/generated/prisma";
-import { requireCurrentAdminToken } from "@/lib/adminAuth";
+import { AuditAction, UserRole } from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET(request: Request, context: RouteContext) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -35,6 +36,7 @@ export async function GET(request: Request, context: RouteContext) {
       name: true,
       email: true,
       role: true,
+      deletedAt: true,
       createdAt: true,
     },
   });
@@ -47,7 +49,7 @@ export async function GET(request: Request, context: RouteContext) {
 }
 
 export async function PUT(request: Request, context: RouteContext) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -85,17 +87,15 @@ export async function PUT(request: Request, context: RouteContext) {
   try {
     updatedUser = await prisma.$transaction(async (tx) => {
       const existing = await tx.user.findUnique({
-        where: { id: userId },
+        where: { id: userId, deletedAt: null },
         select: { id: true, role: true },
       });
 
-      if (!existing) {
-        return null;
-      }
+      if (!existing) return null;
 
       if (existing.role === UserRole.ADMIN && role !== UserRole.ADMIN) {
         const adminCount = await tx.user.count({
-          where: { role: UserRole.ADMIN },
+          where: { role: UserRole.ADMIN, deletedAt: null },
         });
 
         if (adminCount <= MINIMUM_ADMIN_COUNT) {
@@ -111,6 +111,7 @@ export async function PUT(request: Request, context: RouteContext) {
           name: true,
           email: true,
           role: true,
+          deletedAt: true,
           createdAt: true,
         },
       });
@@ -126,7 +127,7 @@ export async function PUT(request: Request, context: RouteContext) {
   if (!updatedUser) {
     if (
       await prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: userId, deletedAt: null },
         select: { id: true },
       })
     ) {
@@ -139,7 +140,7 @@ export async function PUT(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -152,8 +153,15 @@ export async function DELETE(request: Request, context: RouteContext) {
   try {
     await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
-        where: { id: userId },
-        select: { id: true, role: true },
+        where: { id: userId, deletedAt: null },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          deletedAt: true,
+          createdAt: true,
+        },
       });
 
       if (!user) {
@@ -162,7 +170,7 @@ export async function DELETE(request: Request, context: RouteContext) {
 
       if (user.role === UserRole.ADMIN) {
         const adminCount = await tx.user.count({
-          where: { role: UserRole.ADMIN },
+          where: { role: UserRole.ADMIN, deletedAt: null },
         });
 
         if (adminCount <= MINIMUM_ADMIN_COUNT) {
@@ -170,16 +178,30 @@ export async function DELETE(request: Request, context: RouteContext) {
         }
       }
 
-      await tx.user.delete({
+      const deleted = await tx.user.update({
         where: { id: userId },
+        data: { deletedAt: new Date() },
         select: {
           id: true,
           name: true,
           email: true,
           role: true,
+          deletedAt: true,
           createdAt: true,
         },
       });
+
+      await createAuditLog(
+        {
+          token,
+          action: AuditAction.DELETE,
+          entity: "User",
+          entityId: userId,
+          before: user,
+          after: deleted,
+        },
+        tx,
+      );
     });
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {

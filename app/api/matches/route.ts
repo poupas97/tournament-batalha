@@ -4,7 +4,24 @@ import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const matches = await prisma.match.findMany({
-    where: { competition: { active: true } },
+    where: {
+      deletedAt: null,
+      competition: { active: true, deletedAt: null },
+      AND: [
+        {
+          OR: [
+            { homeTeamId: null },
+            { homeTeam: { is: { deletedAt: null } } },
+          ],
+        },
+        {
+          OR: [
+            { awayTeamId: null },
+            { awayTeam: { is: { deletedAt: null } } },
+          ],
+        },
+      ],
+    },
     orderBy: [{ competition: { name: "asc" } }, { date: "asc" }],
     include: { competition: true, homeTeam: true, awayTeam: true },
   });

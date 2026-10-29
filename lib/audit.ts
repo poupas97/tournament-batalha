@@ -55,55 +55,6 @@ function sanitizeAuditValue(value: unknown): InputJsonValue | undefined {
   return JSON.parse(serialized) as InputJsonValue;
 }
 
-function isJsonRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isEqual(left: unknown, right: unknown) {
-  return JSON.stringify(left) === JSON.stringify(right);
-}
-
-function getAuditChanges(
-  before: InputJsonValue | undefined,
-  after: InputJsonValue | undefined,
-): InputJsonValue | undefined {
-  if (!isJsonRecord(before) || !isJsonRecord(after)) {
-    return undefined;
-  }
-
-  const beforeRecord = before as Record<string, unknown>;
-  const afterRecord = after as Record<string, unknown>;
-
-  const changes: Record<string, { before: unknown; after: unknown }> = {};
-
-  const keys = new Set([
-    ...Object.keys(beforeRecord),
-    ...Object.keys(afterRecord),
-  ]);
-
-  for (const key of keys) {
-    const beforeValue = beforeRecord[key];
-    const afterValue = afterRecord[key];
-
-    if (isEqual(beforeValue, afterValue)) {
-      continue;
-    }
-
-    changes[key] = {
-      before: beforeValue,
-      after: afterValue,
-    };
-  }
-
-  if (!Object.keys(changes).length) {
-    return undefined;
-  }
-
-  return {
-    changedFields: Object.keys(changes),
-    changes,
-  } as InputJsonValue;
-}
 function getAuditActorId(token: unknown) {
   if (!token || typeof token !== "object") {
     return null;
@@ -116,9 +67,10 @@ export async function createAuditLog(
   params: CreateAuditLogParams,
   client: Pick<PrismaClient, "auditLog">,
 ) {
-  const before = sanitizeAuditValue(params.before);
-  const after = sanitizeAuditValue(params.after);
-  const metadata = getAuditChanges(before, after);
+  const metadata = {
+    before: sanitizeAuditValue(params.before) ?? null,
+    after: sanitizeAuditValue(params.after) ?? null,
+  } as InputJsonValue;
 
   return await client.auditLog.create({
     data: {

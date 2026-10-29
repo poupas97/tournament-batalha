@@ -11,7 +11,7 @@ export default function CreateTeamPage() {
   const router = useRouter();
 
   const { data, loading, error } = useGetState<CompetitionBEResponse[]>(
-    "/api/backoffice/competitions",
+    "/api/backoffice/competitions?noDeleted=true",
   );
 
   async function handleSubmit(values: ITeamFormValues) {

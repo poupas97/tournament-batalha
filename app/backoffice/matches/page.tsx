@@ -31,23 +31,15 @@ export default function BackofficeMatchesPage() {
           {
             key: "homeTeam.name",
             header: "Equipa da Casa",
-            render: (match) => (
-              <TeamIdentity
-                team={match.homeTeam}
-                placeholder="A definir"
-               
-              />
+            render: (it) => (
+              <TeamIdentity team={it.homeTeam} placeholder="A definir" />
             ),
           },
           {
             key: "awayTeam.name",
             header: "Equipa Visitante",
-            render: (match) => (
-              <TeamIdentity
-                team={match.awayTeam}
-                placeholder="A definir"
-               
-              />
+            render: (it) => (
+              <TeamIdentity team={it.awayTeam} placeholder="A definir" />
             ),
           },
           { key: "status", header: "Estado" },

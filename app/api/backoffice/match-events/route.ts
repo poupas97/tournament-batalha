@@ -80,13 +80,13 @@ export async function POST(request: Request) {
   }
 
   const match = await prisma.match.findUnique({
-    where: { id: matchId },
+    where: { id: matchId, deletedAt: null },
     select: {
       status: true,
       round: true,
       homeTeamId: true,
       awayTeamId: true,
-      competition: { select: { status: true } },
+      competition: { select: { status: true, deletedAt: true } },
     },
   });
 

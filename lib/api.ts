@@ -2,9 +2,29 @@ import { getToken } from "next-auth/jwt";
 import { RouteContext } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 import { parsePositiveInteger } from "@/lib/sanitize";
+import prisma from "@/lib/prisma";
+import { UserRole } from "@/generated/prisma";
 
 export async function requireToken(request: Request) {
-  return getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({
+    req: request as any,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  const userId = parsePositiveInteger(token?.id);
+  if (!token || !userId) return null;
+
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    select: { id: true, role: true },
+  });
+
+  return user ? { ...token, role: user.role } : null;
+}
+
+export async function requireAdminToken(request: Request) {
+  const token = await requireToken(request);
+  return token?.role === UserRole.ADMIN ? token : null;
 }
 
 export async function getParamId(context: RouteContext) {
@@ -52,4 +72,8 @@ export function deletedResponse() {
 
 export function getSearchParam(request: NextRequest, key: string) {
   return request.nextUrl.searchParams.get(key);
+}
+
+export function shouldHideDeletedItems(request: NextRequest) {
+  return getSearchParam(request, "noDeleted") === "true";
 }

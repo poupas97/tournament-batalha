@@ -22,7 +22,8 @@ export default function BackofficeViewPlayerPage() {
         description="Consulte os dados deste jogador"
         back
         edit={
-          data?.team.competition.status === CompetitionStatus.DRAFT
+          data?.team.competition.status === CompetitionStatus.DRAFT &&
+          !data.team.competition.deletedAt
             ? `/backoffice/players/${playerId}/edit`
             : undefined
         }

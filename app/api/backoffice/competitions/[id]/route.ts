@@ -12,6 +12,7 @@ import { RouteContext } from "@/types/api";
 import {
   conflict,
   createdResponse,
+  deletedResponse,
   getParamId,
   getResponse,
   invalidParam,
@@ -19,7 +20,12 @@ import {
   requireToken,
   unauthorized,
 } from "@/lib/api";
-import { CompetitionConfig, CompetitionStatus } from "@/generated/prisma";
+import {
+  AuditAction,
+  CompetitionConfig,
+  CompetitionStatus,
+} from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET(request: Request, context: RouteContext) {
   const token = await requireToken(request);
@@ -64,7 +70,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const existing = await prisma.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, deletedAt: null },
   });
 
   if (!existing) {
@@ -125,4 +131,38 @@ export async function PUT(request: Request, context: RouteContext) {
   });
 
   return createdResponse(competitionUpdated);
+}
+
+export async function DELETE(request: Request, context: RouteContext) {
+  const token = await requireToken(request);
+  if (!token) return unauthorized();
+
+  const competitionId = await getParamId(context);
+  if (!competitionId) return invalidParam("Competition");
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId, deletedAt: null },
+  });
+  if (!competition) return noFound("Competition");
+
+  await prisma.$transaction(async (tx) => {
+    const deleted = await tx.competition.update({
+      where: { id: competitionId },
+      data: { deletedAt: new Date() },
+    });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.DELETE,
+        entity: "Competition",
+        entityId: competitionId,
+        before: competition,
+        after: deleted,
+      },
+      tx,
+    );
+  });
+
+  return deletedResponse();
 }

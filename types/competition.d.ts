@@ -27,6 +27,7 @@ export type CompetitionBEResponse = {
   _count?: {
     teams: number;
   };
+  deletedAt: string | null;
 };
 
 export type LeagueStanding = {

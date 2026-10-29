@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   MAX_NAME_LENGTH,
   TEAM_POT_MAX,
@@ -16,16 +16,19 @@ import {
   getResponse,
   invalidParam,
   requireToken,
+  shouldHideDeletedItems,
   unauthorized,
 } from "@/lib/api";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const token = await requireToken(request);
   if (!token) {
     return unauthorized();
   }
 
+  const hideDeleted = shouldHideDeletedItems(request);
   const teams = await prisma.team.findMany({
+    where: { ...(hideDeleted ? { deletedAt: null } : {}) },
     orderBy: [{ name: "asc" }, { competition: { name: "asc" } }],
     include: {
       competition: true,
@@ -76,8 +79,8 @@ export async function POST(request: Request) {
     return invalidParam("Photo", "photo");
   }
 
-  const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+  const competition = await prisma.competition.findFirst({
+    where: { id: competitionId, deletedAt: null },
     select: { id: true, status: true },
   });
 

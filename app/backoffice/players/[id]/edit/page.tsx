@@ -43,6 +43,7 @@ export default function EditPlayerPage() {
       {canEdit && (
         <Form<IPlayerEditValues>
           initialValues={data}
+          entity="players"
           fields={[
             { key: "photo", label: "Foto", type: "photo" },
             { key: "name", label: "Nome" },

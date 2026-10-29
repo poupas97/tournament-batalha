@@ -9,13 +9,13 @@ type CompetitionSummary = {
   id: number;
   name: string;
   color: string;
-  createdAt: string;
   config: CompetitionConfig;
   qualifed?: number;
   opponents?: number;
   _count: {
     teams: number;
   };
+  createdAt: string;
 };
 
 export default function BackofficeCompetitionsPage() {

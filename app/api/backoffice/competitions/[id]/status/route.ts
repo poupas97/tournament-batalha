@@ -30,7 +30,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, deletedAt: null },
     select: { id: true, status: true },
   });
 
@@ -43,7 +43,9 @@ export async function PUT(request: Request, context: RouteContext) {
       return invalidParam("CompetitionStatus");
     }
 
-    const matches = await prisma.match.count({ where: { competitionId } });
+    const matches = await prisma.match.count({
+      where: { competitionId, deletedAt: null },
+    });
     if (matches === 0) {
       return invalidParam("Matches");
     }

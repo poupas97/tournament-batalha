@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
   const players = await prisma.player.findMany({
     orderBy: { createdAt: "desc" },
-    include: { team: true },
+    include: { team: { include: { competition: true } } },
   });
 
   return getResponse(players);
@@ -53,8 +53,11 @@ export async function POST(request: Request) {
   }
 
   const team = await prisma.team.findUnique({
-    where: { id: teamId },
-    select: { id: true, competition: { select: { status: true } } },
+    where: { id: teamId, deletedAt: null, competition: { deletedAt: null } },
+    select: {
+      id: true,
+      competition: { select: { status: true } },
+    },
   });
 
   if (!team) {

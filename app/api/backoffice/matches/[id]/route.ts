@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { sanitizeDate, sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { RouteContext } from "@/types/api";
 import {
+  deletedResponse,
   getParamId,
   getResponse,
   invalidParam,
@@ -75,7 +76,11 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const existing = await prisma.match.findUnique({
-    where: { id: matchId },
+    where: {
+      id: matchId,
+      deletedAt: null,
+      competition: { deletedAt: null },
+    },
     select: {
       id: true,
       date: true,
@@ -142,7 +147,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const targetCompetition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, deletedAt: null },
     select: { id: true },
   });
 
@@ -164,7 +169,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   if (assignedTeamIds.length > 0) {
     const teams = await prisma.team.findMany({
-      where: { id: { in: assignedTeamIds }, competitionId },
+      where: { id: { in: assignedTeamIds }, competitionId, deletedAt: null },
       select: { id: true },
     });
 
@@ -211,4 +216,38 @@ export async function PUT(request: Request, context: RouteContext) {
   });
 
   return updatedResponse(matchUpdated);
+}
+
+export async function DELETE(request: Request, context: RouteContext) {
+  const token = await requireToken(request);
+  if (!token) return unauthorized();
+
+  const matchId = await getParamId(context);
+  if (!matchId) return invalidParam("Match");
+
+  const match = await prisma.match.findUnique({
+    where: { id: matchId, deletedAt: null },
+  });
+  if (!match) return noFound("Match");
+
+  await prisma.$transaction(async (tx) => {
+    const deleted = await tx.match.update({
+      where: { id: matchId },
+      data: { deletedAt: new Date() },
+    });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.DELETE,
+        entity: "Match",
+        entityId: matchId,
+        before: match,
+        after: deleted,
+      },
+      tx,
+    );
+  });
+
+  return deletedResponse();
 }

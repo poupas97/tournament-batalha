@@ -21,13 +21,15 @@ export default function FormMatch({
     data: competitions,
     loading: competitionsLoading,
     error: competitionsError,
-  } = useGetState<CompetitionBEResponse[]>("/api/backoffice/competitions");
+  } = useGetState<CompetitionBEResponse[]>(
+    "/api/backoffice/competitions?noDeleted=true",
+  );
 
   const {
     data: teams,
     loading: teamsLoading,
     error: teamsError,
-  } = useGetState<TeamBEResponse[]>("/api/backoffice/teams");
+  } = useGetState<TeamBEResponse[]>("/api/backoffice/teams?noDeleted=true");
 
   if (
     teamsLoading ||
@@ -44,6 +46,7 @@ export default function FormMatch({
   return (
     <Form<IMatchFormValues>
       initialValues={initialValues}
+      entity="matches"
       fields={[
         {
           key: "competitionId",

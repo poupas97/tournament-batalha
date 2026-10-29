@@ -132,6 +132,7 @@ export default function FormTeam({
   return (
     <Form<ITeamFormValues>
       initialValues={initialValues}
+      entity="teams"
       fields={[
         { key: "photo", label: "Logo", type: "photo" },
         { key: "name", label: "Nome" },
@@ -145,7 +146,7 @@ export default function FormTeam({
           key: "competitionId",
           label: "Competição",
           type: "select",
-          options: competitions.map((c) => ({ value: c.id, label: c.name })),
+          options: competitions.map((it) => ({ value: it.id, label: it.name })),
         },
       ]}
       onSubmit={onSubmit}

@@ -52,6 +52,7 @@ export type TeamBEResponse = {
     players: number;
     staffs: number;
   };
+  deletedAt: string | null;
 };
 
 export type PlayerEventBEResponse = MatchEvent & {

@@ -61,7 +61,11 @@ export async function POST(request: Request) {
   }
 
   const teams = await prisma.team.findMany({
-    where: { id: { in: [homeTeamId, awayTeamId] }, competitionId },
+    where: {
+      id: { in: [homeTeamId, awayTeamId] },
+      competitionId,
+      deletedAt: null,
+    },
     select: { id: true },
   });
 
@@ -78,8 +82,8 @@ export async function POST(request: Request) {
     return invalidParam("Teams");
   }
 
-  const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+  const competition = await prisma.competition.findFirst({
+    where: { id: competitionId, deletedAt: null },
     select: { id: true },
   });
 

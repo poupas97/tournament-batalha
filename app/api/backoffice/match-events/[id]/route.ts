@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { RouteContext } from "@/types/api";
-import { CompetitionStatus } from "@/generated/prisma";
+import { AuditAction, CompetitionStatus } from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 import {
   deletedResponse,
   getParamId,
@@ -31,6 +32,7 @@ export async function GET(request: Request, context: RouteContext) {
       player: true,
       staff: true,
       team: true,
+      match: { include: { competition: true } },
     },
   });
 
@@ -53,16 +55,15 @@ export async function DELETE(request: Request, context: RouteContext) {
   }
 
   const matchEvent = await prisma.matchEvent.findUnique({
-    where: { id: matchEventId },
-    select: {
-      id: true,
-      matchId: true,
-      match: {
-        select: {
-          status: true,
-          competition: { select: { status: true } },
-        },
-      },
+    where: {
+      id: matchEventId,
+      match: { deletedAt: null, competition: { deletedAt: null } },
+    },
+    include: {
+      team: true,
+      player: true,
+      staff: true,
+      match: { include: { competition: true } },
     },
   });
 
@@ -82,8 +83,20 @@ export async function DELETE(request: Request, context: RouteContext) {
     return invalidParam("MatchStatus");
   }
 
-  await prisma.matchEvent.delete({
-    where: { id: matchEventId },
+  await prisma.$transaction(async (tx) => {
+    const deleted = await tx.matchEvent.delete({ where: { id: matchEventId } });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.DELETE,
+        entity: "MatchEvent",
+        entityId: matchEventId,
+        before: matchEvent,
+        after: deleted,
+      },
+      tx,
+    );
   });
 
   notifyRemoveMatchEvent(matchEvent.matchId, matchEvent);

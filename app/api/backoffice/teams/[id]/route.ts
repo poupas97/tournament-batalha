@@ -5,7 +5,8 @@ import {
   TEAM_POT_MAX,
   TEAM_POT_MIN,
 } from "@/constants/validation";
-import { CompetitionStatus } from "@/generated/prisma";
+import { AuditAction, CompetitionStatus } from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
 import { isPhotoUrl, sanitizePlayers, sanitizeStaffs } from "@/lib/staff";
 import { isValidPhotoValue } from "@/lib/photo";
@@ -13,6 +14,7 @@ import { getRandomSuffix } from "@/lib/random";
 import { deletePhoto, uploadPhoto } from "@/lib/objectStorage";
 import { RouteContext } from "@/types/api";
 import {
+  deletedResponse,
   getParamId,
   getResponse,
   invalidParam,
@@ -92,8 +94,15 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const existing = await prisma.team.findUnique({
-    where: { id: teamId },
-    select: { id: true, competition: { select: { status: true } } },
+    where: {
+      id: teamId,
+      deletedAt: null,
+      competition: { deletedAt: null },
+    },
+    select: {
+      id: true,
+      competition: { select: { status: true } },
+    },
   });
 
   if (!existing) {
@@ -108,15 +117,9 @@ export async function PUT(request: Request, context: RouteContext) {
   try {
     const teamUpdated = await prisma.$transaction(
       async (tx) => {
-        const currentPlayers = await tx.player.findMany({
-          where: { teamId },
-          select: { id: true },
-        });
+        const currentPlayers = await tx.player.findMany({ where: { teamId } });
 
-        const currentStaffs = await tx.staff.findMany({
-          where: { teamId },
-          select: { id: true },
-        });
+        const currentStaffs = await tx.staff.findMany({ where: { teamId } });
 
         const playerIds: number[] = [];
         const staffIds: number[] = [];
@@ -198,13 +201,41 @@ export async function PUT(request: Request, context: RouteContext) {
           updatedStaffs.push(saved);
         }
 
-        await tx.player.deleteMany({
-          where: { teamId, id: { notIn: playerIds } },
-        });
+        for (const removed of currentPlayers.filter(
+          ({ id }) => !playerIds.includes(id),
+        )) {
+          const deleted = await tx.player.delete({ where: { id: removed.id } });
 
-        await tx.staff.deleteMany({
-          where: { teamId, id: { notIn: staffIds } },
-        });
+          await createAuditLog(
+            {
+              token,
+              action: AuditAction.DELETE,
+              entity: "Player",
+              entityId: removed.id,
+              before: removed,
+              after: deleted,
+            },
+            tx,
+          );
+        }
+
+        for (const removed of currentStaffs.filter(
+          ({ id }) => !staffIds.includes(id),
+        )) {
+          const deleted = await tx.staff.delete({ where: { id: removed.id } });
+
+          await createAuditLog(
+            {
+              token,
+              action: AuditAction.DELETE,
+              entity: "Staff",
+              entityId: removed.id,
+              before: removed,
+              after: deleted,
+            },
+            tx,
+          );
+        }
 
         const updatedTeam = await tx.team.update({
           where: { id: teamId },
@@ -245,4 +276,38 @@ export async function PUT(request: Request, context: RouteContext) {
       { status: 502 },
     );
   }
+}
+
+export async function DELETE(request: Request, context: RouteContext) {
+  const token = await requireToken(request);
+  if (!token) return unauthorized();
+
+  const teamId = await getParamId(context);
+  if (!teamId) return invalidParam("Team");
+
+  const team = await prisma.team.findUnique({
+    where: { id: teamId, deletedAt: null },
+  });
+  if (!team) return noFound("Team");
+
+  await prisma.$transaction(async (tx) => {
+    const deleted = await tx.team.update({
+      where: { id: teamId },
+      data: { deletedAt: new Date() },
+    });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.DELETE,
+        entity: "Team",
+        entityId: teamId,
+        before: team,
+        after: deleted,
+      },
+      tx,
+    );
+  });
+
+  return deletedResponse();
 }

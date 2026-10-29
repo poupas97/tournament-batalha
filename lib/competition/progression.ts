@@ -18,10 +18,11 @@ export async function resolveCompetitionProgression(
   tx: Prisma.TransactionClient,
 ) {
   const competition = await tx.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, deletedAt: null },
     include: {
-      teams: true,
+      teams: { where: { deletedAt: null } },
       matches: {
+        where: { deletedAt: null },
         include: { events: true, homeTeam: true, awayTeam: true },
         orderBy: { id: "asc" },
       },

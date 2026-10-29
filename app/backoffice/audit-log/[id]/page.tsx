@@ -33,7 +33,7 @@ export default function ViewAuditLogPage() {
           { key: "entity", label: "Entidade" },
           { key: "entityId", label: "ID da Entidade" },
           { key: "metadata", label: "Metadata", format: "json" },
-          { key: "createdAt", label: "Data", format: "date" },
+          { key: "createdAt", label: "Data", format: "datetime" },
         ]}
       />
     </>

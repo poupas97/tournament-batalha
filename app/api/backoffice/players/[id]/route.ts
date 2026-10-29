@@ -16,7 +16,8 @@ import {
   updatedResponse,
 } from "@/lib/api";
 import { sanitizeNumber, sanitizeText } from "@/lib/sanitize";
-import { CompetitionStatus } from "@/generated/prisma";
+import { AuditAction, CompetitionStatus } from "@/generated/prisma";
+import { createAuditLog } from "@/lib/audit";
 import { RouteContext } from "@/types/api";
 import { isPhotoUrl, isValidPhotoValue } from "@/lib/photo";
 import { getRandomSuffix } from "@/lib/random";
@@ -94,15 +95,22 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const [player, team] = await Promise.all([
     prisma.player.findUnique({
-      where: { id: playerId },
+      where: { id: playerId, team: { competition: { deletedAt: null } } },
       select: {
         id: true,
-        team: { select: { competition: { select: { status: true } } } },
+        team: {
+          select: {
+            competition: { select: { status: true } },
+          },
+        },
       },
     }),
     prisma.team.findUnique({
-      where: { id: teamId },
-      select: { id: true, competition: { select: { status: true } } },
+      where: { id: teamId, deletedAt: null, competition: { deletedAt: null } },
+      select: {
+        id: true,
+        competition: { select: { status: true } },
+      },
     }),
   ]);
 
@@ -163,10 +171,7 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const player = await prisma.player.findUnique({
     where: { id: playerId },
-    select: {
-      id: true,
-      team: { select: { competition: { select: { status: true } } } },
-    },
+    include: { team: { include: { competition: true } } },
   });
 
   if (!player) {
@@ -177,8 +182,20 @@ export async function DELETE(request: Request, context: RouteContext) {
     return invalidParam("CompetitionStatus");
   }
 
-  await prisma.player.delete({
-    where: { id: playerId },
+  await prisma.$transaction(async (tx) => {
+    const deleted = await tx.player.delete({ where: { id: playerId } });
+
+    await createAuditLog(
+      {
+        token,
+        action: AuditAction.DELETE,
+        entity: "Player",
+        entityId: playerId,
+        before: player,
+        after: deleted,
+      },
+      tx,
+    );
   });
 
   return deletedResponse();

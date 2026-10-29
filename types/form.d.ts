@@ -40,4 +40,6 @@ export type FormProps<T extends Record<string, unknown>> = {
   onSubmit: FormSubmitHandler<T>;
   children?: ReactNode;
   vertical?: boolean;
+  submitLabel?: string;
+  entity?: "users" | "teams" | "competitions" | "players" | "matches";
 };

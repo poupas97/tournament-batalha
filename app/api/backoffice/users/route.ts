@@ -10,12 +10,12 @@ import {
   createdResponse,
   getResponse,
   invalidParam,
+  requireAdminToken,
   unauthorized,
 } from "@/lib/api";
-import { requireCurrentAdminToken } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -27,6 +27,7 @@ export async function GET(request: Request) {
       name: true,
       email: true,
       role: true,
+      deletedAt: true,
       createdAt: true,
     },
   });
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
         name: true,
         email: true,
         role: true,
+        deletedAt: true,
         createdAt: true,
       },
     });

@@ -21,6 +21,7 @@ export default function FormCompetition({
   return (
     <Form<ICompetitionFormValues>
       initialValues={initialValues}
+      entity="competitions"
       fields={[
         { key: "name", label: "Nome" },
         { key: "startDate", label: "Data de início", type: "date" },

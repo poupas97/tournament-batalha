@@ -18,7 +18,7 @@ export default function EditUserPage() {
   const userId = params?.id;
 
   const { data, loading, error } = useGetState<UserBEResponse>(
-    userId ? `/api/backoffice/users/${userId}` : undefined,
+    `/api/backoffice/users/${userId}`,
   );
 
   async function handleSubmit(values: IUserFormValues) {
@@ -62,6 +62,7 @@ export default function EditUserPage() {
         <>
           <Form<IUserFormValues>
             initialValues={data}
+            entity="users"
             fields={[
               { key: "name", label: "Nome" },
               { key: "email", label: "Email", type: "email" },

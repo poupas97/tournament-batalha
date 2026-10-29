@@ -9,10 +9,17 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const player = await prisma.player.findUnique({
-    where: { id: playerId, team: { competition: { active: true } } },
+    where: {
+      id: playerId,
+      team: {
+        deletedAt: null,
+        competition: { active: true, deletedAt: null },
+      },
+    },
     include: {
       team: { include: { competition: true } },
       events: {
+        where: { match: { deletedAt: null } },
         orderBy: { minute: "asc" },
         include: {
           match: {

@@ -1,6 +1,6 @@
 import { PLAYER_NUMBER_MAX } from "@/constants/validation";
 import { parsePositiveInteger, sanitizeName } from "@/lib/sanitize";
-import { isPhotoUrl, isValidPhotoValue } from "@/lib/photo";
+import { isValidPhotoValue } from "@/lib/photo";
 
 export { isPhotoUrl } from "@/lib/photo";
 

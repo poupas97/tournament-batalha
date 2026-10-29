@@ -3,7 +3,7 @@ import { CompetitionStatsBEResponse } from "@/types/competition";
 import { Paper, Typography } from "@mui/material";
 import TeamIdentity from "@/components/TeamIdentity";
 import PlayerIdentity from "@/components/PlayerIdentity";
-import { Player, Team } from "@/generated/prisma";
+import { Team } from "@/generated/prisma";
 
 interface RankingScoresTableProps {
   rankingScores: CompetitionStatsBEResponse["rankingScores"];

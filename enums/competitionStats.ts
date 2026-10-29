@@ -25,6 +25,8 @@ export const rankingScoresQuery = async (
     WHERE
         me.type IN ('GOAL', 'PENALTY_GOAL')
         AND m."competitionId" = ${competitionId}
+        AND t."deletedAt" IS NULL
+        AND m."deletedAt" IS NULL
         AND m.status IN ('RT_END', 'ET_END', 'PENALTIES_END')
     GROUP BY
         p.id,

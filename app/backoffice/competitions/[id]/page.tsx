@@ -30,8 +30,9 @@ export default function ViewCompetitionPage() {
   const [actionPending, setActionPending] = useState(false);
 
   const { data, loading, error } = useGetState<CompetitionBEResponse>(
-    competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
+    `/api/backoffice/competitions/${competitionId}`,
   );
+  const isDeleted = Boolean(data?.deletedAt);
 
   async function onShuffle(values: ICompetitionFormValues) {
     const response = await fetch(
@@ -51,27 +52,23 @@ export default function ViewCompetitionPage() {
     };
   }
 
-  async function changeCompetitionStatus(status: CompetitionStatus) {
-    const response = await fetch(
-      `/api/backoffice/competitions/${competitionId}/status`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      },
-    );
-    if (!response.ok) {
-      const body = await response.json().catch(() => null);
-      throw new Error(body?.error ?? "Erro ao alterar estado");
-    }
-  }
-
   async function handleChangeStatus(status: CompetitionStatus) {
-    if (actionPending) return;
+    if (actionPending || !competitionId) return;
     setActionPending(true);
     setActionError("");
     try {
-      await changeCompetitionStatus(status);
+      const response = await fetch(
+        `/api/backoffice/competitions/${competitionId}/status`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        },
+      );
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error ?? "Erro ao alterar estado");
+      }
       window.location.reload();
     } catch (error) {
       setActionError(
@@ -92,11 +89,12 @@ export default function ViewCompetitionPage() {
       content: (
         <Form<ICompetitionFormValues>
           initialValues={data}
+          entity="competitions"
           fields={[
             {
               key: "qualified",
               label: "Qualificados",
-              hint: getCompetitionConfigHint,
+              hint: getCompetitionQualifiedHint,
             },
             {
               key: "opponents",
@@ -105,6 +103,7 @@ export default function ViewCompetitionPage() {
             },
           ]}
           vertical
+          submitLabel="Confirmar sorteio"
           onSubmit={onShuffle}
         />
       ),
@@ -162,16 +161,16 @@ export default function ViewCompetitionPage() {
         </Alert>
       )}
 
-      {data?.status === CompetitionStatus.DRAFT && (
+      {data?.status === CompetitionStatus.DRAFT && !isDeleted && (
         <Button
           size="small"
           onClick={openShuffleModal}
           disabled={actionPending}
         >
-          Fazer sorteio
+          Rever e fazer sorteio
         </Button>
       )}
-      {data?.status === CompetitionStatus.DRAWN && (
+      {data?.status === CompetitionStatus.DRAWN && !isDeleted && (
         <Button
           size="small"
           onClick={() => handleChangeStatus(CompetitionStatus.IN_PROGRESS)}
@@ -181,9 +180,10 @@ export default function ViewCompetitionPage() {
         </Button>
       )}
       {(data?.status === CompetitionStatus.DRAWN ||
-        data?.status === CompetitionStatus.IN_PROGRESS) && (
-        <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
-      )}
+        data?.status === CompetitionStatus.IN_PROGRESS) &&
+        !isDeleted && (
+          <Button href={`${competitionId}/shuffle`}>Ver sorteio</Button>
+        )}
 
       <GridTable
         loading={loading}

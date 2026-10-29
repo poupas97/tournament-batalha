@@ -185,8 +185,11 @@ export default function ViewMatchPage() {
         description="Consulte os detalhes, estado e eventos registados neste jogo"
         back
         edit={
-          data?.status === MatchStatus.SCHEDULED ||
-          data?.status === MatchStatus.POSTPONED
+          data &&
+          (data.deletedAt ||
+            data.competition.deletedAt ||
+            data.status === MatchStatus.SCHEDULED ||
+            data.status === MatchStatus.POSTPONED)
             ? `/backoffice/matches/${matchId}/edit`
             : undefined
         }
@@ -304,29 +307,31 @@ export default function ViewMatchPage() {
         </Box>
       )}
 
-      <Typography variant="h6">Mudar o estado do jogo</Typography>
-      {data && (
-        <Grid container spacing={2}>
-          {Object.values(MatchStatus)
-            .filter((status) => canTransition(data, status))
-            .map((status) => (
-              <Grid key={status} size={{ xs: 12, sm: 6, md: 2 }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  disabled={
-                    updatingStatus || !data.homeTeamId || !data.awayTeamId
-                  }
-                  onClick={() => handleChangeStatus(status)}
-                >
-                  {updatingStatus ? "A guardar…" : status}
-                </Button>
-              </Grid>
-            ))}
-        </Grid>
+      {data && !data.deletedAt && (
+        <>
+          <Typography variant="h6">Mudar o estado do jogo</Typography>
+          <Grid container spacing={2}>
+            {Object.values(MatchStatus)
+              .filter((status) => canTransition(data, status))
+              .map((status) => (
+                <Grid key={status} size={{ xs: 12, sm: 6, md: 2 }}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    disabled={
+                      updatingStatus || !data.homeTeamId || !data.awayTeamId
+                    }
+                    onClick={() => handleChangeStatus(status)}
+                  >
+                    {updatingStatus ? "A guardar…" : status}
+                  </Button>
+                </Grid>
+              ))}
+          </Grid>
+        </>
       )}
 
-      {data && !isMatchFinished(data.status) && (
+      {data && !data.deletedAt && !isMatchFinished(data.status) && (
         <Box style={{ display: "flex", gap: "2rem" }}>
           <MatchEventGrid
             team={data.homeTeam}
@@ -344,7 +349,9 @@ export default function ViewMatchPage() {
       <MatchEventsTable
         data={data}
         onRemoveMatchEvent={
-          data && !isMatchFinished(data.status) ? onRemoveMatchEvent : undefined
+          data && !data.deletedAt && !isMatchFinished(data.status)
+            ? onRemoveMatchEvent
+            : undefined
         }
         isBackoffice
       />

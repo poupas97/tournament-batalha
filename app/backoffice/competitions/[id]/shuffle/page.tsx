@@ -21,7 +21,7 @@ export default function ViewCompetitionMatchesPage() {
     loading: competitionLoading,
     error: competitionError,
   } = useGetState<CompetitionBEResponse>(
-    competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
+    `/api/backoffice/competitions/${competitionId}`,
   );
 
   const {

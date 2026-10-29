@@ -12,10 +12,9 @@
    - No backoffice, facilitar a consulta de jogos por data e competição quando há várias competições em paralelo.
 
 4. **Guiar melhor o fluxo de gestão da competição.**
-   - Mostrar os passos e o estado atual da competição, com indicações do que falta para avançar.
+   - Simplificar a orientação do fluxo: indicar os passos, requisitos em falta e ação seguinte para cada estado. A mensagem contextual de progresso fica adiada por agora.
    - Antes do sorteio, apresentar um resumo de confirmação com equipas, formato e consequências, dado que o sorteio só pode ser feito uma vez.
    - Tornar as ações disponíveis em cada estado mais evidentes e explicar junto da ação quando está bloqueada.
 
-5. **Reforçar acessibilidade e uso em ecrãs pequenos.**
-   - Rever a navegação do backoffice em telemóveis, onde existem vários itens e o botão de saída na mesma barra.
+5. **Reforçar acessibilidade e uso em ecrãs pequenos no frontoffice.**
    - Garantir foco visível e operação por teclado em elementos clicáveis, como linhas de tabela e cartões de jogadores/staff usados para registar eventos.

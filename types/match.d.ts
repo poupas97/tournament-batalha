@@ -26,6 +26,7 @@ export type MatchBEResponse = {
   awayPlaceholder?: string;
   events?: MatchEventBEResponse[];
   status: MatchStatus;
+  deletedAt: string | null;
 };
 
 export type MatchForPlaceholders = {

@@ -11,7 +11,7 @@ export default function ViewUserPage() {
   const userId = params?.id;
 
   const { data, loading, error } = useGetState<UserBEResponse>(
-    userId ? `/api/backoffice/users/${userId}` : undefined,
+    `/api/backoffice/users/${userId}`,
   );
 
   return (

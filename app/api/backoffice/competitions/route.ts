@@ -13,17 +13,21 @@ import {
   getResponse,
   invalidParam,
   requireToken,
+  shouldHideDeletedItems,
   unauthorized,
 } from "@/lib/api";
 import { CompetitionConfig } from "@/generated/prisma";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const token = await requireToken(request);
   if (!token) {
     return unauthorized();
   }
 
+  const hideDeleted = shouldHideDeletedItems(request);
   const competitions = await prisma.competition.findMany({
+    where: { ...(hideDeleted ? { deletedAt: null } : {}) },
     orderBy: { createdAt: "desc" },
     include: {
       _count: {

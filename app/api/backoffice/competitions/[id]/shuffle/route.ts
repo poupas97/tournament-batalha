@@ -75,7 +75,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const competition = await prisma.competition.findUnique({
-    where: { id: competitionId },
+    where: { id: competitionId, deletedAt: null },
   });
 
   if (!competition) {
@@ -113,7 +113,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const teams = await prisma.team.findMany({
-    where: { competitionId },
+    where: { competitionId, deletedAt: null },
   });
 
   if (!teams.length) {
@@ -176,14 +176,6 @@ export async function POST(request: Request, context: RouteContext) {
         qualified,
         opponents,
       },
-    });
-
-    await tx.matchEvent.deleteMany({
-      where: { match: { competitionId: competition.id } },
-    });
-
-    await tx.match.deleteMany({
-      where: { competitionId: competition.id },
     });
 
     await tx.match.createMany({ data: matches });

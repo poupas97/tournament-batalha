@@ -10,7 +10,25 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const match = await prisma.match.findUnique({
-    where: { id: matchId, competition: { active: true } },
+    where: {
+      id: matchId,
+      deletedAt: null,
+      competition: { active: true, deletedAt: null },
+      AND: [
+        {
+          OR: [
+            { homeTeamId: null },
+            { homeTeam: { is: { deletedAt: null } } },
+          ],
+        },
+        {
+          OR: [
+            { awayTeamId: null },
+            { awayTeam: { is: { deletedAt: null } } },
+          ],
+        },
+      ],
+    },
     include: {
       competition: true,
       homeTeam: {
@@ -20,6 +38,9 @@ export async function GET(request: Request, context: RouteContext) {
         include: { players: true, staffs: true },
       },
       events: {
+        where: {
+          team: { deletedAt: null },
+        },
         orderBy: { createdAt: "desc" },
         include: { team: true, player: true, staff: true },
       },

@@ -2,12 +2,10 @@
 
 import { MatchBEResponse } from "@/types/match";
 import { MatchEventBEResponse } from "@/types/match-event";
-import PhotoAvatar from "@/components/PhotoAvatar";
 import PlayerIdentity from "@/components/PlayerIdentity";
 import StaffIdentity from "@/components/StaffIdentity";
 import Link from "next/link";
 import {
-  Box,
   Button,
   Table,
   TableBody,
@@ -15,7 +13,6 @@ import {
   TableContainer,
   TableRow,
   Typography,
-  Stack,
 } from "@mui/material";
 
 type MatchEventsTableProps = {

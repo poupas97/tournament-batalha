@@ -23,7 +23,9 @@ export default function EditTeamPage() {
     data: competitionsData,
     loading: competitionsLoading,
     error: competitionsError,
-  } = useGetState<CompetitionBEResponse[]>("/api/backoffice/competitions");
+  } = useGetState<CompetitionBEResponse[]>(
+    "/api/backoffice/competitions?noDeleted=true",
+  );
 
   async function handleSubmit(values: ITeamFormValues) {
     const response = await fetch(`/api/backoffice/teams/${teamId}`, {
@@ -39,7 +41,7 @@ export default function EditTeamPage() {
     <>
       <Title
         label="Editar equipa"
-        description="Atualize os dados e a competição associada a esta equipa"
+        description="Atualize os dados desta equipa"
         back
       />
 

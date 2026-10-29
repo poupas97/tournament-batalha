@@ -16,7 +16,7 @@ export default function EditCompetitionPage() {
   const competitionId = params?.id;
 
   const { data, loading, error } = useGetState<CompetitionBEResponse>(
-    competitionId ? `/api/backoffice/competitions/${competitionId}` : undefined,
+    `/api/backoffice/competitions/${competitionId}`,
   );
 
   async function handleSubmit(values: ICompetitionFormValues) {

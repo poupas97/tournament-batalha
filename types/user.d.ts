@@ -19,6 +19,7 @@ export type UserBEResponse = {
   email: string;
   role: UserRole;
   password?: string;
+  deletedAt: string | null;
 };
 
 export type IUserPasswordFormValues = {

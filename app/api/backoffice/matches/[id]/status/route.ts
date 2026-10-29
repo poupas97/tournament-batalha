@@ -40,7 +40,7 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 
   const existing = await prisma.match.findUnique({
-    where: { id: matchId },
+    where: { id: matchId, deletedAt: null, competition: { deletedAt: null } },
     select: {
       id: true,
       status: true,
@@ -109,6 +109,7 @@ export async function PUT(request: Request, context: RouteContext) {
       select: {
         id: true,
         status: true,
+        deletedAt: true,
         competition: {
           select: { id: true, status: true },
         },

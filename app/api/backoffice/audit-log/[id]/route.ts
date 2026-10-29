@@ -5,12 +5,12 @@ import {
   getResponse,
   invalidParam,
   noFound,
+  requireAdminToken,
   unauthorized,
 } from "@/lib/api";
-import { requireCurrentAdminToken } from "@/lib/adminAuth";
 
 export async function GET(request: Request, context: RouteContext) {
-  const token = await requireCurrentAdminToken(request);
+  const token = await requireAdminToken(request);
   if (!token) {
     return unauthorized();
   }
@@ -22,7 +22,9 @@ export async function GET(request: Request, context: RouteContext) {
 
   const auditLog = await prisma.auditLog.findUnique({
     where: { id: auditLogId },
-    include: { actor: true },
+    include: {
+      actor: { select: { id: true, name: true, email: true } },
+    },
   });
 
   if (!auditLog) {

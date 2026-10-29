@@ -27,7 +27,7 @@ export default function BackofficeAuditLogPage() {
           { key: "action", header: "Ação" },
           { key: "entity", header: "Entidade" },
           { key: "entityId", header: "ID da Entidade" },
-          { key: "createdAt", header: "Data", format: "date" },
+          { key: "createdAt", header: "Data", format: "datetime" },
         ]}
       />
     </>
