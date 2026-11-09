@@ -1,6 +1,18 @@
 "use client";
 
 import Detail from "@/components/Detail";
+import MatchEventsTable from "@/components/MatchEventsTable";
+import PhotoAvatar from "@/components/PhotoAvatar";
+import Title from "@/components/Title";
+import { SocketEvents } from "@/enums/socket";
+import useGetState from "@/hooks/useGetState";
+import {
+  getCompetitionQualifiedHint,
+  getMatchCompetitionConfigHint,
+  getMatchOpponentsHint,
+  getMatchStatusHint,
+} from "@/lib/detailHints";
+import { getMatchScore } from "@/lib/match";
 import {
   dispatchSocketMessage,
   getSocket,
@@ -8,26 +20,14 @@ import {
   sendSocketMessage,
 } from "@/lib/websocket";
 import { MatchBEResponse } from "@/types/match";
-import { SocketEvents } from "@/enums/socket";
-import {
-  getCompetitionQualifiedHint,
-  getMatchCompetitionConfigHint,
-  getMatchStatusHint,
-  getMatchOpponentsHint,
-} from "@/lib/detailHints";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
 import {
   NotifyAddMatchEvent,
   NotifyMatchStatus,
   NotifyRemoveMatchEvent,
 } from "@/types/socket";
-import Title from "@/components/Title";
-import useGetState from "@/hooks/useGetState";
 import { Box, Typography } from "@mui/material";
-import PhotoAvatar from "@/components/PhotoAvatar";
-import MatchEventsTable from "@/components/MatchEventsTable";
-import { getMatchScore } from "@/lib/match";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ViewMatchPage() {
   const params = useParams();
@@ -38,45 +38,36 @@ export default function ViewMatchPage() {
   );
 
   useEffect(() => {
+    if (!matchId) return;
+
     const socket = getSocket();
-
-    const onMessage = (event: MessageEvent) => {
-      dispatchSocketMessage(event);
-    };
-
+    const onMessage = (event: MessageEvent) => dispatchSocketMessage(event);
     socket.addEventListener("message", onMessage);
     const cancelJoin = sendSocketMessage({ type: SocketEvents.JOIN, matchId });
 
     const offStatus = onSocket(SocketEvents.MATCH_STATUS, (payload) => {
-      const { status } = payload as NotifyMatchStatus;
-
-      setData({ status });
+      setData({ status: (payload as NotifyMatchStatus).status });
     });
 
     const offAdd = onSocket(SocketEvents.ADD_MATCH_EVENT, (payload) => {
       const event = payload as NotifyAddMatchEvent;
-
-      setData((current) => {
-        if (!current) return undefined;
-
-        return {
-          ...current,
-          events: [event, ...(current?.events || [])],
-        };
-      });
+      setData((current) =>
+        current
+          ? { ...current, events: [event, ...(current.events || [])] }
+          : undefined,
+      );
     });
 
     const offRemove = onSocket(SocketEvents.REMOVE_MATCH_EVENT, (payload) => {
       const { id } = payload as NotifyRemoveMatchEvent;
-
-      setData((current) => {
-        if (!current) return undefined;
-
-        return {
-          ...current,
-          events: current.events?.filter((it) => it.id !== id),
-        };
-      });
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              events: current.events?.filter((it) => it.id !== id),
+            }
+          : undefined,
+      );
     });
 
     return () => {
@@ -125,15 +116,11 @@ export default function ViewMatchPage() {
           { key: "round", label: "Ronda" },
           { key: "homeTeam.name", label: "Equipa da Casa" },
           { key: "awayTeam.name", label: "Equipa Visitante" },
-          {
-            key: "status",
-            label: "Estado",
-            hint: getMatchStatusHint,
-          },
+          { key: "status", label: "Estado", hint: getMatchStatusHint },
         ]}
       />
 
-      {data?.homeTeam?.name && data?.awayTeam?.name && (
+      {data?.homeTeam?.name && data.awayTeam?.name && (
         <Box
           sx={{
             display: "flex",
@@ -209,7 +196,7 @@ export default function ViewMatchPage() {
         </Box>
       )}
 
-      <MatchEventsTable data={data} />
+      {!loading && <MatchEventsTable data={data} />}
     </>
   );
 }

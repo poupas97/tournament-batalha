@@ -11,7 +11,7 @@ export default function ViewPlayerPage() {
   const playerId = params?.id;
 
   const { data, loading, error } = useGetState<PlayerBEResponse>(
-    `/api/players/${playerId}`,
+    playerId ? `/api/players/${playerId}` : undefined,
   );
 
   return (

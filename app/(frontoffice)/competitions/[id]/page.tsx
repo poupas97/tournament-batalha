@@ -4,6 +4,7 @@ import CompetitionShuffle from "@/components/CompetitionShuffle";
 import Detail from "@/components/Detail";
 import GridTable from "@/components/GridTable";
 import RankingScoresTable from "@/components/RankingScoresTable";
+import TeamIdentity from "@/components/TeamIdentity";
 import Title from "@/components/Title";
 import { CompetitionStatus } from "@/generated/prisma";
 import useGetState from "@/hooks/useGetState";
@@ -18,8 +19,6 @@ import {
   CompetitionStatsBEResponse,
 } from "@/types/competition";
 import { MatchBEResponse } from "@/types/match";
-import TeamIdentity from "@/components/TeamIdentity";
-import { Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 
 export default function ViewCompetitionPage() {
@@ -50,13 +49,16 @@ export default function ViewCompetitionPage() {
     competitionId ? `/api/competitions/${competitionId}/stats` : undefined,
   );
 
+  const loading = competitionLoading || matchesLoading || statsLoading;
+  const error = competitionError || matchesError || statsError;
+
   return (
     <>
       <Title label="Ver competição" back />
 
       <Detail<CompetitionBEResponse>
-        loading={competitionLoading}
-        error={competitionError}
+        loading={loading}
+        error={error}
         data={competitionData}
         fields={[
           { key: "name", label: "Nome" },
@@ -76,58 +78,42 @@ export default function ViewCompetitionPage() {
             label: "Oponentes",
             hint: getCompetitionOpponentsHint,
           },
-          {
-            key: "status",
-            label: "Estado",
-            hint: getCompetitionStatusHint,
-          },
+          { key: "status", label: "Estado", hint: getCompetitionStatusHint },
           { key: "_count.teams", label: "Equipas" },
           { key: "color", label: "Cor", format: "color" },
         ]}
       />
 
-      {competitionLoading || statsLoading || matchesLoading ? (
-        <Typography variant="body1">A carregar competição...</Typography>
-      ) : competitionError || statsError || matchesError ? (
-        <Typography variant="body1" color="error">
-          {competitionError || statsError || matchesError}
-        </Typography>
-      ) : (
-        !!competitionData &&
-        !!statsData &&
-        !!matchesData && (
+      {competitionData &&
+        matchesData &&
+        statsData &&
+        (competitionData.status === CompetitionStatus.DRAFT ? (
+          <GridTable
+            loading={loading}
+            error={error}
+            data={competitionData.teams}
+            href={(it) => `/teams/${it.id}`}
+            notChangeRoute
+            title={`Equipas (${competitionData.teams.length})`}
+            columns={[
+              {
+                key: "name",
+                header: "Equipa",
+                render: (it) => <TeamIdentity team={it} />,
+              },
+              { key: "_count.players", header: "Jogadores" },
+              { key: "_count.staffs", header: "Staffs" },
+            ]}
+          />
+        ) : (
           <>
-            {competitionData?.status === CompetitionStatus.DRAFT ? (
-              <GridTable
-                loading={false}
-                error={undefined}
-                data={competitionData?.teams}
-                href={(it) => `/teams/${it.id}`}
-                notChangeRoute
-                title={`Equipas (${competitionData?.teams.length || 0})`}
-                columns={[
-                  {
-                    key: "name",
-                    header: "Equipa",
-                    render: (team) => <TeamIdentity team={team} />,
-                  },
-                  { key: "_count.players", header: "Jogadores" },
-                  { key: "_count.staffs", header: "Staffs" },
-                ]}
-              />
-            ) : (
-              <>
-                <CompetitionShuffle
-                  competition={competitionData}
-                  matches={matchesData}
-                />
-
-                <RankingScoresTable rankingScores={statsData.rankingScores} />
-              </>
-            )}
+            <CompetitionShuffle
+              competition={competitionData}
+              matches={matchesData}
+            />
+            <RankingScoresTable rankingScores={statsData.rankingScores} />
           </>
-        )
-      )}
+        ))}
     </>
   );
 }

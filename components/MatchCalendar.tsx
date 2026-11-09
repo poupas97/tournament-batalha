@@ -6,6 +6,7 @@ import {
   Button,
   IconButton,
   Paper,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -27,11 +28,15 @@ import TeamIdentity from "@/components/TeamIdentity";
 
 type MatchCalendarProps = {
   data: MatchBEResponse[] | undefined;
+  loading?: boolean;
+  error?: string;
   isBackoffice?: boolean;
 };
 
 export default function MatchCalendar({
   data,
+  loading = false,
+  error,
   isBackoffice,
 }: MatchCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -71,6 +76,31 @@ export default function MatchCalendar({
 
   function goToToday() {
     setCurrentDate(new Date());
+  }
+
+  if (loading) {
+    return (
+      <Paper sx={{ p: 2 }} role="status" aria-label="A carregar calendário">
+        <Stack spacing={2}>
+          <Skeleton variant="rounded" height={36} />
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(4, 1fr)" },
+              gap: 1,
+            }}
+          >
+            {Array.from({ length: 8 }, (_, index) => (
+              <Skeleton key={index} variant="rounded" height={120} />
+            ))}
+          </Box>
+        </Stack>
+      </Paper>
+    );
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
   }
 
   return (

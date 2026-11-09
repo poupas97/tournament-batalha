@@ -1,8 +1,11 @@
 import HintTooltip from "@/components/HintTooltip";
 import _get from "lodash/get";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Skeleton, Stack, Typography } from "@mui/material";
 import { formattedValue } from "@/lib/formattedValue";
 import type { ReactNode } from "react";
+
+const DETAIL_SKELETON_GRID_GAP = 2;
+const DETAIL_SKELETON_FIELD_GAP = 0.5;
 
 type DetailField<T extends Record<string, unknown>> = {
   key: string;
@@ -27,8 +30,7 @@ export default function Detail<T extends Record<string, unknown>>({
   fields,
   emptyMessage,
 }: DetailProps<T>) {
-  if (loading)
-    return <Typography variant="body1">A carregar dados...</Typography>;
+  if (loading) return <DetailSkeleton fields={fields} />;
 
   if (error)
     return (
@@ -67,6 +69,30 @@ export default function Detail<T extends Record<string, unknown>>({
           </Grid>
         );
       })}
+    </Grid>
+  );
+}
+
+function DetailSkeleton<T extends Record<string, unknown>>({
+  fields,
+}: {
+  fields: DetailField<T>[];
+}) {
+  return (
+    <Grid
+      container
+      spacing={DETAIL_SKELETON_GRID_GAP}
+      role="status"
+      aria-label="A carregar detalhes"
+    >
+      {fields.map((field) => (
+        <Grid size={{ xs: 6, sm: 2 }} key={field.key}>
+          <Stack spacing={DETAIL_SKELETON_FIELD_GAP}>
+            <Skeleton variant="text" width="60%" />
+            <Skeleton variant="text" width="90%" height={30} />
+          </Stack>
+        </Grid>
+      ))}
     </Grid>
   );
 }

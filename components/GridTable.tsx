@@ -1,8 +1,8 @@
 "use client";
 
 import { GridTableProps } from "@/types/grid-table";
-import DataTable from "./DataTable";
-import DataGrid from "./DataGrid";
+import DataTable, { DataTableSkeleton } from "./DataTable";
+import DataGrid, { DataGridSkeleton } from "./DataGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import _get from "lodash/get";
@@ -10,6 +10,8 @@ import { Box, Button, ButtonGroup, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 import GridViewIcon from "@mui/icons-material/GridView";
 import TableRowsIcon from "@mui/icons-material/TableRows";
+
+type GridTableView = "table" | "grid";
 
 function GridTableContent<T>({
   emptyMessage,
@@ -25,7 +27,7 @@ function GridTableContent<T>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [localView, setLocalView] = useState<"table" | "grid">("table");
+  const [localView, setLocalView] = useState<GridTableView>("table");
   const [search, setSearch] = useState("");
 
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -43,7 +45,7 @@ function GridTableContent<T>({
       ? "table"
       : "grid";
 
-  const onSetView = (nextView: "table" | "grid") => {
+  const onSetView = (nextView: GridTableView) => {
     if (notChangeRoute) {
       setLocalView(nextView);
       return;
@@ -117,13 +119,17 @@ function GridTableContent<T>({
         </Box>
       </Box>
 
-      {loading && <Typography variant="body1">A carregar dados...</Typography>}
-      {error && (
+      {loading ? (
+        view === "grid" ? (
+          <DataGridSkeleton columns={rest.columns} />
+        ) : (
+          <DataTableSkeleton columns={rest.columns} />
+        )
+      ) : error ? (
         <Typography variant="body1" color="error">
           {error}
         </Typography>
-      )}
-      {!filteredData?.length ? (
+      ) : !filteredData?.length ? (
         <Typography variant="body1">
           {emptyMessage || "Sem dados para mostrar"}
         </Typography>

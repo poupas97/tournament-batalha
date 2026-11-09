@@ -3,6 +3,7 @@
 import { formattedValue } from "@/lib/formattedValue";
 import { DataTableProps } from "@/types/grid-table";
 import {
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +13,8 @@ import {
 } from "@mui/material";
 import _get from "lodash/get";
 import { useRouter } from "next/navigation";
+
+const DATA_TABLE_SKELETON_ROWS = 6;
 
 export default function DataTable<T>({
   columns,
@@ -60,6 +63,37 @@ export default function DataTable<T>({
                   </TableCell>
                 );
               })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+export function DataTableSkeleton<T>({
+  columns,
+}: Pick<DataTableProps<T>, "columns">) {
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <TableCell key={column.key}>
+                <Skeleton variant="text" width="70%" />
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {Array.from({ length: DATA_TABLE_SKELETON_ROWS }, (_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  <Skeleton variant="text" width="90%" height={28} />
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>

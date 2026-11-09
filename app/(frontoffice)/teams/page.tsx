@@ -1,9 +1,9 @@
 "use client";
 
 import GridTable from "@/components/GridTable";
+import TeamIdentity from "@/components/TeamIdentity";
 import Title from "@/components/Title";
 import useGetState from "@/hooks/useGetState";
-import TeamIdentity from "@/components/TeamIdentity";
 import { TeamBEResponse } from "@/types/team";
 
 export default function TeamsPage() {
